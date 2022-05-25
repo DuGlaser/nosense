@@ -1,24 +1,12 @@
 {
+  "name": "nosense",
   "private": true,
-  "main": "main/index.js",
-  "productName": "nosense",
-  "scripts": {
-    "clean": "rimraf dist main renderer/out renderer/.next",
-    "dev": "npm run build-electron && electron .",
-    "build-renderer": "next build renderer && next export renderer",
-    "build-electron": "tsc -p electron-src",
-    "build": "npm run build-renderer && npm run build-electron",
-    "pack-app": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder",
-    "type-check": "tsc -p ./renderer/tsconfig.json && tsc -p ./electron-src/tsconfig.json",
-    "lint": "run-s lint:**",
-    "lint-fix": "run-s lint-fix:**",
-    "lint:eslint": "eslint './**/*.{ts,tsx}'",
-    "lint-fix:eslint": "yarn run lint:eslint --fix"
-  },
+  "workspaces": [
+    "packages/*",
+    "web",
+    "app"
+  ],
   "dependencies": {
-    "electron-is-dev": "^1.1.0",
-    "electron-next": "^3.1.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -26,28 +14,10 @@
     "@types/node": "^14.14.6",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.9",
-    "@typescript-eslint/eslint-plugin": "^5.25.0",
-    "@typescript-eslint/parser": "^5.25.0",
-    "electron": "^13",
-    "electron-builder": "^23.0.3",
-    "eslint": "^8.15.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.29.4",
-    "eslint-plugin-react-hooks": "^4.5.0",
-    "eslint-plugin-simple-import-sort": "^7.0.0",
-    "next": "latest",
+    "next": "^12.1.6",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
-    "rimraf": "^3.0.0",
-    "typescript": "^4.6.4"
-  },
-  "build": {
-    "asar": true,
-    "files": [
-      "main",
-      "renderer/out"
-    ]
+    "turbo": "^1.2.12",
+    "typescript": "^4.7.2"
   }
 }
