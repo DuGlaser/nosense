@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "name": "@nosense/web",
   "scripts": {
+    "build": "next build && next export",
     "lint": "run-s lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "eslint './**/*.{ts,tsx}'",

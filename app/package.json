@@ -4,8 +4,8 @@
   "name": "@nosense/app",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p .",
-    "dev": "npm run clean && npm run build && electron main",
+    "build": "npm run clean && tsc -p .",
+    "dev": "npm run build && electron main",
     "lint": "run-s lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "eslint './**/*.{ts,tsx}'",
