@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "name": "@nosense/app",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "npm run clean && npm run build && electron main",
+    "lint": "run-s lint:**",
+    "lint-fix": "run-s lint-fix:**",
+    "lint:eslint": "eslint './**/*.{ts,tsx}'",
+    "lint-fix:eslint": "yarn run lint:eslint --fix",
+    "clean": "rm -rf main/"
+  },
+  "dependencies": {
+    "electron-is-dev": "^1.1.0",
+    "electron-next": "^3.1.5"
+  },
+  "devDependencies": {
+    "electron": "^13",
+    "electron-builder": "^23.0.3",
+    "eslint-plugin-custom": "*"
+  },
+  "build": {
+    "asar": true,
+    "files": [
+      "main"
+    ]
+  }
+}
