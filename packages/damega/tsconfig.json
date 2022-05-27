@@ -1,10 +1,9 @@
 {
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "esModuleInterop": true,
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
