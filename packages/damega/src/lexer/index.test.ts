@@ -1,14 +1,27 @@
 import { TokenType } from '../token';
 import { Lexer } from '.';
 
+type Test = {
+  expectedType: TokenType;
+  expectedLiteral: string;
+};
+
+const testLexer = (input: string, tests: Test[]) => {
+  const l = new Lexer(input);
+
+  tests.forEach((test) => {
+    const token = l.NextToken();
+
+    expect(test.expectedType).toBe(token.type);
+    expect(test.expectedLiteral).toBe(token.ch);
+  });
+};
+
 describe('Lexer', () => {
   test('Number', () => {
     const input = `Number value = 0;`;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'VAR_NUMBER', expectedLiteral: 'Number' },
       { expectedType: 'IDENT', expectedLiteral: 'value' },
       { expectedType: 'ASSIGN', expectedLiteral: '=' },
@@ -18,14 +31,7 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
-
-    tests.forEach((test) => {
-      const token = l.NextToken();
-
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    testLexer(input, tests);
   });
 
   test('Bool', () => {
@@ -34,10 +40,7 @@ describe('Lexer', () => {
       Bool flag = false;
     `;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'VAR_BOOLEAN', expectedLiteral: 'Bool' },
       { expectedType: 'IDENT', expectedLiteral: 'flag' },
       { expectedType: 'ASSIGN', expectedLiteral: '=' },
@@ -53,14 +56,7 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
-
-    tests.forEach((test) => {
-      const token = l.NextToken();
-
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    testLexer(input, tests);
   });
 
   test('演算子', () => {
@@ -68,10 +64,7 @@ describe('Lexer', () => {
       1 + 1 - 1 * 1 / 1
     `;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'NUMBER', expectedLiteral: '1' },
       { expectedType: 'PLUS', expectedLiteral: '+' },
       { expectedType: 'NUMBER', expectedLiteral: '1' },
@@ -85,23 +78,13 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
-
-    tests.forEach((test) => {
-      const token = l.NextToken();
-
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    testLexer(input, tests);
   });
 
   test('if', () => {
     const input = `if () {} else {}`;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'IF', expectedLiteral: 'if' },
       { expectedType: 'LPAREN', expectedLiteral: '(' },
       { expectedType: 'RPAREN', expectedLiteral: ')' },
@@ -116,23 +99,13 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
-
-    tests.forEach((test) => {
-      const token = l.NextToken();
-
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    testLexer(input, tests);
   });
 
   test('while', () => {
     const input = `while () {}`;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'WHILE', expectedLiteral: 'while' },
       { expectedType: 'LPAREN', expectedLiteral: '(' },
       { expectedType: 'RPAREN', expectedLiteral: ')' },
@@ -143,23 +116,13 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
-
-    tests.forEach((test) => {
-      const token = l.NextToken();
-
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    testLexer(input, tests);
   });
 
   test('> < >= <=', () => {
     const input = `> < >= <=`;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'GT', expectedLiteral: '>' },
       { expectedType: 'LT', expectedLiteral: '<' },
       { expectedType: 'GT_EQ', expectedLiteral: '>=' },
@@ -168,23 +131,38 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
+    testLexer(input, tests);
+  });
 
-    tests.forEach((test) => {
-      const token = l.NextToken();
+  test('関数', () => {
+    const input = `
+      func something() {}
+      something();
+    `;
 
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    const tests: Test[] = [
+      { expectedType: 'FUNCTION', expectedLiteral: 'func' },
+      { expectedType: 'IDENT', expectedLiteral: 'something' },
+      { expectedType: 'LPAREN', expectedLiteral: '(' },
+      { expectedType: 'RPAREN', expectedLiteral: ')' },
+      { expectedType: 'LBRACE', expectedLiteral: '{' },
+      { expectedType: 'RBRACE', expectedLiteral: '}' },
+
+      { expectedType: 'IDENT', expectedLiteral: 'something' },
+      { expectedType: 'LPAREN', expectedLiteral: '(' },
+      { expectedType: 'RPAREN', expectedLiteral: ')' },
+      { expectedType: 'SEMICOLON', expectedLiteral: ';' },
+
+      { expectedType: 'EOF', expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
   });
 
   test('= ! == !=', () => {
     const input = `= ! == !=`;
 
-    const tests: {
-      expectedType: TokenType;
-      expectedLiteral: string;
-    }[] = [
+    const tests: Test[] = [
       { expectedType: 'ASSIGN', expectedLiteral: '=' },
       { expectedType: 'BANG', expectedLiteral: '!' },
       { expectedType: 'EQ', expectedLiteral: '==' },
@@ -193,13 +171,6 @@ describe('Lexer', () => {
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];
 
-    const l = new Lexer(input);
-
-    tests.forEach((test) => {
-      const token = l.NextToken();
-
-      expect(test.expectedType).toBe(token.type);
-      expect(test.expectedLiteral).toBe(token.ch);
-    });
+    testLexer(input, tests);
   });
 });
