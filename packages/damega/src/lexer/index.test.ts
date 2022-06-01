@@ -189,4 +189,19 @@ describe('Lexer', () => {
 
     testLexer(input, tests);
   });
+
+  test('文字列', () => {
+    const input = `"test1""test2""";`;
+
+    const tests: Test[] = [
+      { expectedType: 'STRING', expectedLiteral: 'test1' },
+      { expectedType: 'STRING', expectedLiteral: 'test2' },
+      { expectedType: 'STRING', expectedLiteral: '' },
+      { expectedType: 'SEMICOLON', expectedLiteral: ';' },
+
+      { expectedType: 'EOF', expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
 });

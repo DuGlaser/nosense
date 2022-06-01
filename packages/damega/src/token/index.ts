@@ -3,6 +3,7 @@ export const token = {
   EOF: 'EOF',
   IDENT: 'IDENT',
   NUMBER: 'NUMBER',
+  STRING: 'STRING',
 
   ASSIGN: '=',
   PLUS: '+',

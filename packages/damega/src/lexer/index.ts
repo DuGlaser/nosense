@@ -30,9 +30,10 @@ export class Lexer {
     this.registerTokenMap(token.LT, () => this.readLT());
     this.registerTokenMap(token.GT, () => this.readGT());
 
+    this.registerTokenMap('"', () => this.readString());
     this.registerTokenMap(token.COMMA, () => this.newToken('COMMA'));
-
     this.registerTokenMap(token.SEMICOLON, () => this.newToken('SEMICOLON'));
+
     this.registerTokenMap(token.LPAREN, () => this.newToken('LPAREN'));
     this.registerTokenMap(token.RPAREN, () => this.newToken('RPAREN'));
     this.registerTokenMap(token.LBRACE, () => this.newToken('LBRACE'));
@@ -164,6 +165,18 @@ export class Lexer {
     }
 
     return '0' <= char && char <= '9';
+  }
+
+  private readString(): Token {
+    this.readChar();
+    const startPos = this.position;
+
+    while (this.ch != '"') {
+      this.readChar();
+    }
+
+    const str = this.input.substring(startPos, this.position);
+    return this.newToken('STRING', str);
   }
 
   private readNumber(): string {
