@@ -1,10 +1,14 @@
 import { LookUpKeyword, Token, token, TokenType } from '@/token';
 
+type ToTokenFn = () => Token;
+
 export class Lexer {
   private input: string;
   private position: number;
   private readPosition: number;
   private ch: string;
+
+  private toTokenMap = new Map<string, ToTokenFn>();
 
   constructor(input: string) {
     this.input = input;
@@ -13,111 +17,100 @@ export class Lexer {
     this.ch = '';
 
     this.readChar();
+
+    this.registerTokenMap(token.EOF, () => this.newToken('EOF'));
+
+    this.registerTokenMap(token.ASSIGN, () => this.readAssign());
+    this.registerTokenMap(token.ASTERISK, () => this.newToken('ASTERISK'));
+    this.registerTokenMap(token.PLUS, () => this.newToken('PLUS'));
+    this.registerTokenMap(token.MINUS, () => this.newToken('MINUS'));
+    this.registerTokenMap(token.BANG, () => this.readBang());
+    this.registerTokenMap(token.SLASH, () => this.newToken('SLASH'));
+
+    this.registerTokenMap(token.LT, () => this.readLT());
+    this.registerTokenMap(token.GT, () => this.readGT());
+
+    this.registerTokenMap(token.COMMA, () => this.newToken('COMMA'));
+
+    this.registerTokenMap(token.SEMICOLON, () => this.newToken('SEMICOLON'));
+    this.registerTokenMap(token.LPAREN, () => this.newToken('LPAREN'));
+    this.registerTokenMap(token.RPAREN, () => this.newToken('RPAREN'));
+    this.registerTokenMap(token.LBRACE, () => this.newToken('LBRACE'));
+    this.registerTokenMap(token.RBRACE, () => this.newToken('RBRACE'));
   }
 
   public NextToken(): Token {
-    let tok: Token;
-
     this.skipWhiteSpace();
 
-    switch (this.ch) {
-      case token.EOF:
-        tok = this.newToken('EOF');
-        break;
-
-      case token.ASSIGN:
-        if (this.peekChar() == token.ASSIGN) {
-          tok = this.newToken('EQ', token.EQ);
-          this.readChar();
-        } else {
-          tok = this.newToken('ASSIGN');
-        }
-        break;
-
-      case token.PLUS:
-        tok = this.newToken('PLUS');
-        break;
-
-      case token.MINUS:
-        tok = this.newToken('MINUS');
-        break;
-
-      case token.BANG:
-        if (this.peekChar() == token.ASSIGN) {
-          tok = this.newToken('NOT_EQ', token.NOT_EQ);
-          this.readChar();
-        } else {
-          tok = this.newToken('BANG', token.BANG);
-        }
-        break;
-
-      case token.ASTERISK:
-        tok = this.newToken('ASTERISK');
-        break;
-
-      case token.SLASH:
-        tok = this.newToken('SLASH');
-        break;
-
-      case token.LT:
-        if (this.peekChar() == token.ASSIGN) {
-          this.readChar();
-          tok = this.newToken('LT_EQ', token.LT_EQ);
-        } else {
-          tok = this.newToken('LT');
-        }
-        break;
-
-      case token.GT:
-        if (this.peekChar() == token.ASSIGN) {
-          this.readChar();
-          tok = this.newToken('GT_EQ', token.GT_EQ);
-        } else {
-          tok = this.newToken('GT');
-        }
-        break;
-
-      case token.COMMA:
-        tok = this.newToken('COMMA');
-        break;
-
-      case token.SEMICOLON:
-        tok = this.newToken('SEMICOLON');
-        break;
-
-      case token.LPAREN:
-        tok = this.newToken('LPAREN');
-        break;
-
-      case token.RPAREN:
-        tok = this.newToken('RPAREN');
-        break;
-
-      case token.LBRACE:
-        tok = this.newToken('LBRACE');
-        break;
-
-      case token.RBRACE:
-        tok = this.newToken('RBRACE');
-        break;
-
-      default:
-        if (this.isLetter(this.ch)) {
-          const ident = this.readIdent();
-          const type = LookUpKeyword(ident);
-
-          return this.newToken(type, ident);
-        } else if (this.isDegit(this.ch)) {
-          const num = this.readNumber();
-
-          return this.newToken('NUMBER', num);
-        } else {
-          tok = this.newToken('ILLEGAL', '');
-        }
+    const fn = this.getToTokenFn(this.ch);
+    if (fn) {
+      const token = fn();
+      this.readChar();
+      return token;
     }
 
-    this.readChar();
-    return tok;
+    if (this.isLetter(this.ch)) {
+      const ident = this.readIdent();
+      const type = LookUpKeyword(ident);
+
+      return this.newToken(type, ident);
+    }
+
+    if (this.isDegit(this.ch)) {
+      const num = this.readNumber();
+
+      return this.newToken('NUMBER', num);
+    }
+
+    return this.newToken('ILLEGAL', '');
+  }
+
+  private registerTokenMap(key: string, fn: ToTokenFn) {
+    if (this.toTokenMap.get(key)) {
+      throw new Error(`${key} is already registered.`);
+    }
+
+    this.toTokenMap.set(key, fn);
+  }
+
+  private getToTokenFn(key: string): ToTokenFn | undefined {
+    return this.toTokenMap.get(key);
+  }
+
+  private readAssign(): Token {
+    if (this.peekChar() == token.ASSIGN) {
+      this.readChar();
+      return this.newToken('EQ', token.EQ);
+    } else {
+      return this.newToken('ASSIGN');
+    }
+  }
+
+  private readBang(): Token {
+    if (this.peekChar() == token.ASSIGN) {
+      this.readChar();
+      return this.newToken('NOT_EQ', token.NOT_EQ);
+    } else {
+      return this.newToken('BANG', token.BANG);
+    }
+  }
+
+  private readLT(): Token {
+    if (this.peekChar() == token.ASSIGN) {
+      this.readChar();
+      return this.newToken('LT_EQ', token.LT_EQ);
+    } else {
+      return this.newToken('LT');
+    }
+  }
+
+  private readGT(): Token {
+    if (this.peekChar() == token.ASSIGN) {
+      this.readChar();
+      return this.newToken('GT_EQ', token.GT_EQ);
+    } else {
+      return this.newToken('GT');
+    }
   }
 
   private readChar() {
