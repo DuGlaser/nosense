@@ -173,4 +173,20 @@ describe('Lexer', () => {
 
     testLexer(input, tests);
   });
+
+  test('配列', () => {
+    const input = `[1, 2]`;
+
+    const tests: Test[] = [
+      { expectedType: 'LBRACKET', expectedLiteral: '[' },
+      { expectedType: 'NUMBER', expectedLiteral: '1' },
+      { expectedType: 'COMMA', expectedLiteral: ',' },
+      { expectedType: 'NUMBER', expectedLiteral: '2' },
+      { expectedType: 'RBRACKET', expectedLiteral: ']' },
+
+      { expectedType: 'EOF', expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
 });

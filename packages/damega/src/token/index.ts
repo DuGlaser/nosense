@@ -22,6 +22,8 @@ export const token = {
   RPAREN: ')',
   LBRACE: '{',
   RBRACE: '}',
+  LBRACKET: '[',
+  RBRACKET: ']',
 
   FUNCTION: 'FUNCTION',
   VAR_STRING: 'VAR_STRING',

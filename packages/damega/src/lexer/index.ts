@@ -37,6 +37,8 @@ export class Lexer {
     this.registerTokenMap(token.RPAREN, () => this.newToken('RPAREN'));
     this.registerTokenMap(token.LBRACE, () => this.newToken('LBRACE'));
     this.registerTokenMap(token.RBRACE, () => this.newToken('RBRACE'));
+    this.registerTokenMap(token.LBRACKET, () => this.newToken('LBRACKET'));
+    this.registerTokenMap(token.RBRACKET, () => this.newToken('RBRACKET'));
   }
 
   public NextToken(): Token {
