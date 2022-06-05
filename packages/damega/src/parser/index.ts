@@ -1,6 +1,7 @@
 import {
   BooleanLiteral,
   Expression,
+  ExpressionStatement,
   Identifier,
   InfixExpression,
   LetStatement,
@@ -123,8 +124,18 @@ export class Parser {
         return this.parseLetStatement();
 
       default:
-        return undefined;
+        return this.parseExpressionStatement();
     }
+  }
+
+  private parseExpressionStatement(): ExpressionStatement | undefined {
+    const token = this.curToken;
+    const expression = this.parseExpression(Precedence.LOWEST);
+    if (!expression) {
+      return undefined;
+    }
+
+    return new ExpressionStatement({ token, expression });
   }
 
   private parseExpression(precedence: Precedence): Expression | undefined {

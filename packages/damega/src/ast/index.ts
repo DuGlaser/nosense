@@ -248,6 +248,37 @@ export class BooleanLiteral extends Expression {
   }
 }
 
+export class ExpressionStatement extends Statement {
+  private _token: Token;
+  private _expression: Expression;
+
+  constructor(arg: { token: Token; expression: Expression }) {
+    super();
+    this._token = arg.token;
+    this._expression = arg.expression;
+  }
+
+  public string(): string {
+    return this._expression.string();
+  }
+
+  public inspect(): string {
+    return this._expression.inspect();
+  }
+
+  public tokenLiteral(): string {
+    return this._token.ch;
+  }
+
+  get token() {
+    return this._token;
+  }
+
+  get expression() {
+    return this._expression;
+  }
+}
+
 export class InfixExpression extends Expression {
   private _token: Token;
   private _left: Expression;

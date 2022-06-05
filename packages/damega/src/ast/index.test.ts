@@ -2,6 +2,7 @@ import { Token } from '../token';
 import {
   BlockStatement,
   BooleanLiteral,
+  ExpressionStatement,
   Identifier,
   IfStatement,
   InfixExpression,
@@ -75,6 +76,28 @@ describe('Ast', () => {
     ]);
 
     expect(`let test: bool = true;`).toBe(p.string());
+  });
+
+  test('1 + 1', () => {
+    const p = new Program([
+      new ExpressionStatement({
+        token: new Token('NUMBER', '1'),
+        expression: new InfixExpression({
+          token: new Token('PLUS', '+'),
+          right: new NumberLiteral({
+            token: new Token('NUMBER', '1'),
+            value: 1,
+          }),
+          operator: '+',
+          left: new NumberLiteral({
+            token: new Token('NUMBER', '1'),
+            value: 1,
+          }),
+        }),
+      }),
+    ]);
+
+    expect(`(1 + 1)`).toBe(p.statements[0].inspect());
   });
 
   test('let x: number = 1 + 1', () => {

@@ -1,6 +1,7 @@
 import {
   BooleanLiteral,
   Expression,
+  ExpressionStatement,
   InfixExpression,
   LetStatement,
   NumberLiteral,
@@ -171,35 +172,35 @@ describe('Parser', () => {
   test('infix precedence', () => {
     const tests = [
       {
-        input: `let x: number = 1 + 1;`,
+        input: `1 + 1;`,
         expected: `(1 + 1)`,
       },
       {
-        input: `let x: number = 1 - 1;`,
+        input: `1 - 1;`,
         expected: `(1 - 1)`,
       },
       {
-        input: `let x: number = 1 + 1 + 1;`,
+        input: `1 + 1 + 1;`,
         expected: `((1 + 1) + 1)`,
       },
       {
-        input: `let x: number = 1 * 1 + 1;`,
+        input: `1 * 1 + 1;`,
         expected: `((1 * 1) + 1)`,
       },
       {
-        input: `let x: number = 1 + 1 * 2;`,
+        input: `1 + 1 * 2;`,
         expected: `(1 + (1 * 2))`,
       },
       {
-        input: `let x: number = 1 * 1 * 2;`,
+        input: `1 * 1 * 2;`,
         expected: `((1 * 1) * 2)`,
       },
       {
-        input: `let x: number = 1 * 1 + 2 * 2;`,
+        input: `1 * 1 + 2 * 2;`,
         expected: `((1 * 1) + (2 * 2))`,
       },
       {
-        input: `let x: number = 1 * 1 + 2 * 2 / 2;`,
+        input: `1 * 1 + 2 * 2 / 2;`,
         expected: `((1 * 1) + ((2 * 2) / 2))`,
       },
     ];
@@ -208,11 +209,11 @@ describe('Parser', () => {
       const program = testParse(test.input);
 
       const stmt = program.statements[0];
-      if (!(stmt instanceof LetStatement)) {
+      if (!(stmt instanceof ExpressionStatement)) {
         throw new Error(`stmt is not LetStatement.`);
       }
 
-      const exp = stmt.value;
+      const exp = stmt.expression;
       if (!(exp instanceof InfixExpression)) {
         throw new Error(`exp is not InfixExpression.`);
       }
