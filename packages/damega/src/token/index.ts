@@ -18,6 +18,7 @@ export const token = {
 
   COMMA: ',',
   SEMICOLON: ';',
+  COLON: ':',
 
   LPAREN: '(',
   RPAREN: ')',
@@ -27,14 +28,16 @@ export const token = {
   RBRACKET: ']',
 
   FUNCTION: 'FUNCTION',
-  VAR_STRING: 'VAR_STRING',
-  VAR_NUMBER: 'VAR_NUMBER',
-  VAR_BOOLEAN: 'VAR_BOOLEAN',
+  TYPE_STRING: 'TYPE_STRING',
+  TYPE_NUMBER: 'TYPE_NUMBER',
+  TYPE_BOOLEAN: 'TYPE_BOOLEAN',
+  RETURN: 'RETURN',
   IF: 'IF',
   ELSE: 'ELSE',
   WHILE: 'WHILE',
   TRUE: 'TRUE',
   FALSE: 'FALSE',
+  LET: 'LET',
 
   EQ: '==',
   NOT_EQ: '!=',
@@ -58,9 +61,11 @@ type Keywords = {
 
 export const keywords: Keywords = {
   func: token.FUNCTION,
-  String: token.VAR_STRING,
-  Number: token.VAR_NUMBER,
-  Bool: token.VAR_BOOLEAN,
+  string: token.TYPE_STRING,
+  number: token.TYPE_NUMBER,
+  bool: token.TYPE_BOOLEAN,
+  return: token.RETURN,
+  let: token.LET,
   if: token.IF,
   else: token.ELSE,
   while: token.WHILE,

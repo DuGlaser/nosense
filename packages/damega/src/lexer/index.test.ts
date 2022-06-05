@@ -18,12 +18,14 @@ const testLexer = (input: string, tests: Test[]) => {
 };
 
 describe('Lexer', () => {
-  test('Number', () => {
-    const input = `Number value = 0;`;
+  test('number', () => {
+    const input = `let value: number = 0;`;
 
     const tests: Test[] = [
-      { expectedType: 'VAR_NUMBER', expectedLiteral: 'Number' },
+      { expectedType: 'LET', expectedLiteral: 'let' },
       { expectedType: 'IDENT', expectedLiteral: 'value' },
+      { expectedType: 'COLON', expectedLiteral: ':' },
+      { expectedType: 'TYPE_NUMBER', expectedLiteral: 'number' },
       { expectedType: 'ASSIGN', expectedLiteral: '=' },
       { expectedType: 'NUMBER', expectedLiteral: '0' },
       { expectedType: 'SEMICOLON', expectedLiteral: ';' },
@@ -34,21 +36,25 @@ describe('Lexer', () => {
     testLexer(input, tests);
   });
 
-  test('Bool', () => {
+  test('bool', () => {
     const input = `
-      Bool flag = true;
-      Bool flag = false;
+      let flag: bool = true;
+      let flag: bool = false;
     `;
 
     const tests: Test[] = [
-      { expectedType: 'VAR_BOOLEAN', expectedLiteral: 'Bool' },
+      { expectedType: 'LET', expectedLiteral: 'let' },
       { expectedType: 'IDENT', expectedLiteral: 'flag' },
+      { expectedType: 'COLON', expectedLiteral: ':' },
+      { expectedType: 'TYPE_BOOLEAN', expectedLiteral: 'bool' },
       { expectedType: 'ASSIGN', expectedLiteral: '=' },
       { expectedType: 'TRUE', expectedLiteral: 'true' },
       { expectedType: 'SEMICOLON', expectedLiteral: ';' },
 
-      { expectedType: 'VAR_BOOLEAN', expectedLiteral: 'Bool' },
+      { expectedType: 'LET', expectedLiteral: 'let' },
       { expectedType: 'IDENT', expectedLiteral: 'flag' },
+      { expectedType: 'COLON', expectedLiteral: ':' },
+      { expectedType: 'TYPE_BOOLEAN', expectedLiteral: 'bool' },
       { expectedType: 'ASSIGN', expectedLiteral: '=' },
       { expectedType: 'FALSE', expectedLiteral: 'false' },
       { expectedType: 'SEMICOLON', expectedLiteral: ';' },
@@ -136,7 +142,7 @@ describe('Lexer', () => {
 
   test('関数', () => {
     const input = `
-      func something() {}
+      func something() { return 1; }
       something();
     `;
 
@@ -146,6 +152,11 @@ describe('Lexer', () => {
       { expectedType: 'LPAREN', expectedLiteral: '(' },
       { expectedType: 'RPAREN', expectedLiteral: ')' },
       { expectedType: 'LBRACE', expectedLiteral: '{' },
+
+      { expectedType: 'RETURN', expectedLiteral: 'return' },
+      { expectedType: 'NUMBER', expectedLiteral: '1' },
+      { expectedType: 'SEMICOLON', expectedLiteral: ';' },
+
       { expectedType: 'RBRACE', expectedLiteral: '}' },
 
       { expectedType: 'IDENT', expectedLiteral: 'something' },
@@ -183,6 +194,24 @@ describe('Lexer', () => {
       { expectedType: 'COMMA', expectedLiteral: ',' },
       { expectedType: 'NUMBER', expectedLiteral: '2' },
       { expectedType: 'RBRACKET', expectedLiteral: ']' },
+
+      { expectedType: 'EOF', expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
+
+  test('string', () => {
+    const input = `let value: string = "test";`;
+
+    const tests: Test[] = [
+      { expectedType: 'LET', expectedLiteral: 'let' },
+      { expectedType: 'IDENT', expectedLiteral: 'value' },
+      { expectedType: 'COLON', expectedLiteral: ':' },
+      { expectedType: 'TYPE_STRING', expectedLiteral: 'string' },
+      { expectedType: 'ASSIGN', expectedLiteral: '=' },
+      { expectedType: 'STRING', expectedLiteral: 'test' },
+      { expectedType: 'SEMICOLON', expectedLiteral: ';' },
 
       { expectedType: 'EOF', expectedLiteral: 'EOF' },
     ];

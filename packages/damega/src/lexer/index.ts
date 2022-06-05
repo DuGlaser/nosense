@@ -33,6 +33,7 @@ export class Lexer {
     this.registerTokenMap('"', () => this.readString());
     this.registerTokenMap(token.COMMA, () => this.newToken('COMMA'));
     this.registerTokenMap(token.SEMICOLON, () => this.newToken('SEMICOLON'));
+    this.registerTokenMap(token.COLON, () => this.newToken('COLON'));
 
     this.registerTokenMap(token.LPAREN, () => this.newToken('LPAREN'));
     this.registerTokenMap(token.RPAREN, () => this.newToken('RPAREN'));
