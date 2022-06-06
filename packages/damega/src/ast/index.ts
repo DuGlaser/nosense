@@ -8,9 +8,6 @@ export abstract class Expression {
   });
 
   public abstract string(): string;
-  public inspect(): string {
-    return this.string();
-  }
   public abstract tokenLiteral(): string;
 }
 
@@ -21,9 +18,6 @@ export abstract class Statement {
   });
 
   public abstract string(): string;
-  public inspect(): string {
-    return this.string();
-  }
   public abstract tokenLiteral(): string;
 }
 
@@ -40,11 +34,6 @@ export class Program {
 
   public string(): string {
     const outs = this.statements.map((stmt) => stmt.string());
-    return outs.join('\n');
-  }
-
-  public inspect(): string {
-    const outs = this.statements.map((stmt) => stmt.inspect());
     return outs.join('\n');
   }
 }
@@ -80,17 +69,6 @@ export class LetStatement extends Statement {
     this.toStringConverter.write(this._type.string(), { right: ' ' });
     this.toStringConverter.write('=', { right: ' ' });
     this.toStringConverter.write(this._value.string(), { right: ';' });
-
-    return this.toStringConverter.toString();
-  }
-
-  public inspect(): string {
-    this.toStringConverter.write('let', { right: ' ' });
-    this.toStringConverter.write(this._name.inspect());
-    this.toStringConverter.write(':', { right: ' ' });
-    this.toStringConverter.write(this._type.inspect(), { right: ' ' });
-    this.toStringConverter.write('=', { right: ' ' });
-    this.toStringConverter.write(this._value.inspect(), { right: ';' });
 
     return this.toStringConverter.toString();
   }
@@ -262,10 +240,6 @@ export class ExpressionStatement extends Statement {
     return this._expression.string();
   }
 
-  public inspect(): string {
-    return this._expression.inspect();
-  }
-
   public tokenLiteral(): string {
     return this._token.ch;
   }
@@ -312,9 +286,18 @@ export class InfixExpression extends Expression {
   }
 
   public inspect(): string {
-    this.toStringConverter.write(this._left.inspect(), { left: '(' });
+    const left =
+      this._left instanceof InfixExpression
+        ? this._left.inspect()
+        : this._left.string();
+    const right =
+      this._right instanceof InfixExpression
+        ? this._right.inspect()
+        : this._right.string();
+
+    this.toStringConverter.write(left, { left: '(' });
     this.toStringConverter.write(this._operator, { left: ' ', right: ' ' });
-    this.toStringConverter.write(this._right.inspect(), { right: ')' });
+    this.toStringConverter.write(right, { right: ')' });
 
     return this.toStringConverter.toString();
   }
@@ -429,43 +412,6 @@ export class IfStatement extends Statement {
     return this.toStringConverter.toString();
   }
 
-  public inspect(): string {
-    this.toStringConverter.write('if');
-    this.toStringConverter.write(this._condition.inspect(), {
-      left: ' (',
-      right: ') ',
-    });
-
-    this.toStringConverter.write('{');
-    this.toStringConverter.return();
-    this.toStringConverter.nest((_) => {
-      this._consequence
-        .string()
-        .split('\n')
-        .forEach((line) => {
-          _.write(line);
-          _.return();
-        });
-    });
-    this.toStringConverter.write('}');
-
-    if (this._alternative) {
-      this.toStringConverter.write('else', {
-        left: ' ',
-        right: ' ',
-      });
-      this.toStringConverter.write('{');
-      this.toStringConverter.return();
-      const nested = this.toStringConverter.getNestedInstance();
-      nested.write(this._alternative.inspect());
-      nested.return();
-
-      this.toStringConverter.write('}');
-    }
-
-    return this.toStringConverter.toString();
-  }
-
   public tokenLiteral(): string {
     return this._token.ch;
   }
@@ -484,6 +430,57 @@ export class IfStatement extends Statement {
 
   get alternative() {
     return this._alternative;
+  }
+}
+
+export class WhileStatement extends Statement {
+  private _token: Token;
+  private _condition: Expression;
+  private _consequence: BlockStatement;
+
+  constructor(args: {
+    token: Token;
+    condition: Expression;
+    consequence: BlockStatement;
+  }) {
+    super();
+    this._token = args.token;
+    this._condition = args.condition;
+    this._consequence = args.consequence;
+  }
+
+  public string(): string {
+    this.toStringConverter.write('while');
+    this.toStringConverter.write(this._condition.string(), {
+      left: ' (',
+      right: ') ',
+    });
+
+    this.toStringConverter.write('{');
+    this.toStringConverter.return();
+    this.toStringConverter.nest((_) => {
+      _.write(this._consequence.string());
+      _.return();
+    });
+    this.toStringConverter.write('}');
+
+    return this.toStringConverter.toString();
+  }
+
+  public tokenLiteral(): string {
+    return this._token.ch;
+  }
+
+  get token() {
+    return this._token;
+  }
+
+  get condition() {
+    return this._condition;
+  }
+
+  get consequence() {
+    return this._consequence;
   }
 }
 

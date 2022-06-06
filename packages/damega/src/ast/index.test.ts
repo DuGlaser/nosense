@@ -97,7 +97,7 @@ describe('Ast', () => {
       }),
     ]);
 
-    expect(`(1 + 1)`).toBe(p.statements[0].inspect());
+    expect(`1 + 1`).toBe(p.statements[0].string());
   });
 
   test('let x: number = 1 + 1', () => {
@@ -126,7 +126,7 @@ describe('Ast', () => {
       }),
     ]);
 
-    expect(`let x: number = (1 + 1);`).toBe(p.statements[0].inspect());
+    expect(`let x: number = 1 + 1;`).toBe(p.statements[0].string());
   });
 
   test('if statement', () => {
@@ -195,6 +195,6 @@ if (true) {
       }),
     ]);
 
-    expect(expected.trim()).toBe(p.inspect());
+    expect(expected.trim()).toBe(p.string());
   });
 });
