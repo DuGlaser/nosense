@@ -36,7 +36,7 @@ export class Ast2StringConverter {
   }
 
   public return() {
-    this.output.push(this.currentText + '\n');
+    this.output.push(this.currentText);
     this.currentText = '';
   }
 
@@ -66,7 +66,7 @@ export class Ast2StringConverter {
     this.output = [];
   }
 
-  public toString() {
+  public toString(): string {
     if (this.currentText !== '') {
       this.output.push(this.currentText);
       this.currentText = '';
@@ -82,7 +82,24 @@ export class Ast2StringConverter {
 
         return indent + item;
       })
-      .join('');
+      .join('\n');
+  }
+
+  public toList() {
+    if (this.currentText !== '') {
+      this.output.push(this.currentText);
+      this.currentText = '';
+    }
+
+    const indent = this.getIndent();
+
+    return this.output.flatMap((item) => {
+      if (item instanceof Ast2StringConverter) {
+        return item.toList();
+      }
+
+      return indent + item;
+    });
   }
 
   private getIndent() {

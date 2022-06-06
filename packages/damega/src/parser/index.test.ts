@@ -33,7 +33,7 @@ describe('Parser', () => {
       const stmt = program.statements[0];
 
       expect(stmt instanceof LetStatement).toBeTruthy();
-      expect(stmt.string()).toBe(test.input);
+      expect(program.string()).toBe(test.input);
 
       if (!(stmt instanceof LetStatement)) {
         throw new Error(`stmt is not StringStatement.`);
@@ -65,7 +65,7 @@ describe('Parser', () => {
       const stmt = program.statements[0];
 
       expect(stmt instanceof LetStatement).toBeTruthy();
-      expect(stmt.string()).toBe(test.input);
+      expect(program.string()).toBe(test.input);
 
       if (!(stmt instanceof LetStatement)) {
         throw new Error(`stmt is not NumberStatement.`);
@@ -96,7 +96,7 @@ describe('Parser', () => {
       const stmt = program.statements[0];
 
       expect(stmt instanceof LetStatement).toBeTruthy();
-      expect(stmt.string()).toBe(test.input);
+      expect(program.string()).toBe(test.input);
 
       if (!(stmt instanceof LetStatement)) {
         throw new Error(`stmt is not BooleanStatement.`);

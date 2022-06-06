@@ -17,7 +17,7 @@ export abstract class Statement {
     count: 2,
   });
 
-  public abstract string(): string;
+  public abstract lines(): string[];
   public abstract tokenLiteral(): string;
 }
 
@@ -33,7 +33,7 @@ export class Program {
   }
 
   public string(): string {
-    const outs = this.statements.map((stmt) => stmt.string());
+    const outs = this.statements.flatMap((stmt) => stmt.lines());
     return outs.join('\n');
   }
 }
@@ -62,7 +62,7 @@ export class LetStatement extends Statement {
     this._type = type;
   }
 
-  public string(): string {
+  public lines(): string[] {
     this.toStringConverter.write('let', { right: ' ' });
     this.toStringConverter.write(this._name.string());
     this.toStringConverter.write(':', { right: ' ' });
@@ -70,7 +70,7 @@ export class LetStatement extends Statement {
     this.toStringConverter.write('=', { right: ' ' });
     this.toStringConverter.write(this._value.string(), { right: ';' });
 
-    return this.toStringConverter.toString();
+    return this.toStringConverter.toList();
   }
 
   public tokenLiteral(): string {
@@ -236,8 +236,8 @@ export class ExpressionStatement extends Statement {
     this._expression = arg.expression;
   }
 
-  public string(): string {
-    return this._expression.string();
+  public lines(): string[] {
+    return [this._expression.string()];
   }
 
   public tokenLiteral(): string {
@@ -339,8 +339,8 @@ export class BlockStatement extends Statement {
     this._statements = statements;
   }
 
-  public string(): string {
-    return this._statements.map((stmt) => stmt.string()).join('\n');
+  public lines(): string[] {
+    return this._statements.flatMap((stmt) => stmt.lines());
   }
 
   public tokenLiteral(): string {
@@ -375,7 +375,7 @@ export class IfStatement extends Statement {
     this._alternative = args.alternative;
   }
 
-  public string(): string {
+  public lines(): string[] {
     this.toStringConverter.write('if');
     this.toStringConverter.write(this._condition.string(), {
       left: ' (',
@@ -385,13 +385,10 @@ export class IfStatement extends Statement {
     this.toStringConverter.write('{');
     this.toStringConverter.return();
     this.toStringConverter.nest((_) => {
-      this._consequence
-        .string()
-        .split('\n')
-        .forEach((line) => {
-          _.write(line);
-          _.return();
-        });
+      this._consequence.lines().forEach((line) => {
+        _.write(line);
+        _.return();
+      });
     });
     this.toStringConverter.write('}');
 
@@ -403,13 +400,13 @@ export class IfStatement extends Statement {
       this.toStringConverter.write('{');
       this.toStringConverter.return();
       const nested = this.toStringConverter.getNestedInstance();
-      nested.write(this._alternative.string());
+      this._alternative.lines().forEach((stmt) => nested.write(stmt));
       nested.return();
 
       this.toStringConverter.write('}');
     }
 
-    return this.toStringConverter.toString();
+    return this.toStringConverter.toList();
   }
 
   public tokenLiteral(): string {
@@ -433,57 +430,6 @@ export class IfStatement extends Statement {
   }
 }
 
-export class WhileStatement extends Statement {
-  private _token: Token;
-  private _condition: Expression;
-  private _consequence: BlockStatement;
-
-  constructor(args: {
-    token: Token;
-    condition: Expression;
-    consequence: BlockStatement;
-  }) {
-    super();
-    this._token = args.token;
-    this._condition = args.condition;
-    this._consequence = args.consequence;
-  }
-
-  public string(): string {
-    this.toStringConverter.write('while');
-    this.toStringConverter.write(this._condition.string(), {
-      left: ' (',
-      right: ') ',
-    });
-
-    this.toStringConverter.write('{');
-    this.toStringConverter.return();
-    this.toStringConverter.nest((_) => {
-      _.write(this._consequence.string());
-      _.return();
-    });
-    this.toStringConverter.write('}');
-
-    return this.toStringConverter.toString();
-  }
-
-  public tokenLiteral(): string {
-    return this._token.ch;
-  }
-
-  get token() {
-    return this._token;
-  }
-
-  get condition() {
-    return this._condition;
-  }
-
-  get consequence() {
-    return this._consequence;
-  }
-}
-
 export class ReturnStatement extends Statement {
   private _token: Token;
   private _valueExpression: Expression;
@@ -494,13 +440,14 @@ export class ReturnStatement extends Statement {
     this._valueExpression = arg.valueExpression;
   }
 
-  public string(): string {
+  public lines(): string[] {
     this.toStringConverter.write('return', { right: ' ' });
     this.toStringConverter.write(this._valueExpression.string(), {
       right: ';',
     });
 
-    return this.toStringConverter.toString();
+    this.toStringConverter.toString;
+    return this.toStringConverter.toList();
   }
 
   public tokenLiteral(): string {

@@ -97,7 +97,7 @@ describe('Ast', () => {
       }),
     ]);
 
-    expect(`1 + 1`).toBe(p.statements[0].string());
+    expect(`1 + 1`).toBe(p.string());
   });
 
   test('let x: number = 1 + 1', () => {
@@ -126,7 +126,7 @@ describe('Ast', () => {
       }),
     ]);
 
-    expect(`let x: number = 1 + 1;`).toBe(p.statements[0].string());
+    expect(`let x: number = 1 + 1;`).toBe(p.string());
   });
 
   test('if statement', () => {
@@ -134,6 +134,10 @@ describe('Ast', () => {
 if (true) {
   let x: number = 1 + 1;
   return 10;
+  if (false) {
+    let x: number = 1 + 1;
+    return 10;
+  }
 } else {
   return 10;
 }
@@ -176,6 +180,48 @@ if (true) {
               valueExpression: new NumberLiteral({
                 token: new Token('NUMBER', '10'),
                 value: 10,
+              }),
+            }),
+            new IfStatement({
+              token: new Token('IF', 'if'),
+              condition: new BooleanLiteral({
+                token: new Token('FALSE', 'false'),
+                value: false,
+              }),
+              alternative: undefined,
+              consequence: new BlockStatement({
+                token: new Token('LBRACE', '{'),
+                statements: [
+                  new LetStatement({
+                    token: new Token('LET', 'let'),
+                    value: new InfixExpression({
+                      token: new Token('PLUS', '+'),
+                      right: new NumberLiteral({
+                        token: new Token('NUMBER', '1'),
+                        value: 1,
+                      }),
+                      operator: '+',
+                      left: new NumberLiteral({
+                        token: new Token('NUMBER', '1'),
+                        value: 1,
+                      }),
+                    }),
+                    name: new Identifier({
+                      token: new Token('IDENT', 'x'),
+                      value: 'x',
+                    }),
+                    type: new TypeIdentifier({
+                      token: new Token('TYPE_NUMBER', 'number'),
+                    }),
+                  }),
+                  new ReturnStatement({
+                    token: new Token('RETURN', 'return'),
+                    valueExpression: new NumberLiteral({
+                      token: new Token('NUMBER', '10'),
+                      value: 10,
+                    }),
+                  }),
+                ],
               }),
             }),
           ],
