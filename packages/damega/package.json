@@ -4,7 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:dev": "jest --watch"
+    "test:dev": "jest --watch",
+    "lint": "run-s lint:**",
+    "lint-fix": "run-s lint-fix:**",
+    "lint:eslint": "eslint './**/*.{ts,tsx}'",
+    "lint-fix:eslint": "yarn run lint:eslint --fix"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
