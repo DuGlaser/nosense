@@ -132,6 +132,7 @@ describe('Ast', () => {
   test('if statement', () => {
     const expected = `
 if (true) {
+  let x: number = 1 + 1;
   return 10;
 } else {
   return 10;
@@ -148,6 +149,28 @@ if (true) {
         consequence: new BlockStatement({
           token: new Token('LBRACE', '{'),
           statements: [
+            new LetStatement({
+              token: new Token('LET', 'let'),
+              value: new InfixExpression({
+                token: new Token('PLUS', '+'),
+                right: new NumberLiteral({
+                  token: new Token('NUMBER', '1'),
+                  value: 1,
+                }),
+                operator: '+',
+                left: new NumberLiteral({
+                  token: new Token('NUMBER', '1'),
+                  value: 1,
+                }),
+              }),
+              name: new Identifier({
+                token: new Token('IDENT', 'x'),
+                value: 'x',
+              }),
+              type: new TypeIdentifier({
+                token: new Token('TYPE_NUMBER', 'number'),
+              }),
+            }),
             new ReturnStatement({
               token: new Token('RETURN', 'return'),
               valueExpression: new NumberLiteral({

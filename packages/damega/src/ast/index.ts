@@ -402,8 +402,13 @@ export class IfStatement extends Statement {
     this.toStringConverter.write('{');
     this.toStringConverter.return();
     this.toStringConverter.nest((_) => {
-      _.write(this._consequence.string());
-      _.return();
+      this._consequence
+        .string()
+        .split('\n')
+        .forEach((line) => {
+          _.write(line);
+          _.return();
+        });
     });
     this.toStringConverter.write('}');
 
@@ -434,8 +439,13 @@ export class IfStatement extends Statement {
     this.toStringConverter.write('{');
     this.toStringConverter.return();
     this.toStringConverter.nest((_) => {
-      _.write(this._consequence.inspect());
-      _.return();
+      this._consequence
+        .string()
+        .split('\n')
+        .forEach((line) => {
+          _.write(line);
+          _.return();
+        });
     });
     this.toStringConverter.write('}');
 

@@ -1,4 +1,5 @@
 import {
+  BlockStatement,
   BooleanLiteral,
   Expression,
   ExpressionStatement,
@@ -169,7 +170,7 @@ export class Parser {
     return leftExp;
   }
 
-  private parseLetStatement(): Statement | undefined {
+  private parseLetStatement(): LetStatement | undefined {
     const token = this.curToken;
 
     if (!this.expectPeek('IDENT')) {
@@ -207,7 +208,24 @@ export class Parser {
     return new LetStatement({ token, value, name, type });
   }
 
-  private parseInfixExpression(left: Expression): Expression | undefined {
+  private parseBlockStatement(): BlockStatement | undefined {
+    const token = this.curToken;
+    this.nextToken();
+
+    const stmts: Statement[] = [];
+
+    while (!this.curTokenIs('RBRACE') && !this.curTokenIs('EOF')) {
+      const stmt = this.parseStatement();
+      if (stmt) {
+        stmts.push(stmt);
+      }
+      this.nextToken();
+    }
+
+    return new BlockStatement({ token, statements: stmts });
+  }
+
+  private parseInfixExpression(left: Expression): InfixExpression | undefined {
     const token = this.curToken;
     const precedence = this.curPrecedence();
 
@@ -264,6 +282,10 @@ export class Parser {
       this.peekError(type);
       return false;
     }
+  }
+
+  private curTokenIs(type: TokenType): boolean {
+    return this.peekToken.type === type;
   }
 
   private peekTokenIs(type: TokenType): boolean {
