@@ -2,6 +2,7 @@ import {
   BooleanLiteral,
   Expression,
   ExpressionStatement,
+  IfStatement,
   InfixExpression,
   LetStatement,
   NumberLiteral,
@@ -248,6 +249,93 @@ while (true) {
 
     const blockStmt = stmt.consequence;
     blockStmt.statements.forEach((letStmt) => {
+      if (!(letStmt instanceof LetStatement)) {
+        throw new Error(`letStmt is not LetStatement.`);
+      }
+
+      testLetStatement({
+        statement: letStmt,
+        expectedType: 'number',
+        expectedValue: 1,
+        expectedIdentifier: 'x',
+      });
+    });
+  });
+
+  test('if statement', () => {
+    const input = `
+if (true) {
+  let x: number = 1;
+  let x: number = 1;
+} else {
+  let x: number = 1;
+  let x: number = 1;
+}
+`;
+
+    const program = testParse(input);
+
+    const stmt = program.statements[0];
+    if (!(stmt instanceof IfStatement)) {
+      throw new Error(`stmt is not IfStatement.`);
+    }
+
+    const exp = stmt.condition;
+    if (!(exp instanceof Expression)) {
+      throw new Error(`exp is not condition.`);
+    }
+
+    testLiteral(exp, true);
+
+    stmt.consequence.statements.forEach((letStmt) => {
+      if (!(letStmt instanceof LetStatement)) {
+        throw new Error(`letStmt is not LetStatement.`);
+      }
+
+      testLetStatement({
+        statement: letStmt,
+        expectedType: 'number',
+        expectedValue: 1,
+        expectedIdentifier: 'x',
+      });
+    });
+
+    stmt.alternative?.statements.forEach((letStmt) => {
+      if (!(letStmt instanceof LetStatement)) {
+        throw new Error(`letStmt is not LetStatement.`);
+      }
+
+      testLetStatement({
+        statement: letStmt,
+        expectedType: 'number',
+        expectedValue: 1,
+        expectedIdentifier: 'x',
+      });
+    });
+  });
+
+  test('if statement (non else)', () => {
+    const input = `
+if (true) {
+  let x: number = 1;
+  let x: number = 1;
+}`;
+
+    const program = testParse(input);
+
+    const stmt = program.statements[0];
+    if (!(stmt instanceof IfStatement)) {
+      throw new Error(`stmt is not IfStatement.`);
+    }
+
+    const exp = stmt.condition;
+    if (!(exp instanceof Expression)) {
+      throw new Error(`exp is not condition.`);
+    }
+
+    testLiteral(exp, true);
+
+    stmt.consequence.statements.forEach((letStmt) => {
       if (!(letStmt instanceof LetStatement)) {
         throw new Error(`letStmt is not LetStatement.`);
       }

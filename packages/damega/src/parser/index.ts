@@ -4,6 +4,7 @@ import {
   Expression,
   ExpressionStatement,
   Identifier,
+  IfStatement,
   InfixExpression,
   LetStatement,
   NumberLiteral,
@@ -125,6 +126,9 @@ export class Parser {
       case 'LET':
         return this.parseLetStatement();
 
+      case 'IF':
+        return this.parseIfStatement();
+
       case 'WHILE':
         return this.parseWhileStatement();
 
@@ -210,6 +214,39 @@ export class Parser {
     }
 
     return new LetStatement({ token, value, name, type });
+  }
+
+  private parseIfStatement(): IfStatement | undefined {
+    const token = this.curToken;
+
+    if (!this.expectPeek('LPAREN')) return undefined;
+    this.nextToken();
+
+    const condition = this.parseExpression(Precedence.LOWEST);
+    if (!condition) return undefined;
+
+    if (!this.curTokenIs('RPAREN')) return undefined;
+    this.nextToken();
+
+    if (!this.expectPeek('LBRACE')) return undefined;
+
+    const consequence = this.parseBlockStatement();
+    if (!consequence) return undefined;
+
+    let alternative: BlockStatement | undefined = undefined;
+
+    if (this.peekTokenIs('ELSE')) {
+      if (!this.expectPeek('LBRACE')) return undefined;
+      alternative = this.parseBlockStatement();
+      if (!consequence) return undefined;
+    }
+
+    return new IfStatement({
+      token,
+      condition,
+      consequence,
+      alternative,
+    });
   }
 
   private parseWhileStatement(): WhileStatement | undefined {
