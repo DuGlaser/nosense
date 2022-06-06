@@ -11,6 +11,7 @@ import {
   Statement,
   StringLiteral,
   TypeIdentifier,
+  WhileStatement,
 } from '@/ast';
 import { Lexer } from '@/lexer';
 import { Token, token, TokenType } from '@/token';
@@ -124,6 +125,9 @@ export class Parser {
       case 'LET':
         return this.parseLetStatement();
 
+      case 'WHILE':
+        return this.parseWhileStatement();
+
       default:
         return this.parseExpressionStatement();
     }
@@ -206,6 +210,26 @@ export class Parser {
     }
 
     return new LetStatement({ token, value, name, type });
+  }
+
+  private parseWhileStatement(): WhileStatement | undefined {
+    const token = this.curToken;
+
+    if (!this.expectPeek('LPAREN')) return undefined;
+    this.nextToken();
+
+    const condition = this.parseExpression(Precedence.LOWEST);
+    if (!condition) return undefined;
+
+    if (!this.curTokenIs('RPAREN')) return undefined;
+    this.nextToken();
+
+    if (!this.expectPeek('LBRACE')) return undefined;
+
+    const consequence = this.parseBlockStatement();
+    if (!consequence) return undefined;
+
+    return new WhileStatement({ token, condition, consequence });
   }
 
   private parseBlockStatement(): BlockStatement | undefined {

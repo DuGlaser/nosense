@@ -6,10 +6,12 @@ import {
   LetStatement,
   NumberLiteral,
   Program,
+  Statement,
   StringLiteral,
+  WhileStatement,
 } from '../ast';
 import { Lexer } from '../lexer';
-import { token } from '../token';
+import { Token, token } from '../token';
 import { Parser } from '.';
 
 describe('Parser', () => {
@@ -221,6 +223,43 @@ describe('Parser', () => {
       expect(exp.inspect()).toBe(test.expected);
     });
   });
+
+  test('while statement', () => {
+    const input = `
+while (true) {
+  let x: number = 1;
+  let x: number = 1;
+}
+`;
+
+    const program = testParse(input);
+
+    const stmt = program.statements[0];
+    if (!(stmt instanceof WhileStatement)) {
+      throw new Error(`stmt is not WhileStatement.`);
+    }
+
+    const exp = stmt.condition;
+    if (!(exp instanceof Expression)) {
+      throw new Error(`exp is not condition.`);
+    }
+
+    testLiteral(exp, true);
+
+    const blockStmt = stmt.consequence;
+    blockStmt.statements.forEach((letStmt) => {
+      if (!(letStmt instanceof LetStatement)) {
+        throw new Error(`letStmt is not LetStatement.`);
+      }
+
+      testLetStatement({
+        statement: letStmt,
+        expectedType: 'number',
+        expectedValue: 1,
+        expectedIdentifier: 'x',
+      });
+    });
+  });
 });
 
 function testParse(input: string): Program {
@@ -269,6 +308,44 @@ function testLiteral<T>(exp: Expression, expected: T) {
   if (exp instanceof BooleanLiteral && typeof expected === 'boolean') {
     return testBooleanLiteral(expected, exp);
   }
+}
+
+type LetParameter = {
+  statement: Statement;
+  expectedIdentifier: string;
+} & (
+  | {
+      expectedType: 'number';
+      expectedValue: number;
+    }
+  | {
+      expectedType: 'string';
+      expectedValue: string;
+    }
+  | {
+      expectedType: 'bool';
+      expectedValue: boolean;
+    }
+);
+
+function testLetStatement(args: LetParameter) {
+  const { statement, expectedType, expectedIdentifier, expectedValue } = args;
+
+  if (!(statement instanceof LetStatement)) {
+    throw new Error(`statement is not LetStatement.`);
+  }
+
+  const t = statement.type.token;
+  if (!(t instanceof Token)) {
+    throw new Error(`statement is not LetStatement.`);
+  }
+
+  expect(expectedType).toBe(t.ch);
+
+  const name = statement.name;
+  expect(expectedIdentifier).toBe(name.string());
+
+  testLiteral(statement.value, expectedValue);
 }
 
 function testInfixExpression<T>(
