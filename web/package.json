@@ -7,7 +7,7 @@
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "TIMING=1 eslint './**/*.{ts,tsx}'",
-    "lint-fix:eslint": "yarn run lint:eslint --fix"
+    "lint-fix:eslint": "npm run lint:eslint --fix"
   },
   "devDependencies": {
     "eslint-plugin-jsx-a11y": "^6.5.1",
