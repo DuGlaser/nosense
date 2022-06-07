@@ -4,9 +4,9 @@
   "name": "@nosense/web",
   "scripts": {
     "build": "next build && next export",
-    "lint": "run-s lint:**",
+    "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
-    "lint:eslint": "eslint './**/*.{ts,tsx}'",
+    "lint:eslint": "TIMING=1 eslint './**/*.{ts,tsx}'",
     "lint-fix:eslint": "yarn run lint:eslint --fix"
   },
   "devDependencies": {

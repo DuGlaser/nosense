@@ -8,7 +8,10 @@
   ],
   "scripts": {
     "build": "npx turbo run build",
-    "test": "npx turbo run test"
+    "test": "npx turbo run test",
+    "lint": "npx turbo run lint",
+    "lint-fix": "npx turbo run lint-fix",
+    "deploy": "npx turbo run deploy"
   },
   "dependencies": {
     "react": "^17.0.2",
