@@ -12,6 +12,7 @@ import {
   ReturnStatement,
   StringLiteral,
   TypeIdentifier,
+  WhileStatement,
 } from '.';
 
 describe('Ast', () => {
@@ -229,6 +230,61 @@ if (true) {
         alternative: new BlockStatement({
           token: new Token('LBRACE', '{'),
           statements: [
+            new ReturnStatement({
+              token: new Token('RETURN', 'return'),
+              valueExpression: new NumberLiteral({
+                token: new Token('NUMBER', '10'),
+                value: 10,
+              }),
+            }),
+          ],
+        }),
+      }),
+    ]);
+
+    expect(expected.trim()).toBe(p.string());
+  });
+
+  test('while statement', () => {
+    const expected = `
+while (1 > 10) {
+  let x: number = 10;
+  return 10;
+}
+`;
+
+    const p = new Program([
+      new WhileStatement({
+        token: new Token('WHILE', 'while'),
+        condition: new InfixExpression({
+          token: new Token('NUMBER', '1'),
+          left: new NumberLiteral({
+            token: new Token('NUMBER', '1'),
+            value: 1,
+          }),
+          operator: '>',
+          right: new NumberLiteral({
+            token: new Token('NUMBER', '10'),
+            value: 10,
+          }),
+        }),
+        consequence: new BlockStatement({
+          token: new Token('LBRACE', '{'),
+          statements: [
+            new LetStatement({
+              token: new Token('LET', 'let'),
+              value: new NumberLiteral({
+                token: new Token('NUMBER', '10'),
+                value: 10,
+              }),
+              name: new Identifier({
+                token: new Token('IDENT', 'x'),
+                value: 'x',
+              }),
+              type: new TypeIdentifier({
+                token: new Token('TYPE_NUMBER', 'number'),
+              }),
+            }),
             new ReturnStatement({
               token: new Token('RETURN', 'return'),
               valueExpression: new NumberLiteral({
