@@ -6,6 +6,7 @@ import {
   InfixExpression,
   LetStatement,
   NumberLiteral,
+  PrefixExpression,
   Program,
   Statement,
   StringLiteral,
@@ -346,6 +347,48 @@ if (true) {
         expectedValue: 1,
         expectedIdentifier: 'x',
       });
+    });
+  });
+
+  test('prefix expression', () => {
+    const tests = [
+      {
+        input: `!true`,
+        expectedOperator: `!`,
+        expectedRight: true,
+      },
+      {
+        input: `!false`,
+        expectedOperator: `!`,
+        expectedRight: false,
+      },
+      {
+        input: `!2`,
+        expectedOperator: `!`,
+        expectedRight: 2,
+      },
+      {
+        input: `-2`,
+        expectedOperator: `-`,
+        expectedRight: 2,
+      },
+    ];
+
+    tests.forEach((test) => {
+      const program = testParse(test.input);
+
+      const stmt = program.statements[0];
+      if (!(stmt instanceof ExpressionStatement)) {
+        throw new Error(`stmt is not LetStatement.`);
+      }
+
+      const exp = stmt.expression;
+      if (!(exp instanceof PrefixExpression)) {
+        throw new Error(`exp is not InfixExpression.`);
+      }
+
+      expect(exp.operator).toBe(test.expectedOperator);
+      testLiteral(exp, test.expectedRight);
     });
   });
 });

@@ -26,6 +26,7 @@ export * from './IfStatement';
 export * from './InfixExpression';
 export * from './LetStatement';
 export * from './NumberLiteral';
+export * from './PrefixExpression';
 export * from './ReturnStatement';
 export * from './StringLiteral';
 export * from './TypeIdentifier';

@@ -8,6 +8,7 @@ import {
   InfixExpression,
   LetStatement,
   NumberLiteral,
+  PrefixExpression,
   Program,
   Statement,
   StringLiteral,
@@ -31,6 +32,7 @@ enum Precedence {
   'SUM',
   'MINUS',
   'PRODUCT',
+  'PREFIX',
 }
 
 const getPrecedence = (token: TokenType): Precedence => {
@@ -76,6 +78,8 @@ export class Parser {
     this.registerPrefix(token.NUMBER, () => this.parseNumberLiteral());
     this.registerPrefix(token.TRUE, () => this.parseBooleanLiteral());
     this.registerPrefix(token.FALSE, () => this.parseBooleanLiteral());
+    this.registerPrefix('BANG', () => this.parsePrefixExpression());
+    this.registerPrefix('MINUS', () => this.parsePrefixExpression());
 
     this.registerInfix('PLUS', (left) => this.parseInfixExpression(left));
     this.registerInfix('MINUS', (left) => this.parseInfixExpression(left));
@@ -284,6 +288,16 @@ export class Parser {
     }
 
     return new BlockStatement({ token, statements: stmts });
+  }
+
+  private parsePrefixExpression(): PrefixExpression | undefined {
+    const token = this.curToken;
+
+    this.nextToken();
+    const right = this.parseExpression(Precedence.PREFIX);
+    if (!right) return undefined;
+
+    return new PrefixExpression({ token, right, operator: token.ch });
   }
 
   private parseInfixExpression(left: Expression): InfixExpression | undefined {

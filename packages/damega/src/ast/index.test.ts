@@ -8,6 +8,7 @@ import {
   InfixExpression,
   LetStatement,
   NumberLiteral,
+  PrefixExpression,
   Program,
   ReturnStatement,
   StringLiteral,
@@ -293,6 +294,33 @@ while (1 > 10) {
               }),
             }),
           ],
+        }),
+      }),
+    ]);
+
+    expect(expected.trim()).toBe(p.string());
+  });
+
+  test('prefix expression', () => {
+    const expected = `let x: bool = !true;`;
+
+    const p = new Program([
+      new LetStatement({
+        token: new Token('BANG', '!'),
+        value: new PrefixExpression({
+          token: new Token('BANG', '!'),
+          operator: '!',
+          right: new BooleanLiteral({
+            token: new Token('TRUE', 'true'),
+            value: true,
+          }),
+        }),
+        name: new Identifier({
+          token: new Token('IDENT', 'x'),
+          value: 'x',
+        }),
+        type: new TypeIdentifier({
+          token: new Token('TYPE_BOOLEAN', 'bool'),
         }),
       }),
     ]);
