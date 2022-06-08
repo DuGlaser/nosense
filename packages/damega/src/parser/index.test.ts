@@ -215,6 +215,46 @@ describe('Parser', () => {
         input: `1 * (1 + 2) * 2 / 2;`,
         expected: `(((1 * (1 + 2)) * 2) / 2)`,
       },
+      {
+        input: `true == true;`,
+        expected: `(true == true)`,
+      },
+      {
+        input: `true == false;`,
+        expected: `(true == false)`,
+      },
+      {
+        input: `true != false;`,
+        expected: `(true != false)`,
+      },
+      {
+        input: `true != true;`,
+        expected: `(true != true)`,
+      },
+      {
+        input: `1 + 2 == 1 * 2;`,
+        expected: `((1 + 2) == (1 * 2))`,
+      },
+      {
+        input: `1 + 2 != 1 * 2;`,
+        expected: `((1 + 2) != (1 * 2))`,
+      },
+      {
+        input: `1 + 2 > 1 * 2;`,
+        expected: `((1 + 2) > (1 * 2))`,
+      },
+      {
+        input: `1 + 2 > 1 * 2;`,
+        expected: `((1 + 2) > (1 * 2))`,
+      },
+      {
+        input: `1 + 2 < 1 * 2;`,
+        expected: `((1 + 2) < (1 * 2))`,
+      },
+      {
+        input: `1 + 2 < 1 * 2;`,
+        expected: `((1 + 2) < (1 * 2))`,
+      },
     ];
 
     tests.forEach((test) => {

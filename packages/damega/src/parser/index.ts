@@ -74,6 +74,7 @@ export class Parser {
     this.nextToken();
     this.nextToken();
 
+    this.registerPrefix(token.IDENT, () => this.parseIdentifier());
     this.registerPrefix(token.STRING, () => this.parseStringLiteral());
     this.registerPrefix(token.NUMBER, () => this.parseNumberLiteral());
     this.registerPrefix(token.TRUE, () => this.parseBooleanLiteral());
@@ -86,6 +87,10 @@ export class Parser {
     this.registerInfix('MINUS', (left) => this.parseInfixExpression(left));
     this.registerInfix('ASTERISK', (left) => this.parseInfixExpression(left));
     this.registerInfix('SLASH', (left) => this.parseInfixExpression(left));
+    this.registerInfix('EQ', (left) => this.parseInfixExpression(left));
+    this.registerInfix('NOT_EQ', (left) => this.parseInfixExpression(left));
+    this.registerInfix('LT', (left) => this.parseInfixExpression(left));
+    this.registerInfix('GT', (left) => this.parseInfixExpression(left));
   }
 
   public parseToken(): Program {
@@ -342,6 +347,10 @@ export class Parser {
 
   private parseStringLiteral() {
     return new StringLiteral({ token: this.curToken, value: this.curToken.ch });
+  }
+
+  private parseIdentifier() {
+    return new Identifier({ token: this.curToken, value: this.curToken.ch });
   }
 
   private parseNumberLiteral(): NumberLiteral | undefined {
