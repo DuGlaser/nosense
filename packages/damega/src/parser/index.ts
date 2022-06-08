@@ -80,6 +80,7 @@ export class Parser {
     this.registerPrefix(token.FALSE, () => this.parseBooleanLiteral());
     this.registerPrefix('BANG', () => this.parsePrefixExpression());
     this.registerPrefix('MINUS', () => this.parsePrefixExpression());
+    this.registerPrefix('LPAREN', () => this.parseGroupedExpression());
 
     this.registerInfix('PLUS', (left) => this.parseInfixExpression(left));
     this.registerInfix('MINUS', (left) => this.parseInfixExpression(left));
@@ -125,6 +126,10 @@ export class Parser {
     return this.infixParseFns.get(key);
   }
 
+  /**
+   * Statement
+   */
+
   private parseStatement(): Statement | undefined {
     switch (this.curToken.type) {
       case 'LET':
@@ -149,37 +154,6 @@ export class Parser {
     }
 
     return new ExpressionStatement({ token, expression });
-  }
-
-  private parseExpression(precedence: Precedence): Expression | undefined {
-    const prefixFn = this.getPrefixFn(this.curToken.type);
-    if (!prefixFn) {
-      return undefined;
-    }
-    let leftExp = prefixFn();
-    if (!leftExp) {
-      return undefined;
-    }
-
-    while (
-      !this.peekTokenIs('SEMICOLON') &&
-      precedence < this.peekPrecedence()
-    ) {
-      const infixFn = this.getInfixFn(this.peekToken.type);
-      if (!infixFn) {
-        return undefined;
-      }
-
-      this.nextToken();
-      const newLeftExp = infixFn(leftExp);
-      if (!newLeftExp) {
-        return undefined;
-      }
-
-      leftExp = newLeftExp;
-    }
-
-    return leftExp;
   }
 
   private parseLetStatement(): LetStatement | undefined {
@@ -290,6 +264,41 @@ export class Parser {
     return new BlockStatement({ token, statements: stmts });
   }
 
+  /**
+   * Expression
+   */
+
+  private parseExpression(precedence: Precedence): Expression | undefined {
+    const prefixFn = this.getPrefixFn(this.curToken.type);
+    if (!prefixFn) {
+      return undefined;
+    }
+    let leftExp = prefixFn();
+    if (!leftExp) {
+      return undefined;
+    }
+
+    while (
+      !this.peekTokenIs('SEMICOLON') &&
+      precedence < this.peekPrecedence()
+    ) {
+      const infixFn = this.getInfixFn(this.peekToken.type);
+      if (!infixFn) {
+        return undefined;
+      }
+
+      this.nextToken();
+      const newLeftExp = infixFn(leftExp);
+      if (!newLeftExp) {
+        return undefined;
+      }
+
+      leftExp = newLeftExp;
+    }
+
+    return leftExp;
+  }
+
   private parsePrefixExpression(): PrefixExpression | undefined {
     const token = this.curToken;
 
@@ -298,6 +307,15 @@ export class Parser {
     if (!right) return undefined;
 
     return new PrefixExpression({ token, right, operator: token.ch });
+  }
+
+  private parseGroupedExpression(): Expression | undefined {
+    this.nextToken();
+
+    const exp = this.parseExpression(Precedence.LOWEST);
+    if (!this.expectPeek('RPAREN')) return undefined;
+
+    return exp;
   }
 
   private parseInfixExpression(left: Expression): InfixExpression | undefined {
@@ -317,6 +335,10 @@ export class Parser {
       operator: token.ch,
     });
   }
+
+  /**
+   * Literal
+   */
 
   private parseStringLiteral() {
     return new StringLiteral({ token: this.curToken, value: this.curToken.ch });

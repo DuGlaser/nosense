@@ -207,6 +207,14 @@ describe('Parser', () => {
         input: `1 * 1 + 2 * 2 / 2;`,
         expected: `((1 * 1) + ((2 * 2) / 2))`,
       },
+      {
+        input: `(1 + 1) * 1;`,
+        expected: `((1 + 1) * 1)`,
+      },
+      {
+        input: `1 * (1 + 2) * 2 / 2;`,
+        expected: `(((1 * (1 + 2)) * 2) / 2)`,
+      },
     ];
 
     tests.forEach((test) => {
@@ -358,7 +366,17 @@ if (true) {
         expectedRight: true,
       },
       {
+        input: `!(true)`,
+        expectedOperator: `!`,
+        expectedRight: true,
+      },
+      {
         input: `!false`,
+        expectedOperator: `!`,
+        expectedRight: false,
+      },
+      {
+        input: `!(false)`,
         expectedOperator: `!`,
         expectedRight: false,
       },
