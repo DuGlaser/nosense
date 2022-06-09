@@ -13,6 +13,7 @@ import {
   Program,
   ReturnStatement,
   StringLiteral,
+  WhileStatement,
 } from '@/ast';
 import {
   BooleanObject,
@@ -40,6 +41,10 @@ export class Evaluator {
 
     if (node instanceof IfStatement) {
       return this.evalIfStatement(node, env);
+    }
+
+    if (node instanceof WhileStatement) {
+      return this.evalWhileStatement(node, env);
     }
 
     if (node instanceof LetStatement) {
@@ -115,6 +120,21 @@ export class Evaluator {
       this.Eval(node.consequence, nestedEnv);
     } else if (node.alternative) {
       this.Eval(node.alternative, nestedEnv);
+    }
+
+    return NULL;
+  }
+
+  private evalWhileStatement(node: WhileStatement, env: Environment): Obj {
+    const nestedEnv = new Environment(env);
+
+    const getCondition = () => {
+      const condition = this.Eval(node.condition, env);
+      return condition === TRUE;
+    };
+
+    while (getCondition()) {
+      this.Eval(node.consequence, nestedEnv);
     }
 
     return NULL;

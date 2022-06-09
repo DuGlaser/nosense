@@ -275,6 +275,40 @@ describe('Evaluator', () => {
       expect(test.expected).toEqual(evaluated);
     });
   });
+
+  test('while statement', () => {
+    const tests = [
+      {
+        input: `
+          let x: number = 0;
+
+          while (x < 10) {
+            x = x + 1;
+          }
+
+          x;
+        `,
+        expected: new NumberObject({ value: 10 }),
+      },
+      {
+        input: `
+          let x: number = 0;
+
+          while (false) {
+            x = x + 1;
+          }
+
+          x;
+        `,
+        expected: new NumberObject({ value: 0 }),
+      },
+    ];
+
+    tests.forEach((test) => {
+      const evaluated = testEval(test.input);
+      expect(test.expected).toEqual(evaluated);
+    });
+  });
 });
 
 function testEval(input: string): Obj {
