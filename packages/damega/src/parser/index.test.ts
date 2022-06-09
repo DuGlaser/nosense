@@ -1,4 +1,5 @@
 import {
+  AssignStatement,
   BooleanLiteral,
   Expression,
   ExpressionStatement,
@@ -369,7 +370,6 @@ if (true) {
   let x: number = 1;
   let x: number = 1;
 }`;
-
     const program = testParse(input);
 
     const stmt = program.statements[0];
@@ -447,6 +447,29 @@ if (true) {
 
       expect(exp.operator).toBe(test.expectedOperator);
       testLiteral(exp, test.expectedRight);
+    });
+  });
+
+  test('assign statement', () => {
+    const tests = [
+      {
+        input: `x = 10;`,
+        expectedName: 'x',
+        expectedValue: 10,
+      },
+    ];
+
+    tests.forEach((test) => {
+      const program = testParse(test.input);
+
+      const stmt = program.statements[0];
+      if (!(stmt instanceof AssignStatement)) {
+        console.error({ stmt });
+        throw new Error(`stmt is not AssignStatement.`);
+      }
+
+      testLiteral(stmt.name, test.expectedName);
+      testLiteral(stmt.value, test.expectedValue);
     });
   });
 });

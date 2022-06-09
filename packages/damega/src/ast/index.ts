@@ -1,3 +1,4 @@
+export * from './AssignStatement';
 export * from './base';
 export * from './BlockStatement';
 export * from './BooleanLiteral';

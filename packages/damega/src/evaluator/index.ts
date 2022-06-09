@@ -1,4 +1,5 @@
 import {
+  AssignStatement,
   BlockStatement,
   BooleanLiteral,
   ExpressionStatement,
@@ -37,6 +38,10 @@ export class Evaluator {
 
     if (node instanceof LetStatement) {
       return this.evalLetStatement(node, env);
+    }
+
+    if (node instanceof AssignStatement) {
+      return this.evalAssignStatement(node, env);
     }
 
     if (node instanceof ReturnStatement) {
@@ -109,6 +114,14 @@ export class Evaluator {
     }
 
     env.set(node.name.value, value);
+    return NULL;
+  }
+
+  private evalAssignStatement(node: AssignStatement, env: Environment): Obj {
+    const value = this.Eval(node.value, env);
+
+    env.update(node.name.value, value);
+
     return NULL;
   }
 

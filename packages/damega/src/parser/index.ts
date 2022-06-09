@@ -1,4 +1,5 @@
 import {
+  AssignStatement,
   BlockStatement,
   BooleanLiteral,
   Expression,
@@ -147,7 +148,11 @@ export class Parser {
         return this.parseWhileStatement();
 
       default:
-        return this.parseExpressionStatement();
+        if (this.peekTokenIs('ASSIGN')) {
+          return this.parseAssignStatement();
+        } else {
+          return this.parseExpressionStatement();
+        }
     }
   }
 
@@ -208,9 +213,7 @@ export class Parser {
     const condition = this.parseExpression(Precedence.LOWEST);
     if (!condition) return undefined;
 
-    if (!this.curTokenIs('RPAREN')) return undefined;
-    this.nextToken();
-
+    if (!this.expectPeek('RPAREN')) return undefined;
     if (!this.expectPeek('LBRACE')) return undefined;
 
     const consequence = this.parseBlockStatement();
@@ -219,9 +222,11 @@ export class Parser {
     let alternative: BlockStatement | undefined = undefined;
 
     if (this.peekTokenIs('ELSE')) {
+      this.nextToken();
+
       if (!this.expectPeek('LBRACE')) return undefined;
       alternative = this.parseBlockStatement();
-      if (!consequence) return undefined;
+      if (!alternative) return undefined;
     }
 
     return new IfStatement({
@@ -241,9 +246,7 @@ export class Parser {
     const condition = this.parseExpression(Precedence.LOWEST);
     if (!condition) return undefined;
 
-    if (!this.curTokenIs('RPAREN')) return undefined;
-    this.nextToken();
-
+    if (!this.expectPeek('RPAREN')) return undefined;
     if (!this.expectPeek('LBRACE')) return undefined;
 
     const consequence = this.parseBlockStatement();
@@ -267,6 +270,21 @@ export class Parser {
     }
 
     return new BlockStatement({ token, statements: stmts });
+  }
+
+  private parseAssignStatement(): AssignStatement | undefined {
+    const token = this.curToken;
+    const name = this.parseIdentifier();
+
+    if (!this.expectPeek('ASSIGN')) return undefined;
+    this.nextToken();
+
+    const value = this.parseExpression(Precedence.LOWEST);
+    if (!value) return undefined;
+
+    if (!this.expectPeek('SEMICOLON')) return undefined;
+
+    return new AssignStatement({ token, name, value });
   }
 
   /**
@@ -391,7 +409,7 @@ export class Parser {
   }
 
   private curTokenIs(type: TokenType): boolean {
-    return this.peekToken.type === type;
+    return this.curToken.type === type;
   }
 
   private peekTokenIs(type: TokenType): boolean {
