@@ -120,6 +120,22 @@ describe('Evaluator', () => {
       },
       {
         input: `
+          let x: number = 100;
+          x = x + (-10);
+          x;
+        `,
+        expected: new NumberObject({ value: 90 }),
+      },
+      {
+        input: `
+          let x: number = 100;
+          x = x * (-10);
+          x;
+        `,
+        expected: new NumberObject({ value: -1000 }),
+      },
+      {
+        input: `
           let x: number = 10;
           x = x * x * x;
           x;
@@ -131,6 +147,21 @@ describe('Evaluator', () => {
           let x: bool = true;
           x = false;
           x;
+        `,
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: `
+          let x: bool = true;
+          x = !x;
+          x;
+        `,
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: `
+          let x: bool = true;
+          !x;
         `,
         expected: new BooleanObject({ value: false }),
       },
@@ -161,6 +192,16 @@ describe('Evaluator', () => {
           x;
         `,
         expected: new NumberObject({ value: 10 }),
+      },
+      {
+        input: `
+          let x: number = 0;
+          if (!true) {
+            x = 10;
+          }
+          x;
+        `,
+        expected: new NumberObject({ value: 0 }),
       },
       {
         input: `

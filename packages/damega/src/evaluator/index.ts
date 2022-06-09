@@ -9,6 +9,7 @@ import {
   LetStatement,
   Node,
   NumberLiteral,
+  PrefixExpression,
   Program,
   ReturnStatement,
   StringLiteral,
@@ -63,6 +64,10 @@ export class Evaluator {
 
     if (node instanceof InfixExpression) {
       return this.evalInfixExpression(node, env);
+    }
+
+    if (node instanceof PrefixExpression) {
+      return this.evalPrefixExpression(node, env);
     }
 
     if (node instanceof NumberLiteral) {
@@ -205,6 +210,41 @@ export class Evaluator {
         node.operator
       } ${right.type()}`,
     });
+  }
+
+  private evalPrefixExpression(node: PrefixExpression, env: Environment): Obj {
+    const right = this.Eval(node.right, env);
+    if (!right) return NULL;
+
+    switch (node.operator) {
+      case '!':
+        return this.evalBangOperatorExpression(right);
+      case '-':
+        return this.evalMinusOperatorExpression(right);
+      default:
+        return new ErrorObject({
+          message: `unknown operator:${node.operator}${right.type()}`,
+        });
+    }
+  }
+
+  private evalBangOperatorExpression(obj: Obj): Obj {
+    switch (obj) {
+      case TRUE:
+        return FALSE;
+      case FALSE:
+        return TRUE;
+      default:
+        return FALSE;
+    }
+  }
+
+  private evalMinusOperatorExpression(obj: Obj): Obj {
+    if (obj instanceof NumberObject) {
+      return new NumberObject({ value: -obj.value });
+    }
+
+    return new ErrorObject({ message: `unknown operator: -${obj.type()}` });
   }
 
   private evalNumberInfixExpression(

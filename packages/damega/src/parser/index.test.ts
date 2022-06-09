@@ -457,6 +457,21 @@ if (true) {
         expectedName: 'x',
         expectedValue: 10,
       },
+      {
+        input: `x = true;`,
+        expectedName: 'x',
+        expectedValue: true,
+      },
+      {
+        input: `x = false;`,
+        expectedName: 'x',
+        expectedValue: false,
+      },
+      {
+        input: `x = "test";`,
+        expectedName: 'x',
+        expectedValue: 'test',
+      },
     ];
 
     tests.forEach((test) => {
