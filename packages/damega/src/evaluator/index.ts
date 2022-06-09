@@ -213,7 +213,7 @@ export class Evaluator {
     right: NumberObject
   ): Obj {
     const leftValue = left.value;
-    const rightValue = left.value;
+    const rightValue = right.value;
 
     switch (operator) {
       case '+':
@@ -225,13 +225,13 @@ export class Evaluator {
       case '/':
         return new NumberObject({ value: leftValue / rightValue });
       case '<':
-        return new BooleanObject({ value: leftValue < rightValue });
+        return this.nativeBoolToBooleanObject(leftValue < rightValue);
       case '>':
-        return new BooleanObject({ value: leftValue > rightValue });
+        return this.nativeBoolToBooleanObject(leftValue > rightValue);
       case '==':
-        return new BooleanObject({ value: leftValue === rightValue });
+        return this.nativeBoolToBooleanObject(leftValue === rightValue);
       case '!=':
-        return new BooleanObject({ value: leftValue !== rightValue });
+        return this.nativeBoolToBooleanObject(leftValue !== rightValue);
       default:
         return new ErrorObject({
           message: `unknown operator: ${left.type()} ${operator} ${right.type()}`,
