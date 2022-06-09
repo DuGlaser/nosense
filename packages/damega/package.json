@@ -1,8 +1,11 @@
 {
   "name": "@nosense/damega",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
   "scripts": {
+    "build": "tsc -d",
     "test": "jest",
     "test:dev": "jest --watch",
     "lint": "run-p lint:**",
