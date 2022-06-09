@@ -1,18 +1,19 @@
 {
-  "private": true,
+  "name": "@nosense/damega",
   "version": "0.0.0",
-  "name": "@nosense/web",
+  "main": "index.js",
   "scripts": {
-    "build": "next build && next export",
+    "test": "jest",
+    "test:dev": "jest --watch",
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "TIMING=1 eslint './**/*.{ts,tsx}'",
     "lint-fix:eslint": "npm run lint:eslint --fix"
   },
   "devDependencies": {
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.30.0",
-    "eslint-plugin-react-hooks": "^4.5.0",
+    "@types/jest": "^27.5.1",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.3",
     "eslint-plugin-custom": "*"
   }
 }

@@ -7,10 +7,18 @@
       "outputs": [".next/**"]
     },
     "test": {
-      "dependsOn": ["^build"],
-      "outputs": []
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": ["./**/*.ts", "./**/*.tsx"]
     },
     "lint": {
+      "outputs": []
+    },
+    "lint-fix": {
+      "outputs": []
+    },
+    "deploy": {
+      "dependsOn": ["build", "test", "lint"],
       "outputs": []
     },
     "dev": {
