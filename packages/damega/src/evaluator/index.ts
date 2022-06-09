@@ -4,6 +4,7 @@ import {
   BooleanLiteral,
   ExpressionStatement,
   Identifier,
+  IfStatement,
   InfixExpression,
   LetStatement,
   Node,
@@ -34,6 +35,10 @@ export class Evaluator {
   public Eval(node: Node, env: Environment): Obj {
     if (node instanceof Program) {
       return this.evalProgram(node, env);
+    }
+
+    if (node instanceof IfStatement) {
+      return this.evalIfStatement(node, env);
     }
 
     if (node instanceof LetStatement) {
@@ -95,6 +100,19 @@ export class Evaluator {
     }
 
     return result;
+  }
+
+  private evalIfStatement(node: IfStatement, env: Environment): Obj {
+    const nestedEnv = new Environment(env);
+    const condition = this.Eval(node.condition, nestedEnv);
+
+    if (condition === TRUE) {
+      this.Eval(node.consequence, nestedEnv);
+    } else if (node.alternative) {
+      this.Eval(node.alternative, nestedEnv);
+    }
+
+    return NULL;
   }
 
   private evalLetStatement(node: LetStatement, env: Environment): Obj {
