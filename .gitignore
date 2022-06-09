@@ -13,8 +13,8 @@
 /web/out/
 
 # production
-/main
-/dist
+app/main
+**/dist
 
 # misc
 .DS_Store
