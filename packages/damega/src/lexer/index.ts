@@ -82,7 +82,7 @@ export class Lexer {
   }
 
   private readAssign(): Token {
-    if (this.peekChar() == token.ASSIGN) {
+    if (this.peekChar() === token.ASSIGN) {
       this.readChar();
       return this.newToken('EQ', token.EQ);
     } else {
@@ -91,7 +91,7 @@ export class Lexer {
   }
 
   private readBang(): Token {
-    if (this.peekChar() == token.ASSIGN) {
+    if (this.peekChar() === token.ASSIGN) {
       this.readChar();
       return this.newToken('NOT_EQ', token.NOT_EQ);
     } else {
@@ -100,7 +100,7 @@ export class Lexer {
   }
 
   private readLT(): Token {
-    if (this.peekChar() == token.ASSIGN) {
+    if (this.peekChar() === token.ASSIGN) {
       this.readChar();
       return this.newToken('LT_EQ', token.LT_EQ);
     } else {
@@ -109,7 +109,7 @@ export class Lexer {
   }
 
   private readGT(): Token {
-    if (this.peekChar() == token.ASSIGN) {
+    if (this.peekChar() === token.ASSIGN) {
       this.readChar();
       return this.newToken('GT_EQ', token.GT_EQ);
     } else {
@@ -172,7 +172,7 @@ export class Lexer {
     this.readChar();
     const startPos = this.position;
 
-    while (this.ch != '"') {
+    while (this.ch !== '"') {
       this.readChar();
     }
 
