@@ -75,6 +75,165 @@ describe('Evaluator', () => {
       expect(test.expected).toEqual(evaluated);
     });
   });
+
+  test('assign statement', () => {
+    const tests = [
+      {
+        input: `
+          let x: number = 0;
+          x = 10;
+          x;
+        `,
+        expected: new NumberObject({ value: 10 }),
+      },
+      {
+        input: `
+          let x: number = 10;
+          x = x + 10;
+          x;
+        `,
+        expected: new NumberObject({ value: 20 }),
+      },
+      {
+        input: `
+          let x: number = 100;
+          x = x / 10;
+          x;
+        `,
+        expected: new NumberObject({ value: 10 }),
+      },
+      {
+        input: `
+          let x: number = 100;
+          x = x * 10;
+          x;
+        `,
+        expected: new NumberObject({ value: 1000 }),
+      },
+      {
+        input: `
+          let x: number = 100;
+          x = x - 10;
+          x;
+        `,
+        expected: new NumberObject({ value: 90 }),
+      },
+      {
+        input: `
+          let x: number = 10;
+          x = x * x * x;
+          x;
+        `,
+        expected: new NumberObject({ value: 1000 }),
+      },
+      {
+        input: `
+          let x: bool = true;
+          x = false;
+          x;
+        `,
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: `
+          let x: bool = true;
+          x = 1 != 1;
+          x;
+        `,
+        expected: new BooleanObject({ value: false }),
+      },
+    ];
+
+    tests.forEach((test) => {
+      const evaluated = testEval(test.input);
+      expect(test.expected).toEqual(evaluated);
+    });
+  });
+
+  test('if statement', () => {
+    const tests = [
+      {
+        input: `
+          let x: number = 0;
+          if (true) {
+            x = 10;
+          }
+          x;
+        `,
+        expected: new NumberObject({ value: 10 }),
+      },
+      {
+        input: `
+          let x: number = 0;
+          if (true) {
+            x = 10;
+            x = x + 10;
+          }
+          x;
+        `,
+        expected: new NumberObject({ value: 20 }),
+      },
+      {
+        input: `
+          let x: number = 0;
+          let y: number = 1;
+          let z: number = 0;
+          if (y > x) {
+            z = 10;
+          } else {
+            z = 20;
+          }
+          z;
+        `,
+        expected: new NumberObject({ value: 10 }),
+      },
+      {
+        input: `
+          let x: number = 0;
+          let y: number = 1;
+          let z: number = 0;
+          if (y < x) {
+            z = 10;
+          } else {
+            z = 20;
+          }
+          z;
+        `,
+        expected: new NumberObject({ value: 20 }),
+      },
+      {
+        input: `
+          let x: bool = true;
+
+          if (1 == 1) {
+            x = true;
+          } else {
+            x = false;
+          }
+          x;
+        `,
+        expected: new BooleanObject({ value: true }),
+      },
+      {
+        input: `
+          let x: bool = true;
+
+          if (1 != 1) {
+            x = true;
+          } else {
+            x = false;
+          }
+          x;
+        `,
+        expected: new BooleanObject({ value: false }),
+      },
+    ];
+
+    tests.forEach((test) => {
+      const evaluated = testEval(test.input);
+      expect(test.expected).toEqual(evaluated);
+    });
+  });
 });
 
 function testEval(input: string): Obj {
