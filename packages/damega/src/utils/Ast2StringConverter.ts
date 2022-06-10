@@ -67,25 +67,10 @@ export class Ast2StringConverter {
   }
 
   public toString(): string {
-    if (this.currentText !== '') {
-      this.output.push(this.currentText);
-      this.currentText = '';
-    }
-
-    const indent = this.getIndent();
-
-    return this.output
-      .map((item) => {
-        if (item instanceof Ast2StringConverter) {
-          return item.toString();
-        }
-
-        return indent + item;
-      })
-      .join('\n');
+    return this.toList().join('\n');
   }
 
-  public toList() {
+  public toList(): string[] {
     if (this.currentText !== '') {
       this.output.push(this.currentText);
       this.currentText = '';
@@ -102,7 +87,7 @@ export class Ast2StringConverter {
     });
   }
 
-  private getIndent() {
+  private getIndent(): string {
     const outs: string[] = [];
     if (this.context.indent.type === 'TAB') {
       for (let i = 0; i < this.context.currentLevel; i++) {
