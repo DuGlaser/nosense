@@ -14,7 +14,7 @@ import {
   WhileStatement,
 } from '../ast';
 import { Lexer } from '../lexer';
-import { Token, token } from '../token';
+import { TOKEN, Token } from '../token';
 import { Parser } from '.';
 
 describe('Parser', () => {
@@ -45,7 +45,7 @@ describe('Parser', () => {
       }
 
       expect(stmt.name.value).toBe(test.expectedIdentifier);
-      expect(stmt.type.token.type).toBe(token.TYPE_STRING);
+      expect(stmt.type.token.type).toBe(TOKEN.TYPE_STRING);
       testStringLiteral(test.expectedValue, stmt.value);
     });
   });

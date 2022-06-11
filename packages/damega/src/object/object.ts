@@ -1,4 +1,4 @@
-import { token, TokenType } from '@/token';
+import { TOKEN } from '@/token';
 
 export enum OBJECT {
   NUMBER = 'NUMBER',
@@ -111,16 +111,16 @@ export class ErrorObject extends Obj {
 }
 
 const typeMap: Record<string, OBJECT> = {
-  [token.TYPE_BOOLEAN]: OBJECT.BOOL,
-  [token.TYPE_NUMBER]: OBJECT.NUMBER,
-  [token.TYPE_STRING]: OBJECT.STRING,
+  [TOKEN.TYPE_BOOLEAN]: OBJECT.BOOL,
+  [TOKEN.TYPE_NUMBER]: OBJECT.NUMBER,
+  [TOKEN.TYPE_STRING]: OBJECT.STRING,
 };
 
-export const getMatchedType = (token: TokenType): OBJECT | undefined => {
+export const getMatchedType = (token: TOKEN): OBJECT | undefined => {
   return typeMap[token];
 };
 
-export const isTypeMatched = (token: TokenType, obj: Obj): boolean => {
+export const isTypeMatched = (token: TOKEN, obj: Obj): boolean => {
   const t = getMatchedType(token);
   if (!t) return false;
 

@@ -1,4 +1,4 @@
-import { LookUpKeyword, Token, token, TokenType } from '@/token';
+import { LookUpKeyword, TOKEN, Token } from '@/token';
 
 type ToTokenFn = () => Token;
 
@@ -18,29 +18,29 @@ export class Lexer {
 
     this.readChar();
 
-    this.registerTokenMap(token.EOF, () => this.newToken('EOF'));
+    this.registerTokenMap('EOF', () => this.newToken(TOKEN.EOF));
 
-    this.registerTokenMap(token.ASSIGN, () => this.readAssign());
-    this.registerTokenMap(token.ASTERISK, () => this.newToken('ASTERISK'));
-    this.registerTokenMap(token.PLUS, () => this.newToken('PLUS'));
-    this.registerTokenMap(token.MINUS, () => this.newToken('MINUS'));
-    this.registerTokenMap(token.BANG, () => this.readBang());
-    this.registerTokenMap(token.SLASH, () => this.newToken('SLASH'));
+    this.registerTokenMap('=', () => this.readAssign());
+    this.registerTokenMap('*', () => this.newToken(TOKEN.ASTERISK));
+    this.registerTokenMap('+', () => this.newToken(TOKEN.PLUS));
+    this.registerTokenMap('-', () => this.newToken(TOKEN.MINUS));
+    this.registerTokenMap('!', () => this.readBang());
+    this.registerTokenMap('/', () => this.newToken(TOKEN.SLASH));
 
-    this.registerTokenMap(token.LT, () => this.readLT());
-    this.registerTokenMap(token.GT, () => this.readGT());
+    this.registerTokenMap('<', () => this.readLT());
+    this.registerTokenMap('>', () => this.readGT());
 
     this.registerTokenMap('"', () => this.readString());
-    this.registerTokenMap(token.COMMA, () => this.newToken('COMMA'));
-    this.registerTokenMap(token.SEMICOLON, () => this.newToken('SEMICOLON'));
-    this.registerTokenMap(token.COLON, () => this.newToken('COLON'));
+    this.registerTokenMap(',', () => this.newToken(TOKEN.COMMA));
+    this.registerTokenMap(';', () => this.newToken(TOKEN.SEMICOLON));
+    this.registerTokenMap(':', () => this.newToken(TOKEN.COLON));
 
-    this.registerTokenMap(token.LPAREN, () => this.newToken('LPAREN'));
-    this.registerTokenMap(token.RPAREN, () => this.newToken('RPAREN'));
-    this.registerTokenMap(token.LBRACE, () => this.newToken('LBRACE'));
-    this.registerTokenMap(token.RBRACE, () => this.newToken('RBRACE'));
-    this.registerTokenMap(token.LBRACKET, () => this.newToken('LBRACKET'));
-    this.registerTokenMap(token.RBRACKET, () => this.newToken('RBRACKET'));
+    this.registerTokenMap('(', () => this.newToken(TOKEN.LPAREN));
+    this.registerTokenMap(')', () => this.newToken(TOKEN.RPAREN));
+    this.registerTokenMap('{', () => this.newToken(TOKEN.LBRACE));
+    this.registerTokenMap('}', () => this.newToken(TOKEN.RBRACE));
+    this.registerTokenMap('[', () => this.newToken(TOKEN.LBRACKET));
+    this.registerTokenMap(']', () => this.newToken(TOKEN.RBRACKET));
   }
 
   public NextToken(): Token {
@@ -63,10 +63,10 @@ export class Lexer {
     if (this.isDegit(this.ch)) {
       const num = this.readNumber();
 
-      return this.newToken('NUMBER', num);
+      return this.newToken(TOKEN.NUMBER, num);
     }
 
-    return this.newToken('ILLEGAL', '');
+    return this.newToken(TOKEN.ILLEGAL, '');
   }
 
   private registerTokenMap(key: string, fn: ToTokenFn) {
@@ -82,38 +82,38 @@ export class Lexer {
   }
 
   private readAssign(): Token {
-    if (this.peekChar() === token.ASSIGN) {
+    if (this.peekChar() === '=') {
       this.readChar();
-      return this.newToken('EQ', token.EQ);
+      return this.newToken(TOKEN.EQ, '==');
     } else {
-      return this.newToken('ASSIGN');
+      return this.newToken(TOKEN.ASSIGN);
     }
   }
 
   private readBang(): Token {
-    if (this.peekChar() === token.ASSIGN) {
+    if (this.peekChar() === '=') {
       this.readChar();
-      return this.newToken('NOT_EQ', token.NOT_EQ);
+      return this.newToken(TOKEN.NOT_EQ, '!=');
     } else {
-      return this.newToken('BANG', token.BANG);
+      return this.newToken(TOKEN.BANG);
     }
   }
 
   private readLT(): Token {
-    if (this.peekChar() === token.ASSIGN) {
+    if (this.peekChar() === '=') {
       this.readChar();
-      return this.newToken('LT_EQ', token.LT_EQ);
+      return this.newToken(TOKEN.LT_EQ, '<=');
     } else {
-      return this.newToken('LT');
+      return this.newToken(TOKEN.LT);
     }
   }
 
   private readGT(): Token {
-    if (this.peekChar() === token.ASSIGN) {
+    if (this.peekChar() === '=') {
       this.readChar();
-      return this.newToken('GT_EQ', token.GT_EQ);
+      return this.newToken(TOKEN.GT_EQ, '>=');
     } else {
-      return this.newToken('GT');
+      return this.newToken(TOKEN.GT);
     }
   }
 
@@ -127,7 +127,7 @@ export class Lexer {
     this.readPosition++;
   }
 
-  private newToken(type: TokenType, ch: string = this.ch) {
+  private newToken(type: TOKEN, ch: string = this.ch) {
     return new Token(type, ch);
   }
 
@@ -177,7 +177,7 @@ export class Lexer {
     }
 
     const str = this.input.substring(startPos, this.position);
-    return this.newToken('STRING', str);
+    return this.newToken(TOKEN.STRING, str);
   }
 
   private readNumber(): string {

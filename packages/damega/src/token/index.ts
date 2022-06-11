@@ -1,83 +1,81 @@
-export const token = {
-  ILLEGAL: 'ILLEGAL',
-  EOF: 'EOF',
-  IDENT: 'IDENT',
-  NUMBER: 'NUMBER',
-  STRING: 'STRING',
+export enum TOKEN {
+  ILLEGAL = 'ILLEGAL',
+  EOF = 'EOF',
+  IDENT = 'IDENT',
+  NUMBER = 'NUMBER',
+  STRING = 'STRING',
 
-  ASSIGN: '=',
-  PLUS: '+',
-  MINUS: '-',
-  BANG: '!',
-  ASTERISK: '*',
-  SLASH: '/',
-  LT: '<',
-  LT_EQ: '<=',
-  GT: '>',
-  GT_EQ: '>=',
+  ASSIGN = 'ASSIGN',
+  PLUS = 'PLUS',
+  MINUS = 'MINUS',
+  BANG = 'BANG',
+  ASTERISK = 'ASTERISK',
+  SLASH = 'SLASH',
+  LT = 'LT',
+  LT_EQ = 'LT_EQ',
+  GT = 'GT',
+  GT_EQ = 'GT_EQ',
 
-  COMMA: ',',
-  SEMICOLON: ';',
-  COLON: ':',
+  COMMA = 'COMMA',
+  SEMICOLON = 'SEMICOLON',
+  COLON = 'COLON',
 
-  LPAREN: '(',
-  RPAREN: ')',
-  LBRACE: '{',
-  RBRACE: '}',
-  LBRACKET: '[',
-  RBRACKET: ']',
+  LPAREN = 'LPAREN',
+  RPAREN = 'RPAREN',
+  LBRACE = 'LBRACE',
+  RBRACE = 'RBRACE',
+  LBRACKET = 'LBRACKET',
+  RBRACKET = 'RBRACKET',
 
-  FUNCTION: 'FUNCTION',
-  TYPE_STRING: 'TYPE_STRING',
-  TYPE_NUMBER: 'TYPE_NUMBER',
-  TYPE_BOOLEAN: 'TYPE_BOOLEAN',
-  RETURN: 'RETURN',
-  IF: 'IF',
-  ELSE: 'ELSE',
-  WHILE: 'WHILE',
-  TRUE: 'TRUE',
-  FALSE: 'FALSE',
-  LET: 'LET',
+  FUNCTION = 'FUNCTION',
+  TYPE_STRING = 'TYPE_STRING',
+  TYPE_NUMBER = 'TYPE_NUMBER',
+  TYPE_BOOLEAN = 'TYPE_BOOLEAN',
+  RETURN = 'RETURN',
+  IF = 'IF',
+  ELSE = 'ELSE',
+  WHILE = 'WHILE',
+  TRUE = 'TRUE',
+  FALSE = 'FALSE',
+  LET = 'LET',
 
-  EQ: '==',
-  NOT_EQ: '!=',
-} as const;
-
-export type TokenType = keyof typeof token;
+  EQ = 'EQ',
+  NOT_EQ = 'NOT_EQ',
+}
 
 export class Token {
-  readonly type: TokenType;
+  readonly type: TOKEN;
   readonly ch: string;
 
-  constructor(type: TokenType, ch: string) {
+  constructor(type: TOKEN, ch: string) {
     this.type = type;
     this.ch = ch;
   }
 }
 
 type Keywords = {
-  [key in string]: TokenType;
+  [key in string]: TOKEN;
 };
 
 export const keywords: Keywords = {
-  func: token.FUNCTION,
-  string: token.TYPE_STRING,
-  number: token.TYPE_NUMBER,
-  bool: token.TYPE_BOOLEAN,
-  return: token.RETURN,
-  let: token.LET,
-  if: token.IF,
-  else: token.ELSE,
-  while: token.WHILE,
-  true: token.TRUE,
-  false: token.FALSE,
+  func: TOKEN.FUNCTION,
+  string: TOKEN.TYPE_STRING,
+  number: TOKEN.TYPE_NUMBER,
+  bool: TOKEN.TYPE_BOOLEAN,
+  return: TOKEN.RETURN,
+  let: TOKEN.LET,
+  if: TOKEN.IF,
+  else: TOKEN.ELSE,
+  while: TOKEN.WHILE,
+  true: TOKEN.TRUE,
+  false: TOKEN.FALSE,
 };
 
-export const LookUpKeyword = (keyword: string): TokenType => {
+export const LookUpKeyword = (keyword: string): TOKEN => {
   const type = keywords[keyword];
 
   if (!type) {
-    return 'IDENT';
+    return TOKEN.IDENT;
   }
 
   return type;

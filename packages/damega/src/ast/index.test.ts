@@ -1,4 +1,4 @@
-import { Token } from '../token';
+import { TOKEN, Token } from '../token';
 import {
   BlockStatement,
   BooleanLiteral,
@@ -20,17 +20,17 @@ describe('Ast', () => {
   test('let test: string = "test";', () => {
     const p = new Program([
       new LetStatement({
-        token: new Token('LET', 'let'),
+        token: new Token(TOKEN.LET, 'let'),
         value: new StringLiteral({
-          token: new Token('STRING', 'test'),
+          token: new Token(TOKEN.STRING, 'test'),
           value: 'test',
         }),
         name: new Identifier({
-          token: new Token('IDENT', 'test'),
+          token: new Token(TOKEN.IDENT, 'test'),
           value: 'test',
         }),
         type: new TypeIdentifier({
-          token: new Token('TYPE_STRING', 'string'),
+          token: new Token(TOKEN.TYPE_STRING, 'string'),
         }),
       }),
     ]);
@@ -41,17 +41,17 @@ describe('Ast', () => {
   test('let test: number = 5;', () => {
     const p = new Program([
       new LetStatement({
-        token: new Token('LET', 'let'),
+        token: new Token(TOKEN.LET, 'let'),
         value: new NumberLiteral({
-          token: new Token('NUMBER', '5'),
+          token: new Token(TOKEN.NUMBER, '5'),
           value: 5,
         }),
         name: new Identifier({
-          token: new Token('IDENT', 'test'),
+          token: new Token(TOKEN.IDENT, 'test'),
           value: 'test',
         }),
         type: new TypeIdentifier({
-          token: new Token('TYPE_NUMBER', 'number'),
+          token: new Token(TOKEN.TYPE_NUMBER, 'number'),
         }),
       }),
     ]);
@@ -62,17 +62,17 @@ describe('Ast', () => {
   test('let test: bool = true;', () => {
     const p = new Program([
       new LetStatement({
-        token: new Token('LET', 'let'),
+        token: new Token(TOKEN.LET, 'let'),
         value: new BooleanLiteral({
-          token: new Token('TRUE', 'true'),
+          token: new Token(TOKEN.TRUE, 'true'),
           value: true,
         }),
         name: new Identifier({
-          token: new Token('IDENT', 'test'),
+          token: new Token(TOKEN.IDENT, 'test'),
           value: 'test',
         }),
         type: new TypeIdentifier({
-          token: new Token('TYPE_BOOLEAN', 'bool'),
+          token: new Token(TOKEN.TYPE_BOOLEAN, 'bool'),
         }),
       }),
     ]);
@@ -83,16 +83,16 @@ describe('Ast', () => {
   test('1 + 1', () => {
     const p = new Program([
       new ExpressionStatement({
-        token: new Token('NUMBER', '1'),
+        token: new Token(TOKEN.NUMBER, '1'),
         expression: new InfixExpression({
-          token: new Token('PLUS', '+'),
+          token: new Token(TOKEN.PLUS, '+'),
           right: new NumberLiteral({
-            token: new Token('NUMBER', '1'),
+            token: new Token(TOKEN.NUMBER, '1'),
             value: 1,
           }),
           operator: '+',
           left: new NumberLiteral({
-            token: new Token('NUMBER', '1'),
+            token: new Token(TOKEN.NUMBER, '1'),
             value: 1,
           }),
         }),
@@ -105,25 +105,25 @@ describe('Ast', () => {
   test('let x: number = 1 + 1', () => {
     const p = new Program([
       new LetStatement({
-        token: new Token('LET', 'let'),
+        token: new Token(TOKEN.LET, 'let'),
         value: new InfixExpression({
-          token: new Token('PLUS', '+'),
+          token: new Token(TOKEN.PLUS, '+'),
           right: new NumberLiteral({
-            token: new Token('NUMBER', '1'),
+            token: new Token(TOKEN.NUMBER, '1'),
             value: 1,
           }),
           operator: '+',
           left: new NumberLiteral({
-            token: new Token('NUMBER', '1'),
+            token: new Token(TOKEN.NUMBER, '1'),
             value: 1,
           }),
         }),
         name: new Identifier({
-          token: new Token('IDENT', 'x'),
+          token: new Token(TOKEN.IDENT, 'x'),
           value: 'x',
         }),
         type: new TypeIdentifier({
-          token: new Token('TYPE_NUMBER', 'number'),
+          token: new Token(TOKEN.TYPE_NUMBER, 'number'),
         }),
       }),
     ]);
@@ -147,79 +147,79 @@ if (true) {
 
     const p = new Program([
       new IfStatement({
-        token: new Token('IF', 'if'),
+        token: new Token(TOKEN.IF, 'if'),
         condition: new BooleanLiteral({
-          token: new Token('TRUE', 'true'),
+          token: new Token(TOKEN.TRUE, 'true'),
           value: true,
         }),
         consequence: new BlockStatement({
-          token: new Token('LBRACE', '{'),
+          token: new Token(TOKEN.LBRACE, '{'),
           statements: [
             new LetStatement({
-              token: new Token('LET', 'let'),
+              token: new Token(TOKEN.LET, 'let'),
               value: new InfixExpression({
-                token: new Token('PLUS', '+'),
+                token: new Token(TOKEN.PLUS, '+'),
                 right: new NumberLiteral({
-                  token: new Token('NUMBER', '1'),
+                  token: new Token(TOKEN.NUMBER, '1'),
                   value: 1,
                 }),
                 operator: '+',
                 left: new NumberLiteral({
-                  token: new Token('NUMBER', '1'),
+                  token: new Token(TOKEN.NUMBER, '1'),
                   value: 1,
                 }),
               }),
               name: new Identifier({
-                token: new Token('IDENT', 'x'),
+                token: new Token(TOKEN.IDENT, 'x'),
                 value: 'x',
               }),
               type: new TypeIdentifier({
-                token: new Token('TYPE_NUMBER', 'number'),
+                token: new Token(TOKEN.TYPE_NUMBER, 'number'),
               }),
             }),
             new ReturnStatement({
-              token: new Token('RETURN', 'return'),
+              token: new Token(TOKEN.RETURN, 'return'),
               valueExpression: new NumberLiteral({
-                token: new Token('NUMBER', '10'),
+                token: new Token(TOKEN.NUMBER, '10'),
                 value: 10,
               }),
             }),
             new IfStatement({
-              token: new Token('IF', 'if'),
+              token: new Token(TOKEN.IF, 'if'),
               condition: new BooleanLiteral({
-                token: new Token('FALSE', 'false'),
+                token: new Token(TOKEN.FALSE, 'false'),
                 value: false,
               }),
               alternative: undefined,
               consequence: new BlockStatement({
-                token: new Token('LBRACE', '{'),
+                token: new Token(TOKEN.LBRACE, '{'),
                 statements: [
                   new LetStatement({
-                    token: new Token('LET', 'let'),
+                    token: new Token(TOKEN.LET, 'let'),
                     value: new InfixExpression({
-                      token: new Token('PLUS', '+'),
+                      token: new Token(TOKEN.PLUS, '+'),
                       right: new NumberLiteral({
-                        token: new Token('NUMBER', '1'),
+                        token: new Token(TOKEN.NUMBER, '1'),
                         value: 1,
                       }),
                       operator: '+',
                       left: new NumberLiteral({
-                        token: new Token('NUMBER', '1'),
+                        token: new Token(TOKEN.NUMBER, '1'),
                         value: 1,
                       }),
                     }),
                     name: new Identifier({
-                      token: new Token('IDENT', 'x'),
+                      token: new Token(TOKEN.IDENT, 'x'),
                       value: 'x',
                     }),
                     type: new TypeIdentifier({
-                      token: new Token('TYPE_NUMBER', 'number'),
+                      token: new Token(TOKEN.TYPE_NUMBER, 'number'),
                     }),
                   }),
                   new ReturnStatement({
-                    token: new Token('RETURN', 'return'),
+                    token: new Token(TOKEN.RETURN, 'return'),
                     valueExpression: new NumberLiteral({
-                      token: new Token('NUMBER', '10'),
+                      token: new Token(TOKEN.NUMBER, '10'),
                       value: 10,
                     }),
                   }),
@@ -229,12 +229,12 @@ if (true) {
           ],
         }),
         alternative: new BlockStatement({
-          token: new Token('LBRACE', '{'),
+          token: new Token(TOKEN.LBRACE, '{'),
           statements: [
             new ReturnStatement({
-              token: new Token('RETURN', 'return'),
+              token: new Token(TOKEN.RETURN, 'return'),
               valueExpression: new NumberLiteral({
-                token: new Token('NUMBER', '10'),
+                token: new Token(TOKEN.NUMBER, '10'),
                 value: 10,
               }),
             }),
@@ -256,40 +256,40 @@ while (1 > 10) {
 
     const p = new Program([
       new WhileStatement({
-        token: new Token('WHILE', 'while'),
+        token: new Token(TOKEN.WHILE, 'while'),
         condition: new InfixExpression({
-          token: new Token('NUMBER', '1'),
+          token: new Token(TOKEN.NUMBER, '1'),
           left: new NumberLiteral({
-            token: new Token('NUMBER', '1'),
+            token: new Token(TOKEN.NUMBER, '1'),
             value: 1,
           }),
           operator: '>',
           right: new NumberLiteral({
-            token: new Token('NUMBER', '10'),
+            token: new Token(TOKEN.NUMBER, '10'),
             value: 10,
           }),
         }),
         consequence: new BlockStatement({
-          token: new Token('LBRACE', '{'),
+          token: new Token(TOKEN.LBRACE, '{'),
           statements: [
             new LetStatement({
-              token: new Token('LET', 'let'),
+              token: new Token(TOKEN.LET, 'let'),
               value: new NumberLiteral({
-                token: new Token('NUMBER', '10'),
+                token: new Token(TOKEN.NUMBER, '10'),
                 value: 10,
               }),
               name: new Identifier({
-                token: new Token('IDENT', 'x'),
+                token: new Token(TOKEN.IDENT, 'x'),
                 value: 'x',
               }),
               type: new TypeIdentifier({
-                token: new Token('TYPE_NUMBER', 'number'),
+                token: new Token(TOKEN.TYPE_NUMBER, 'number'),
               }),
             }),
             new ReturnStatement({
-              token: new Token('RETURN', 'return'),
+              token: new Token(TOKEN.RETURN, 'return'),
               valueExpression: new NumberLiteral({
-                token: new Token('NUMBER', '10'),
+                token: new Token(TOKEN.NUMBER, '10'),
                 value: 10,
               }),
             }),
@@ -306,21 +306,21 @@ while (1 > 10) {
 
     const p = new Program([
       new LetStatement({
-        token: new Token('BANG', '!'),
+        token: new Token(TOKEN.BANG, '!'),
         value: new PrefixExpression({
-          token: new Token('BANG', '!'),
+          token: new Token(TOKEN.BANG, '!'),
           operator: '!',
           right: new BooleanLiteral({
-            token: new Token('TRUE', 'true'),
+            token: new Token(TOKEN.TRUE, 'true'),
             value: true,
           }),
         }),
         name: new Identifier({
-          token: new Token('IDENT', 'x'),
+          token: new Token(TOKEN.IDENT, 'x'),
           value: 'x',
         }),
         type: new TypeIdentifier({
-          token: new Token('TYPE_BOOLEAN', 'bool'),
+          token: new Token(TOKEN.TYPE_BOOLEAN, 'bool'),
         }),
       }),
     ]);
