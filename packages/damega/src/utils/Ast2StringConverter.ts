@@ -88,21 +88,10 @@ export class Ast2StringConverter {
   }
 
   private getIndent(): string {
-    const outs: string[] = [];
     if (this.context.indent.type === 'TAB') {
-      for (let i = 0; i < this.context.currentLevel; i++) {
-        outs.push('\t');
-      }
-    } else {
-      for (
-        let i = 0;
-        i < this.context.currentLevel * this.context.indent.count;
-        i++
-      ) {
-        outs.push(' ');
-      }
+      return '\t'.repeat(this.context.currentLevel);
     }
 
-    return outs.join('');
+    return ' '.repeat(this.context.currentLevel * this.context.indent.count);
   }
 }
