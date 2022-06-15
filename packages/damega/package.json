@@ -5,7 +5,10 @@
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "scripts": {
-    "build": "tsc -d",
+    "build": "run-s clean build:typescript resolve-path",
+    "build:typescript": "tsc -d",
+    "clean": "rm -rf dist",
+    "resolve-path": "ts-node ./scripts/resolve-path.ts",
     "test": "jest",
     "test:dev": "jest --watch",
     "lint": "run-p lint:**",
@@ -15,8 +18,9 @@
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
+    "eslint-plugin-custom": "*",
     "jest": "^28.1.0",
     "ts-jest": "^28.0.3",
-    "eslint-plugin-custom": "*"
+    "ts-node": "^10.8.1"
   }
 }
