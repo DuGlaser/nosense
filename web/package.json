@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "name": "@nosense/web",
   "scripts": {
+    "dev": "next dev",
     "build": "next build && next export",
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
@@ -10,9 +11,15 @@
     "lint-fix:eslint": "npm run lint:eslint --fix"
   },
   "devDependencies": {
+    "eslint-plugin-custom": "*",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.30.0",
-    "eslint-plugin-react-hooks": "^4.5.0",
-    "eslint-plugin-custom": "*"
+    "eslint-plugin-react-hooks": "^4.5.0"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.8.4",
+    "@nosense/damega": "*"
   }
 }
