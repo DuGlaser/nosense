@@ -12,9 +12,10 @@ import {
   Statement,
   StringLiteral,
   WhileStatement,
-} from '../ast';
-import { Lexer } from '../lexer';
-import { TOKEN, Token } from '../token';
+} from '@/ast';
+import { Lexer } from '@/lexer';
+import { TOKEN, Token } from '@/token';
+
 import { Parser } from '.';
 
 describe('Parser', () => {

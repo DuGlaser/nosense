@@ -5,8 +5,8 @@
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "scripts": {
-    "build": "run-s clean build:typescript resolve-path",
-    "build:typescript": "tsc -d",
+    "build": "run-s clean build:ts resolve-path",
+    "build:ts": "tsc -d -p tsconfig.build.json",
     "clean": "rm -rf dist",
     "resolve-path": "ts-node ./scripts/resolve-path.ts",
     "test": "jest",

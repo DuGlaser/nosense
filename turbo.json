@@ -9,7 +9,7 @@
     "test": {
       "dependsOn": ["build"],
       "outputs": [],
-      "inputs": ["./**/*.ts", "./**/*.tsx"]
+      "inputs": ["./**/*.ts", "./**/*.tsx, ./**/package.json"]
     },
     "lint": {
       "outputs": []
