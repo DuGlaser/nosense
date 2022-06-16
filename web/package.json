@@ -7,7 +7,7 @@
     "build": "next build && next export",
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
-    "lint:eslint": "TIMING=1 eslint './**/*.{ts,tsx}'",
+    "lint:eslint": "TIMING=1 eslint .",
     "lint-fix:eslint": "npm run lint:eslint --fix"
   },
   "devDependencies": {
