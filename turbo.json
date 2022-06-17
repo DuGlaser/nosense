@@ -12,6 +12,7 @@
       "inputs": ["./**/*.ts", "./**/*.tsx, ./**/package.json"]
     },
     "lint": {
+      "dependsOn": ["build"],
       "outputs": []
     },
     "lint-fix": {
@@ -19,7 +20,8 @@
     },
     "deploy": {
       "dependsOn": ["build", "test", "lint"],
-      "outputs": []
+      "outputs": [],
+      "inputs": ["./**/*.ts", "./**/*.tsx, ./**/package.json"]
     },
     "dev": {
       "cache": false
