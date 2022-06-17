@@ -18,6 +18,7 @@ export const convert2LetStatementObject = (
   }
 
   return {
+    _type: 'LetStatement',
     typeIdentifier,
     expression: stmt.value.string(),
     name: stmt.name.string(),
