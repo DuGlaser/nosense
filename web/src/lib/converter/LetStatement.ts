@@ -4,8 +4,7 @@ import { match } from 'ts-pattern';
 import { LetStatementObject, TYPE_IDENTIFIER } from '@/lib/models/astObjects';
 
 export const convert2LetStatementObject = (
-  stmt: LetStatement,
-  indentLevel = 0
+  stmt: LetStatement
 ): LetStatementObject => {
   const typeIdentifier = match(stmt.type.token.type)
     .with(TOKEN.TYPE_NUMBER, () => TYPE_IDENTIFIER.NUMBER)
@@ -22,8 +21,5 @@ export const convert2LetStatementObject = (
     typeIdentifier,
     expression: stmt.value.string(),
     name: stmt.name.string(),
-    meta: {
-      indentLevel,
-    },
   };
 };

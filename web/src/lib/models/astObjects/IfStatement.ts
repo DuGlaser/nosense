@@ -1,11 +1,7 @@
-import { AstObject } from '.';
+import { AstObject, BaseAstObject } from '.';
 
-export interface IfStatementObject {
-  _type: 'IfStatement';
+export interface IfStatementObject extends BaseAstObject<'IfStatement'> {
   condition: string;
   consequence: AstObject[];
   alternative: AstObject[] | undefined;
-  meta: {
-    indentLevel: number;
-  };
 }

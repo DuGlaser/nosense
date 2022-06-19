@@ -6,13 +6,9 @@ import { AstObject } from '@/lib/models/astObjects';
 import { convert2IfStatementObject } from './IfStatement';
 import { convert2LetStatementObject } from './LetStatement';
 
-export const convert2AstObject = (node: Node, indentLevel = 0): AstObject => {
+export const convert2AstObject = (node: Node): AstObject => {
   return match(node)
-    .with(P.instanceOf(LetStatement), (n) =>
-      convert2LetStatementObject(n, indentLevel)
-    )
-    .with(P.instanceOf(IfStatement), (n) =>
-      convert2IfStatementObject(n, indentLevel)
-    )
+    .with(P.instanceOf(LetStatement), (n) => convert2LetStatementObject(n))
+    .with(P.instanceOf(IfStatement), (n) => convert2IfStatementObject(n))
     .otherwise(() => undefined);
 };

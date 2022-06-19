@@ -2,6 +2,9 @@ import { IfStatementObject } from './IfStatement';
 import { LetStatementObject } from './LetStatement';
 
 export type AstObject = LetStatementObject | IfStatementObject | undefined;
+export interface BaseAstObject<T> {
+  _type: T;
+}
 
 export * from './IfStatement';
 export * from './LetStatement';
