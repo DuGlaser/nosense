@@ -1,7 +1,9 @@
 import { NextPage } from 'next';
 
+import { Editor } from '@/features/editor';
+
 const IndexPage: NextPage = () => {
-  return <h1>Index Page</h1>;
+  return <Editor />;
 };
 
 export default IndexPage;
