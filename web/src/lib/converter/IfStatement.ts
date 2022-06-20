@@ -11,8 +11,6 @@ export const convert2IfStatementObject = (
     _type: 'IfStatement',
     condition: stmt.condition.string(),
     consequence: stmt.consequence.statements.map((_) => convert2AstObject(_)),
-    alternative: stmt.alternative
-      ? stmt.alternative.statements.map((_) => convert2AstObject(_))
-      : undefined,
+    alternative: stmt.alternative?.statements.map((_) => convert2AstObject(_)),
   };
 };
