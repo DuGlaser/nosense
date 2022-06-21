@@ -1,6 +1,5 @@
 import { Box, Stack } from '@mui/material';
-import { Parser } from '@nosense/damega';
-import { Lexer } from '@nosense/damega/dist/lexer';
+import { Lexer, Parser } from '@nosense/damega';
 
 import { convert2AstObject } from '@/lib/converter/convert2AstObject';
 
