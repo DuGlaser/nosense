@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import { Lexer, Parser } from '@nosense/damega';
 
-import { convert2AstObject } from '@/lib/converter/convert2AstObject';
+import { convert2AstObject } from '@/lib/converter';
 
 import {
   BlockStatements,
