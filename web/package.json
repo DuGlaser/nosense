@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "TIMING=1 eslint .",
