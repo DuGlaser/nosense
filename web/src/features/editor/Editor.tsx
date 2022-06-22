@@ -30,6 +30,10 @@ if (true) {
 } else {
   let x: number = 10;
 }
+
+while (true) {
+  let x: number = 10;
+}
 `;
 
 const l = new Lexer(input);

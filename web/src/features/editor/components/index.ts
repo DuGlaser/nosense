@@ -5,3 +5,4 @@ export * from './EditorLineWrapper';
 export * from './EditorStatement';
 export * from './IfStatementComponent';
 export * from './LetStatementComponent';
+export * from './WhileStatementComponent';
