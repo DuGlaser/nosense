@@ -1,15 +1,17 @@
-import { EditorLineWrapper } from '@editor/components';
+import { EditorLinesWrapper, EditorLineWrapper } from '@editor/components';
 import { Box } from '@mui/material';
 import { FC } from 'react';
 
-type EditorLineNumberProps = {
-  lineNumber: number;
-};
-
-export const EditorLineNumber: FC<EditorLineNumberProps> = ({ lineNumber }) => {
+export const EditorLineNumber: FC<{ lineNumber: number }> = ({
+  lineNumber,
+}) => {
   return (
-    <EditorLineWrapper>
-      <Box sx={{ color: '#b3b3b3', textAlign: 'end' }}>{lineNumber}</Box>
-    </EditorLineWrapper>
+    <EditorLinesWrapper>
+      {[...Array(lineNumber)].map((_, i) => (
+        <EditorLineWrapper key={i}>
+          <Box sx={{ color: '#b3b3b3', textAlign: 'end' }}>{i + 1}</Box>
+        </EditorLineWrapper>
+      ))}
+    </EditorLinesWrapper>
   );
 };

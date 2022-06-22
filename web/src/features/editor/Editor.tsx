@@ -3,36 +3,26 @@ import { Lexer, Parser } from '@nosense/damega';
 
 import { convert2AstObject } from '@/lib/converter';
 
+import { calcLinesNumber } from './calcLineNumber';
 import {
   BlockStatements,
   EditorLineNumber,
-  EditorLinesWrapper,
-  EditorLineWrapper,
   EditorStatement,
 } from './components';
 
 const input = `
 let x: number = 10;
-let x: bool = true;
-let x: number = 10;
-let x: number = 10;
-let x: number = 10;
-let x: number = 10;
-let x: bool = true;
-let x: number = 10;
-let x: number = 10;
-let x: number = 10;
 
-if (true) {
-  if (false) {
-    let x: number = 10;
-  }
-} else {
-  let x: number = 10;
+while (x > 10) {
+  x = x + 1;
 }
 
-while (true) {
-  x = 10;
+let pass: bool = true;
+
+if (x > 10) {
+  pass = false;
+} else {
+  pass = true;
 }
 `;
 
@@ -40,6 +30,7 @@ const l = new Lexer(input);
 const p = new Parser(l);
 const program = p.parseToken();
 const astObjects = program.statements.map((_) => convert2AstObject(_));
+const lineNumber = calcLinesNumber(astObjects);
 
 export const Editor = () => {
   return (
@@ -59,13 +50,7 @@ export const Editor = () => {
           height: '100%',
         }}
       />
-      <EditorLinesWrapper>
-        {[...Array(17)].map((_, i) => (
-          <EditorLineWrapper key={i}>
-            <EditorLineNumber lineNumber={i + 1} />
-          </EditorLineWrapper>
-        ))}
-      </EditorLinesWrapper>
+      <EditorLineNumber lineNumber={lineNumber} />
       <BlockStatements>
         {astObjects.map((astObject, i) => (
           <EditorStatement key={i} astObject={astObject} />
