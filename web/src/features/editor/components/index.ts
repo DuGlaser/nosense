@@ -1,3 +1,4 @@
+export * from './AssignStatementComponent';
 export * from './BlockStatements';
 export * from './EditorLineNumber';
 export * from './EditorLinesWrapper';

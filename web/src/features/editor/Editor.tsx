@@ -32,7 +32,7 @@ if (true) {
 }
 
 while (true) {
-  let x: number = 10;
+  x = 10;
 }
 `;
 
