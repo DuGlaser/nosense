@@ -1,9 +1,9 @@
+import { EditorLineWrapper } from '@editor/components';
+import { StatementProps } from '@editor/type';
 import { Box, Stack } from '@mui/material';
 import { FC } from 'react';
 import { match } from 'ts-pattern';
 
-import { EditorLineWrapper } from '@/features/editor/components';
-import { StatementProps } from '@/features/editor/type';
 import { LetStatementObject, TYPE_IDENTIFIER } from '@/lib/models/astObjects';
 
 export const LetStatementComponent: FC<StatementProps<LetStatementObject>> = ({

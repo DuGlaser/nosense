@@ -1,11 +1,11 @@
-import { FC } from 'react';
-import { match, P } from 'ts-pattern';
-
 import {
   IfStatementComponent,
   LetStatementComponent,
-} from '@/features/editor/components';
-import { StatementProps } from '@/features/editor/type';
+} from '@editor/components';
+import { StatementProps } from '@editor/type';
+import { FC } from 'react';
+import { match, P } from 'ts-pattern';
+
 import { AstObject } from '@/lib/models/astObjects';
 
 export const EditorStatement: FC<StatementProps<AstObject>> = ({

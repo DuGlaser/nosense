@@ -1,7 +1,6 @@
+import { EditorLineWrapper } from '@editor/components';
 import { Box } from '@mui/material';
 import { FC } from 'react';
-
-import { EditorLineWrapper } from '@/features/editor/components';
 
 type EditorLineNumberProps = {
   lineNumber: number;

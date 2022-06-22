@@ -1,12 +1,12 @@
-import { Box, Stack } from '@mui/material';
-import { FC, PropsWithChildren } from 'react';
-
 import {
   BlockStatements,
   EditorLineWrapper,
   EditorStatement,
-} from '@/features/editor/components';
-import { StatementProps } from '@/features/editor/type';
+} from '@editor/components';
+import { StatementProps } from '@editor/type';
+import { Box, Stack } from '@mui/material';
+import { FC, PropsWithChildren } from 'react';
+
 import { IfStatementObject } from '@/lib/models/astObjects';
 
 const IfLabel: FC<PropsWithChildren> = ({ children }) => {

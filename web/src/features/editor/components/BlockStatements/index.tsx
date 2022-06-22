@@ -1,7 +1,6 @@
+import { EditorLinesWrapper } from '@editor/components';
 import { SxProps, Theme } from '@mui/material';
 import { FC, PropsWithChildren } from 'react';
-
-import { EditorLinesWrapper } from '@/features/editor/components/EditorLinesWrapper';
 
 export const BlockStatements: FC<
   PropsWithChildren<{ nested?: boolean; sx?: SxProps<Theme> }>
