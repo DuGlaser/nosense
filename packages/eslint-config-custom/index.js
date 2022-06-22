@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
+  ignorePatterns: ['*.d.ts', '*.js'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -14,6 +15,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:import/typescript',
     'plugin:jsx-a11y/recommended',
     'plugin:prettier/recommended',
   ],
@@ -24,6 +26,18 @@ module.exports = {
     'import/first': 'error',
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'error',
+    'import/no-unresolved': 'error',
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['../*'],
+            message: 'Usage of relative parent imports is not allowed.',
+          },
+        ],
+      },
+    ],
     eqeqeq: 'error',
 
     '@typescript-eslint/no-explicit-any': 'off',
@@ -36,6 +50,10 @@ module.exports = {
       node: {
         extensions: ['.ts', '.tsx'],
       },
+      typescript: {},
+    },
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
   },
 };

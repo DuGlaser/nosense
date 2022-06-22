@@ -1,4 +1,5 @@
-import { TOKEN, Token } from '../token';
+import { TOKEN, Token } from '@/token';
+
 import {
   BlockStatement,
   BooleanLiteral,

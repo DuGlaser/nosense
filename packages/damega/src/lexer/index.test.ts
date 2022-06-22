@@ -1,4 +1,5 @@
-import { TOKEN } from '../token';
+import { TOKEN } from '@/token';
+
 import { Lexer } from '.';
 
 type Test = {

@@ -1,0 +1,5 @@
+export enum TYPE_IDENTIFIER {
+  STRING = 'STRING',
+  NUMBER = 'NUMBER',
+  BOOLEAN = 'BOOLEAN',
+}

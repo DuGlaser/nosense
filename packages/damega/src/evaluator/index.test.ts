@@ -1,4 +1,4 @@
-import { Lexer } from '../lexer';
+import { Lexer } from '@/lexer';
 import {
   BooleanObject,
   Environment,
@@ -7,8 +7,9 @@ import {
   Obj,
   OBJECT,
   StringObject,
-} from '../object';
-import { Parser } from '../parser';
+} from '@/object';
+import { Parser } from '@/parser';
+
 import { Evaluator } from '.';
 
 describe('Evaluator', () => {

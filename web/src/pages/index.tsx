@@ -1,7 +1,8 @@
+import { Editor } from '@editor';
 import { NextPage } from 'next';
 
 const IndexPage: NextPage = () => {
-  return <h1>Index Page</h1>;
+  return <Editor />;
 };
 
 export default IndexPage;
