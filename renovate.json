@@ -1,0 +1,21 @@
+{
+  "extends": ["config:base"],
+  "timezone": "Asia/Tokyo",
+  "schedule": ["every weekend"],
+  "labels": ["renovate"],
+  "patch": { "automerge": true },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "minor": {
+    "groupName": "all dependencies",
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "packagePatterns": ["typescript"],
+      "enabled": false
+    }
+  ]
+}
