@@ -17,7 +17,7 @@
     "lint-fix:eslint": "npm run lint:eslint --fix"
   },
   "devDependencies": {
-    "@types/jest": "27.5.2",
+    "@types/jest": "28.1.4",
     "eslint-plugin-custom": "*",
     "jest": "28.1.1",
     "ts-jest": "28.0.5",
