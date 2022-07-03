@@ -1,6 +1,8 @@
 {
   "name": "nosense",
   "private": true,
+  "license": "MIT",
+  "author": "DuGlaser <duglaser0618@gmail.com>",
   "workspaces": [
     "packages/*",
     "web",

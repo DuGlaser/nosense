@@ -4,7 +4,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**"]
+      "outputs": []
     },
     "test": {
       "dependsOn": ["build"],
@@ -18,8 +18,12 @@
     "lint-fix": {
       "outputs": []
     },
+    "release:app": {
+      "dependsOn": ["web#build"],
+      "outputs": []
+    },
     "deploy": {
-      "dependsOn": ["build", "test", "lint"],
+      "dependsOn": ["build", "test", "lint", "release:app"],
       "outputs": [],
       "inputs": ["./**/*.ts", "./**/*.tsx, ./**/package.json"]
     },

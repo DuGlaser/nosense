@@ -4,6 +4,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
+  "license": "MIT",
+  "author": "DuGlaser <duglaser0618@gmail.com>",
+  "homepage": "https://github.com/DuGlaser/nosense",
   "scripts": {
     "build": "run-s clean build:ts resolve-path",
     "build:ts": "tsc -d -p tsconfig.build.json",

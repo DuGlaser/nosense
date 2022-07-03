@@ -1,8 +1,11 @@
 {
   "private": true,
   "version": "0.0.0",
-  "name": "@nosense/app",
-  "main": "index.js",
+  "name": "app",
+  "main": "main/index.js",
+  "license": "MIT",
+  "author": "DuGlaser <duglaser0618@gmail.com>",
+  "homepage": "https://github.com/DuGlaser/nosense",
   "scripts": {
     "build": "npm run clean && tsc -p .",
     "dev": "npm run build && electron main",
@@ -10,7 +13,10 @@
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "TIMING=1 eslint .",
     "lint-fix:eslint": "npm run lint:eslint --fix",
-    "clean": "rm -rf main/"
+    "clean": "run-p clean:**",
+    "clean:main": "rm -rf main/",
+    "clean:dist": "rm -rf dist/",
+    "release": "npm run clean:dist && electron-builder --dir --config electron-builder.json"
   },
   "dependencies": {
     "electron-is-dev": "2.0.0",
@@ -20,11 +26,5 @@
     "electron": "19.0.7",
     "electron-builder": "23.1.0",
     "eslint-plugin-custom": "*"
-  },
-  "build": {
-    "asar": true,
-    "files": [
-      "main"
-    ]
   }
 }
