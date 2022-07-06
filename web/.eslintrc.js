@@ -14,6 +14,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/no-unescaped-entities': 'off',
     'jsx-a11y/anchor-is-valid': 'off',
+    'jsx-a11y/no-static-element-interactions': 'off',
     'jsx-a11y/label-has-associated-control': [
       'error',
       {
@@ -28,6 +29,9 @@ module.exports = {
   settings: {
     react: {
       version: 'detect',
+    },
+    'import/resolver': {
+      typescript: {},
     },
   },
 };
