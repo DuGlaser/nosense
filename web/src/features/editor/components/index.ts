@@ -1,4 +1,5 @@
 export * from './AssignStatementComponent';
+export * from './AutoCompleteInput';
 export * from './BlockStatements';
 export * from './EditorLineNumber';
 export * from './EditorLinesWrapper';

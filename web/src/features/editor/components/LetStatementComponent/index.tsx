@@ -1,10 +1,20 @@
-import { EditorLineWrapper } from '@editor/components';
+import {
+  AutocompleteInput,
+  CompleteOption,
+  EditorLineWrapper,
+} from '@editor/components';
 import { StatementProps } from '@editor/type';
 import { Box, Stack } from '@mui/material';
 import { FC } from 'react';
 import { match } from 'ts-pattern';
 
 import { LetStatementObject, TYPE_IDENTIFIER } from '@/lib/models/astObjects';
+
+const options: CompleteOption[] = [
+  { displayName: '数値型', keyword: ['number', 'すうちがた', '数値型'] },
+  { displayName: '文字列型', keyword: ['string', 'もじれつがた', '文字列型'] },
+  { displayName: '論理型', keyword: ['bool', 'ろんりがた', '論理型'] },
+];
 
 export const LetStatementComponent: FC<StatementProps<LetStatementObject>> = ({
   astObject,
@@ -18,13 +28,13 @@ export const LetStatementComponent: FC<StatementProps<LetStatementObject>> = ({
   return (
     <EditorLineWrapper>
       <Stack direction={'row'} spacing={'4px'}>
-        <Box
+        <AutocompleteInput
           sx={{
             color: '#F2CB44',
           }}
-        >
-          {typeLabel}
-        </Box>
+          options={options}
+          defaultValue={typeLabel}
+        />
         <Box>:</Box>
         <Box>{astObject.name}</Box>
       </Stack>
