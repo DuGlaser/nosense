@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, styled } from '@mui/material';
 import { Lexer, Parser } from '@nosense/damega';
 
 import { convert2AstObject } from '@/lib/converter';
@@ -32,30 +32,28 @@ const program = p.parseToken();
 const astObjects = program.statements.map((_) => convert2AstObject(_));
 const lineNumber = calcLinesNumber(astObjects);
 
+const CStack = styled(Stack)(({ theme }) => ({
+  backgroundColor: theme.background[900],
+  color: theme.background.contrast[900],
+  height: '100vh',
+}));
+
+const CBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.background[800],
+  width: '30px',
+  height: '100%',
+}));
+
 export const Editor = () => {
   return (
-    <Stack
-      direction={'row'}
-      spacing={'8px'}
-      sx={{
-        bgcolor: '#222831',
-        color: '#EEEEEE',
-        height: '100vh',
-      }}
-    >
-      <Box
-        sx={{
-          bgcolor: 'rgba(57, 62, 70, 0.5)',
-          width: '30px',
-          height: '100%',
-        }}
-      />
+    <CStack direction={'row'} spacing={'8px'}>
+      <CBox />
       <EditorLineNumber lineNumber={lineNumber} />
       <BlockStatements>
         {astObjects.map((astObject, i) => (
           <EditorStatement key={i} astObject={astObject} />
         ))}
       </BlockStatements>
-    </Stack>
+    </CStack>
   );
 };
