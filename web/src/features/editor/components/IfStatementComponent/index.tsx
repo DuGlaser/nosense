@@ -1,11 +1,12 @@
 import {
   BlockStatements,
+  EditableCode,
   EditorLineWrapper,
   EditorStatement,
 } from '@editor/components';
 import { StatementProps } from '@editor/type';
 import { Box, Stack } from '@mui/material';
-import { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren, useCallback } from 'react';
 
 import { IfStatementObject } from '@/lib/models/astObjects';
 
@@ -29,12 +30,22 @@ const IfLabel: FC<PropsWithChildren> = ({ children }) => {
 export const IfStatementComponent: FC<StatementProps<IfStatementObject>> = ({
   astObject,
 }) => {
+  const handleValidateCondition = useCallback((value: string) => {
+    const r = new RegExp(/\(.+\)/);
+    return r.test(value);
+  }, []);
+
   return (
     <BlockStatements>
       <EditorLineWrapper>
         <Stack direction={'row'} spacing={'4px'}>
           <IfLabel>if</IfLabel>
-          <Box>({astObject.condition})</Box>
+          <Box>
+            <EditableCode
+              defaultValue={`(${astObject.condition})`}
+              validator={handleValidateCondition}
+            />
+          </Box>
         </Stack>
       </EditorLineWrapper>
       <BlockStatements nested>

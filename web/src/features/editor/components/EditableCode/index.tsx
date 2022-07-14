@@ -1,8 +1,10 @@
 import { Box, styled, SxProps, Theme } from '@mui/material';
 import { FC, useEffect, useRef, useState } from 'react';
 
-const EditableDiv = styled('div')(() => ({
-  border: 'none',
+const EditableDiv = styled('div', {
+  shouldForwardProp: (propName: string) => !propName.startsWith('$'),
+})<{ $validSyntax: boolean }>(({ $validSyntax }) => ({
+  borderBottom: $validSyntax ? 'none' : '1px solid red',
   minWidth: '5px',
   '&:focus': {
     outline: '0px solid transparent',
@@ -54,20 +56,24 @@ type Props = {
   options?: CompleteOption[];
   sx?: SxProps<Theme>;
   onChange?: (newValue: string) => void;
+  validator?: (value: string) => boolean;
 };
 
 // TODO: ショートカットを用意する
-export const AutocompleteInput: FC<Props> = ({
+export const EditableCode: FC<Props> = ({
   defaultValue,
   sx = [],
   options,
   onChange,
+  validator,
 }) => {
   const [value, setValue] = useState(defaultValue);
   const [displayValue, setDisplayValue] = useState(defaultValue);
   const [displayOptions, setDisplayOptions] = useState<
     CompleteOption[] | undefined
   >(undefined);
+  const [key, setKey] = useState(0);
+  const [validSyntax, setValidSyntax] = useState(true);
   const enableComplete = useRef(false);
 
   const updateDisplayOption = (
@@ -85,11 +91,24 @@ export const AutocompleteInput: FC<Props> = ({
     setDisplayOptions(filterCompleteOptions(value, options));
   };
 
+  const handleValidate = (value: string) => {
+    if (validator) {
+      setValidSyntax(validator(value));
+    }
+  };
+
   const handleUpdateValue = (value: string) => {
     setValue(value);
     if (onChange) {
       onChange(value);
     }
+
+    handleValidate(value);
+  };
+
+  const handleUpdateDisplayValue = (value: string) => {
+    setDisplayValue(value);
+    setKey(Math.random());
   };
 
   const handleCloseCompleteMenu = () => {
@@ -97,8 +116,8 @@ export const AutocompleteInput: FC<Props> = ({
     setDisplayOptions(undefined);
   };
 
-  const selectCompleteItem = (value: string) => {
-    setDisplayValue(value);
+  const handleSelectCompleteItem = (value: string) => {
+    handleUpdateDisplayValue(value);
     handleUpdateValue(value);
     handleCloseCompleteMenu();
   };
@@ -117,11 +136,17 @@ export const AutocompleteInput: FC<Props> = ({
         sx={[...(Array.isArray(sx) ? sx : [sx])]}
         contentEditable
         suppressContentEditableWarning={true}
+        key={key}
+        $validSyntax={validSyntax}
         onInput={(e) => {
           const target = e.target as HTMLDivElement;
           handleUpdateValue(target.innerText);
         }}
-        onBlur={handleCloseCompleteMenu}
+        onBlur={() => {
+          handleCloseCompleteMenu();
+          handleValidate(value);
+          handleUpdateDisplayValue(value);
+        }}
         onFocus={() => {
           enableComplete.current = true;
           updateDisplayOption(value, options);
@@ -136,7 +161,7 @@ export const AutocompleteInput: FC<Props> = ({
               key={option.displayName}
               onMouseDown={(e) => {
                 const target = e.target as HTMLDivElement;
-                selectCompleteItem(target.innerText);
+                handleSelectCompleteItem(target.innerText);
               }}
             >
               {option.displayName}

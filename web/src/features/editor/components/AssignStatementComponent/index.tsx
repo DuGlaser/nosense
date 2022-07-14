@@ -1,7 +1,7 @@
-import { EditorLineWrapper } from '@editor/components';
+import { EditableCode, EditorLineWrapper } from '@editor/components';
 import { StatementProps } from '@editor/type';
 import { ArrowBack } from '@mui/icons-material';
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { FC } from 'react';
 
 import { AssignStatementObject } from '@/lib/models/astObjects';
@@ -12,9 +12,9 @@ export const AssignStatementComponent: FC<
   return (
     <EditorLineWrapper>
       <Stack direction={'row'} spacing={'5px'} alignItems={'center'}>
-        <Box>{astObject.name}</Box>
+        <EditableCode defaultValue={astObject.name} />
         <ArrowBack fontSize={'inherit'} />
-        <Box>{astObject.value}</Box>
+        <EditableCode defaultValue={astObject.value} />
       </Stack>
     </EditorLineWrapper>
   );

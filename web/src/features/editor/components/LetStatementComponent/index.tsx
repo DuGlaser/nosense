@@ -1,11 +1,11 @@
 import {
-  AutocompleteInput,
   CompleteOption,
+  EditableCode,
   EditorLineWrapper,
 } from '@editor/components';
 import { StatementProps } from '@editor/type';
 import { Box, Stack } from '@mui/material';
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { match } from 'ts-pattern';
 
 import { LetStatementObject, TYPE_IDENTIFIER } from '@/lib/models/astObjects';
@@ -25,18 +25,24 @@ export const LetStatementComponent: FC<StatementProps<LetStatementObject>> = ({
     .with(TYPE_IDENTIFIER.BOOLEAN, () => '論理型')
     .exhaustive();
 
+  const handleValidate = useCallback((value: string) => {
+    return options.map((option) => option.displayName).includes(value);
+  }, []);
+
   return (
     <EditorLineWrapper>
       <Stack direction={'row'} spacing={'4px'}>
-        <AutocompleteInput
+        <EditableCode
           sx={{
             color: '#F2CB44',
           }}
           options={options}
           defaultValue={typeLabel}
+          validator={handleValidate}
+          onChange={(value) => console.log(value)}
         />
         <Box>:</Box>
-        <Box>{astObject.name}</Box>
+        <EditableCode defaultValue={astObject.name} />
       </Stack>
     </EditorLineWrapper>
   );
