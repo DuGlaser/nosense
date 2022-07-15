@@ -20,7 +20,6 @@
     "jest-environment-jsdom": "28.1.2"
   },
   "dependencies": {
-    "@editorjs/editorjs": "^2.25.0",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@mui/icons-material": "5.8.4",

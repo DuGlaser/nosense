@@ -1,15 +1,14 @@
 import { Box, Stack, styled } from '@mui/material';
 import { Lexer, Parser } from '@nosense/damega';
-import dynamic from 'next/dynamic';
 
 import { convert2AstObject } from '@/lib/converter';
 
 import { calcLinesNumber } from './calcLineNumber';
-
-const ReactEditorJS = dynamic<any>(
-  () => import('./components').then((mod) => mod.ReactEditorJS),
-  { ssr: false }
-);
+import {
+  BlockStatements,
+  EditorLineNumber,
+  EditorStatement,
+} from './components';
 
 const input = `
 let x: number = 10;
@@ -49,13 +48,12 @@ export const Editor = () => {
   return (
     <CStack direction={'row'} spacing={'8px'}>
       <CBox />
-      {/* <EditorLineNumber lineNumber={lineNumber} /> */}
-      {/* <BlockStatements> */}
-      {/*   {astObjects.map((astObject, i) => ( */}
-      {/*     <EditorStatement key={i} astObject={astObject} /> */}
-      {/*   ))} */}
-      {/* </BlockStatements> */}
-      <ReactEditorJS />
+      <EditorLineNumber lineNumber={lineNumber} />
+      <BlockStatements>
+        {astObjects.map((astObject, i) => (
+          <EditorStatement key={i} astObject={astObject} />
+        ))}
+      </BlockStatements>
     </CStack>
   );
 };
