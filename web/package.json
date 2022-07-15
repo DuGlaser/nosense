@@ -23,10 +23,10 @@
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@mui/icons-material": "5.8.4",
-    "@mui/material": "5.8.6",
+    "@mui/material": "5.8.7",
     "@nosense/damega": "*",
     "slate": "^0.81.1",
     "slate-react": "^0.81.0",
-    "ts-pattern": "4.0.3"
+    "ts-pattern": "4.0.4"
   }
 }
