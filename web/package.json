@@ -25,6 +25,8 @@
     "@mui/icons-material": "5.8.4",
     "@mui/material": "5.8.6",
     "@nosense/damega": "*",
+    "slate": "^0.81.1",
+    "slate-react": "^0.81.0",
     "ts-pattern": "4.0.3"
   }
 }
