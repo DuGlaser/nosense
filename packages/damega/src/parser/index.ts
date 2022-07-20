@@ -149,6 +149,8 @@ export class Parser {
       case 'WHILE':
         return this.parseWhileStatement();
 
+      case TOKEN.RETURN:
+        return this.parseReturnStatement();
       default:
         if (this.peekTokenIs(TOKEN.ASSIGN)) {
           return this.parseAssignStatement();
@@ -289,6 +291,18 @@ export class Parser {
     return new AssignStatement({ token, name, value });
   }
 
+  private parseReturnStatement(): ReturnStatement | undefined {
+    const token = this.curToken;
+    this.nextToken();
+
+    const valueExpression = this.parseExpression(Precedence.LOWEST);
+    if (!valueExpression) return undefined;
+
+    return new ReturnStatement({
+      token,
+      valueExpression,
+    });
+  }
   /**
    * Expression
    */
