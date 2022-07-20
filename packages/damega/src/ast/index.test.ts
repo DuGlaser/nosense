@@ -16,6 +16,7 @@ import {
   TypeIdentifier,
   WhileStatement,
 } from '.';
+import { FunctionStatement } from './FunctionStatement';
 
 describe('Ast', () => {
   test('let test: string = "test";', () => {
@@ -323,6 +324,56 @@ while (1 > 10) {
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_BOOLEAN, 'bool'),
         }),
+      }),
+    ]);
+
+    expect(expected.trim()).toBe(p.string());
+  });
+
+  test('function statement', () => {
+    const expected = `
+func something(a, b) {
+  return a + b;
+}
+`;
+
+    const p = new Program([
+      new FunctionStatement({
+        token: new Token(TOKEN.FUNCTION, 'func'),
+        name: new Identifier({
+          token: new Token(TOKEN.IDENT, 'something'),
+          value: 'something',
+        }),
+        body: new BlockStatement({
+          token: new Token(TOKEN.LBRACE, '{'),
+          statements: [
+            new ReturnStatement({
+              token: new Token(TOKEN.RETURN, 'return'),
+              valueExpression: new InfixExpression({
+                token: new Token(TOKEN.NUMBER, '+'),
+                left: new Identifier({
+                  token: new Token(TOKEN.IDENT, 'a'),
+                  value: 'a',
+                }),
+                operator: '+',
+                right: new Identifier({
+                  token: new Token(TOKEN.IDENT, 'b'),
+                  value: 'b',
+                }),
+              }),
+            }),
+          ],
+        }),
+        parameters: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'a'),
+            value: 'a',
+          }),
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'b'),
+            value: 'b',
+          }),
+        ],
       }),
     ]);
 

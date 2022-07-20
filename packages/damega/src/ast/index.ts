@@ -3,6 +3,7 @@ export * from './base';
 export * from './BlockStatement';
 export * from './BooleanLiteral';
 export * from './ExpressionStatement';
+export * from './FunctionStatement';
 export * from './Identifier';
 export * from './IfStatement';
 export * from './InfixExpression';
