@@ -234,4 +234,84 @@ describe('Lexer', () => {
 
     testLexer(input, tests);
   });
+
+  test('関数', () => {
+    const input = `something();`;
+
+    const tests: Test[] = [
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'something' },
+      { expectedType: TOKEN.LPAREN, expectedLiteral: '(' },
+      { expectedType: TOKEN.RPAREN, expectedLiteral: ')' },
+      { expectedType: TOKEN.SEMICOLON, expectedLiteral: ';' },
+
+      { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
+
+  test('引数付き関数', () => {
+    const input = `something(a, true, "string");`;
+
+    const tests: Test[] = [
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'something' },
+      { expectedType: TOKEN.LPAREN, expectedLiteral: '(' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'a' },
+      { expectedType: TOKEN.COMMA, expectedLiteral: ',' },
+      { expectedType: TOKEN.TRUE, expectedLiteral: 'true' },
+      { expectedType: TOKEN.COMMA, expectedLiteral: ',' },
+      { expectedType: TOKEN.STRING, expectedLiteral: 'string' },
+      { expectedType: TOKEN.RPAREN, expectedLiteral: ')' },
+      { expectedType: TOKEN.SEMICOLON, expectedLiteral: ';' },
+
+      { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
+
+  test('関数宣言', () => {
+    const input = `func something() { return true; }`;
+
+    const tests: Test[] = [
+      { expectedType: TOKEN.FUNCTION, expectedLiteral: 'func' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'something' },
+      { expectedType: TOKEN.LPAREN, expectedLiteral: '(' },
+      { expectedType: TOKEN.RPAREN, expectedLiteral: ')' },
+      { expectedType: TOKEN.LBRACE, expectedLiteral: '{' },
+      { expectedType: TOKEN.RETURN, expectedLiteral: 'return' },
+      { expectedType: TOKEN.TRUE, expectedLiteral: 'true' },
+      { expectedType: TOKEN.SEMICOLON, expectedLiteral: ';' },
+      { expectedType: TOKEN.RBRACE, expectedLiteral: '}' },
+
+      { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
+
+  test('引数付き関数宣言', () => {
+    const input = `func something(a, b) { return a + b; }`;
+
+    const tests: Test[] = [
+      { expectedType: TOKEN.FUNCTION, expectedLiteral: 'func' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'something' },
+      { expectedType: TOKEN.LPAREN, expectedLiteral: '(' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'a' },
+      { expectedType: TOKEN.COMMA, expectedLiteral: ',' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'b' },
+      { expectedType: TOKEN.RPAREN, expectedLiteral: ')' },
+      { expectedType: TOKEN.LBRACE, expectedLiteral: '{' },
+      { expectedType: TOKEN.RETURN, expectedLiteral: 'return' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'a' },
+      { expectedType: TOKEN.PLUS, expectedLiteral: '+' },
+      { expectedType: TOKEN.IDENT, expectedLiteral: 'b' },
+      { expectedType: TOKEN.SEMICOLON, expectedLiteral: ';' },
+      { expectedType: TOKEN.RBRACE, expectedLiteral: '}' },
+
+      { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+    ];
+
+    testLexer(input, tests);
+  });
 });
