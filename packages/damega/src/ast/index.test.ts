@@ -3,7 +3,9 @@ import { TOKEN, Token } from '@/token';
 import {
   BlockStatement,
   BooleanLiteral,
+  CallExpression,
   ExpressionStatement,
+  FunctionStatement,
   Identifier,
   IfStatement,
   InfixExpression,
@@ -16,7 +18,6 @@ import {
   TypeIdentifier,
   WhileStatement,
 } from '.';
-import { FunctionStatement } from './FunctionStatement';
 
 describe('Ast', () => {
   test('let test: string = "test";', () => {
@@ -374,6 +375,35 @@ func something(a, b) {
             value: 'b',
           }),
         ],
+      }),
+    ]);
+
+    expect(expected.trim()).toBe(p.string());
+  });
+
+  test('call expression', () => {
+    const expected = `something(a, b);`;
+
+    const p = new Program([
+      new ExpressionStatement({
+        token: new Token(TOKEN.IDENT, 'something'),
+        expression: new CallExpression({
+          token: new Token(TOKEN.IDENT, 'something'),
+          name: new Identifier({
+            token: new Token(TOKEN.IDENT, 'something'),
+            value: 'something',
+          }),
+          args: [
+            new Identifier({
+              token: new Token(TOKEN.IDENT, 'a'),
+              value: 'a',
+            }),
+            new Identifier({
+              token: new Token(TOKEN.IDENT, 'b'),
+              value: 'b',
+            }),
+          ],
+        }),
       }),
     ]);
 
