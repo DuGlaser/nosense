@@ -2,6 +2,7 @@ import {
   AssignStatement,
   BlockStatement,
   BooleanLiteral,
+  CallExpression,
   Expression,
   ExpressionStatement,
   FunctionStatement,
@@ -36,6 +37,7 @@ enum Precedence {
   'MINUS',
   'PRODUCT',
   'PREFIX',
+  'CALL',
 }
 
 const getPrecedence = (token: TOKEN): Precedence => {
@@ -55,6 +57,9 @@ const getPrecedence = (token: TOKEN): Precedence => {
     case TOKEN.SLASH:
     case TOKEN.ASTERISK:
       return Precedence.PRODUCT;
+
+    case TOKEN.LPAREN:
+      return Precedence.CALL;
 
     default:
       return Precedence.LOWEST;
@@ -96,6 +101,7 @@ export class Parser {
     this.registerInfix(TOKEN.NOT_EQ, (left) => this.parseInfixExpression(left));
     this.registerInfix(TOKEN.LT, (left) => this.parseInfixExpression(left));
     this.registerInfix(TOKEN.GT, (left) => this.parseInfixExpression(left));
+    this.registerInfix(TOKEN.LPAREN, (left) => this.parseCallExpression(left));
   }
 
   public parseToken(): Program {
@@ -417,6 +423,44 @@ export class Parser {
       right,
       operator: token.ch,
     });
+  }
+
+  private parseCallExpression(name: Expression): CallExpression | undefined {
+    if (!(name instanceof Identifier)) return;
+
+    const token = this.curToken;
+
+    const args = this.parseExpressionList();
+    if (!args) return undefined;
+
+    return new CallExpression({
+      token,
+      name,
+      args,
+    });
+  }
+
+  private parseExpressionList(): Expression[] | undefined {
+    const exps: Expression[] = [];
+
+    if (!this.curTokenIs(TOKEN.LPAREN)) {
+      return undefined;
+    }
+
+    if (this.peekTokenIs(TOKEN.RPAREN)) {
+      return exps;
+    }
+
+    do {
+      this.nextToken();
+      const exp = this.parseExpression(Precedence.LOWEST);
+      if (!exp) return undefined;
+
+      exps.push(exp);
+      this.nextToken();
+    } while (this.curTokenIs(TOKEN.COMMA));
+
+    return exps;
   }
 
   /**
