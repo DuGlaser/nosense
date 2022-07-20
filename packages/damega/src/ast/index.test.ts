@@ -3,7 +3,9 @@ import { TOKEN, Token } from '@/token';
 import {
   BlockStatement,
   BooleanLiteral,
+  CallExpression,
   ExpressionStatement,
+  FunctionStatement,
   Identifier,
   IfStatement,
   InfixExpression,
@@ -81,7 +83,7 @@ describe('Ast', () => {
     expect(`let test: bool = true;`).toBe(p.string());
   });
 
-  test('1 + 1', () => {
+  test('1 + 1;', () => {
     const p = new Program([
       new ExpressionStatement({
         token: new Token(TOKEN.NUMBER, '1'),
@@ -100,10 +102,10 @@ describe('Ast', () => {
       }),
     ]);
 
-    expect(`1 + 1`).toBe(p.string());
+    expect(`1 + 1;`).toBe(p.string());
   });
 
-  test('let x: number = 1 + 1', () => {
+  test('let x: number = 1 + 1;', () => {
     const p = new Program([
       new LetStatement({
         token: new Token(TOKEN.LET, 'let'),
@@ -322,6 +324,85 @@ while (1 > 10) {
         }),
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_BOOLEAN, 'bool'),
+        }),
+      }),
+    ]);
+
+    expect(expected.trim()).toBe(p.string());
+  });
+
+  test('function statement', () => {
+    const expected = `
+func something(a, b) {
+  return a + b;
+}
+`;
+
+    const p = new Program([
+      new FunctionStatement({
+        token: new Token(TOKEN.FUNCTION, 'func'),
+        name: new Identifier({
+          token: new Token(TOKEN.IDENT, 'something'),
+          value: 'something',
+        }),
+        body: new BlockStatement({
+          token: new Token(TOKEN.LBRACE, '{'),
+          statements: [
+            new ReturnStatement({
+              token: new Token(TOKEN.RETURN, 'return'),
+              valueExpression: new InfixExpression({
+                token: new Token(TOKEN.NUMBER, '+'),
+                left: new Identifier({
+                  token: new Token(TOKEN.IDENT, 'a'),
+                  value: 'a',
+                }),
+                operator: '+',
+                right: new Identifier({
+                  token: new Token(TOKEN.IDENT, 'b'),
+                  value: 'b',
+                }),
+              }),
+            }),
+          ],
+        }),
+        parameters: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'a'),
+            value: 'a',
+          }),
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'b'),
+            value: 'b',
+          }),
+        ],
+      }),
+    ]);
+
+    expect(expected.trim()).toBe(p.string());
+  });
+
+  test('call expression', () => {
+    const expected = `something(a, b);`;
+
+    const p = new Program([
+      new ExpressionStatement({
+        token: new Token(TOKEN.IDENT, 'something'),
+        expression: new CallExpression({
+          token: new Token(TOKEN.IDENT, 'something'),
+          name: new Identifier({
+            token: new Token(TOKEN.IDENT, 'something'),
+            value: 'something',
+          }),
+          args: [
+            new Identifier({
+              token: new Token(TOKEN.IDENT, 'a'),
+              value: 'a',
+            }),
+            new Identifier({
+              token: new Token(TOKEN.IDENT, 'b'),
+              value: 'b',
+            }),
+          ],
         }),
       }),
     ]);

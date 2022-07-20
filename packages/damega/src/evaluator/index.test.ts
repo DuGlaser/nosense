@@ -310,6 +310,103 @@ describe('Evaluator', () => {
       expect(test.expected).toEqual(evaluated);
     });
   });
+
+  test('call expression', () => {
+    const tests = [
+      {
+        input: `
+          func something(a, b) {
+            return a + b;
+          }
+
+          something(10, 20);
+        `,
+        expected: new NumberObject({ value: 30 }),
+      },
+      {
+        input: `
+          func something(a, b) {
+            return a + b;
+          }
+
+          something(something(10, 10), 20);
+        `,
+        expected: new NumberObject({ value: 40 }),
+      },
+      {
+        input: `
+          func something(a, b) {
+            return 10 + a + b;
+          }
+
+          something(10, 20);
+        `,
+        expected: new NumberObject({ value: 40 }),
+      },
+      {
+        input: `
+          func something(a, b) {
+            let x: number = 10;
+            return x + a + b;
+          }
+
+          something(10, 20);
+        `,
+        expected: new NumberObject({ value: 40 }),
+      },
+      {
+        input: `
+          func double(a) {
+            return a * 2;
+          }
+
+          func add(a, b) {
+            return double(a) + double(b);
+          }
+
+          add(10, 20);
+        `,
+        expected: new NumberObject({ value: 60 }),
+      },
+      {
+        input: `
+          func fib(a) {
+            if (a < 3) {
+              return 1;
+            }
+
+            return fib(a - 2) + fib(a - 1);
+          }
+
+          fib(5);
+        `,
+        expected: new NumberObject({ value: 5 }),
+      },
+      {
+        input: `
+          func test() {
+            let count: number = 10;
+            while (true) {
+              count = count - 1;
+              if (count < 1) {
+                return "OK";
+              }
+            }
+
+            return "NG";
+          }
+
+          test();
+        `,
+        expected: new StringObject({ value: 'OK' }),
+      },
+    ];
+
+    tests.forEach((test) => {
+      const evaluated = testEval(test.input);
+      expect(test.expected).toEqual(evaluated);
+    });
+  });
 });
 
 function testEval(input: string): Obj {

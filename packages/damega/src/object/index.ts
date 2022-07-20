@@ -1,2 +1,2 @@
-export * from './enviroment';
+export * from './environment';
 export * from './object';

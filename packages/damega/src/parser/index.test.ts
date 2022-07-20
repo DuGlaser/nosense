@@ -1,14 +1,17 @@
 import {
   AssignStatement,
   BooleanLiteral,
+  CallExpression,
   Expression,
   ExpressionStatement,
+  FunctionStatement,
   IfStatement,
   InfixExpression,
   LetStatement,
   NumberLiteral,
   PrefixExpression,
   Program,
+  ReturnStatement,
   Statement,
   StringLiteral,
   WhileStatement,
@@ -399,6 +402,31 @@ if (true) {
     });
   });
 
+  test('function statement', () => {
+    const input = `
+func something(a ,b) {
+  return a + b;
+}`;
+
+    const program = testParse(input);
+
+    const stmt = program.statements[0];
+    if (!(stmt instanceof FunctionStatement)) {
+      throw new Error(`stmt is not FunctionStatement.`);
+    }
+
+    const returnStmt = stmt.body.statements[0];
+    if (!(returnStmt instanceof ReturnStatement)) {
+      throw new Error(`returnStmt is not ReturnStatement.`);
+    }
+
+    const expectedParameters = ['a', 'b'];
+
+    stmt.parameters.forEach((value, index) => {
+      expect(value.tokenLiteral()).toBe(expectedParameters[index]);
+    });
+  });
+
   test('prefix expression', () => {
     const tests = [
       {
@@ -438,16 +466,68 @@ if (true) {
 
       const stmt = program.statements[0];
       if (!(stmt instanceof ExpressionStatement)) {
-        throw new Error(`stmt is not LetStatement.`);
+        throw new Error(`stmt is not ExpressionStatement.`);
       }
 
       const exp = stmt.expression;
       if (!(exp instanceof PrefixExpression)) {
-        throw new Error(`exp is not InfixExpression.`);
+        throw new Error(`exp is not PrefixExpression.`);
       }
 
       expect(exp.operator).toBe(test.expectedOperator);
       testLiteral(exp, test.expectedRight);
+    });
+  });
+
+  test('call expression', () => {
+    const tests = [
+      {
+        input: 'something();',
+        expectedName: 'something',
+        expectedArgsLength: 0,
+      },
+      {
+        input: 'something(a)',
+        expectedName: 'something',
+        expectedArgsLength: 1,
+      },
+      {
+        input: 'something(a, b)',
+        expectedName: 'something',
+        expectedArgsLength: 2,
+      },
+      {
+        input: 'something(a, b, a * b)',
+        expectedName: 'something',
+        expectedArgsLength: 3,
+      },
+      {
+        input: 'something(true, 1 + 1)',
+        expectedName: 'something',
+        expectedArgsLength: 2,
+      },
+      {
+        input: 'something(something(1))',
+        expectedName: 'something',
+        expectedArgsLength: 1,
+      },
+    ];
+
+    tests.forEach((test) => {
+      const program = testParse(test.input);
+
+      const stmt = program.statements[0];
+      if (!(stmt instanceof ExpressionStatement)) {
+        throw new Error(`stmt is not ExpressionStatement.`);
+      }
+
+      const exp = stmt.expression;
+      if (!(exp instanceof CallExpression)) {
+        throw new Error(`stmt is not ExpressionStatement.`);
+      }
+
+      expect(test.expectedName).toBe(exp.name.value);
+      expect(test.expectedArgsLength).toBe(exp.args.length);
     });
   });
 
