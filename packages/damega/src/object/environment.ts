@@ -43,4 +43,8 @@ export class Environment {
 
     return value;
   }
+
+  public extend() {
+    return new Environment(this);
+  }
 }
