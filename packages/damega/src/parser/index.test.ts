@@ -3,12 +3,14 @@ import {
   BooleanLiteral,
   Expression,
   ExpressionStatement,
+  FunctionStatement,
   IfStatement,
   InfixExpression,
   LetStatement,
   NumberLiteral,
   PrefixExpression,
   Program,
+  ReturnStatement,
   Statement,
   StringLiteral,
   WhileStatement,
@@ -396,6 +398,31 @@ if (true) {
         expectedValue: 1,
         expectedIdentifier: 'x',
       });
+    });
+  });
+
+  test('function statement', () => {
+    const input = `
+func something(a ,b) {
+  return a + b;
+}`;
+
+    const program = testParse(input);
+
+    const stmt = program.statements[0];
+    if (!(stmt instanceof FunctionStatement)) {
+      throw new Error(`stmt is not FunctionStatement.`);
+    }
+
+    const returnStmt = stmt.body.statements[0];
+    if (!(returnStmt instanceof ReturnStatement)) {
+      throw new Error(`returnStmt is not ReturnStatement.`);
+    }
+
+    const expectedParameters = ['a', 'b'];
+
+    stmt.parameters.forEach((value, index) => {
+      expect(value.tokenLiteral()).toBe(expectedParameters[index]);
     });
   });
 

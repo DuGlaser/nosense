@@ -4,6 +4,7 @@ import {
   BooleanLiteral,
   Expression,
   ExpressionStatement,
+  FunctionStatement,
   Identifier,
   IfStatement,
   InfixExpression,
@@ -11,6 +12,7 @@ import {
   NumberLiteral,
   PrefixExpression,
   Program,
+  ReturnStatement,
   Statement,
   StringLiteral,
   TypeIdentifier,
@@ -140,17 +142,21 @@ export class Parser {
 
   private parseStatement(): Statement | undefined {
     switch (this.curToken.type) {
-      case 'LET':
+      case TOKEN.LET:
         return this.parseLetStatement();
 
-      case 'IF':
+      case TOKEN.IF:
         return this.parseIfStatement();
 
-      case 'WHILE':
+      case TOKEN.WHILE:
         return this.parseWhileStatement();
+
+      case TOKEN.FUNCTION:
+        return this.parseFunctionStatement();
 
       case TOKEN.RETURN:
         return this.parseReturnStatement();
+
       default:
         if (this.peekTokenIs(TOKEN.ASSIGN)) {
           return this.parseAssignStatement();
@@ -303,6 +309,44 @@ export class Parser {
       valueExpression,
     });
   }
+
+  private parseFunctionStatement(): FunctionStatement | undefined {
+    const token = this.curToken;
+
+    if (!this.expectPeek(TOKEN.IDENT)) return undefined;
+    const name = this.parseIdentifier();
+
+    if (!this.expectPeek(TOKEN.LPAREN)) return undefined;
+    const parameters = this.parseFunctionParameters();
+    if (!parameters) return undefined;
+
+    if (!this.expectPeek(TOKEN.LBRACE)) return undefined;
+    const body = this.parseBlockStatement();
+    if (!body) return undefined;
+
+    return new FunctionStatement({ token, name, parameters, body });
+  }
+
+  private parseFunctionParameters(): Identifier[] | undefined {
+    const idents: Identifier[] = [];
+
+    if (!this.curTokenIs(TOKEN.LPAREN)) {
+      return undefined;
+    }
+
+    if (this.peekTokenIs(TOKEN.RPAREN)) {
+      return idents;
+    }
+
+    do {
+      this.nextToken();
+      idents.push(this.parseIdentifier());
+      this.nextToken();
+    } while (this.curTokenIs(TOKEN.COMMA));
+
+    return idents;
+  }
+
   /**
    * Expression
    */
