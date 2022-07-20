@@ -1,4 +1,7 @@
+import { BlockStatement, Identifier } from '@/ast';
 import { TOKEN } from '@/token';
+
+import { Environment } from './environment';
 
 export enum OBJECT {
   NUMBER = 'NUMBER',
@@ -6,7 +9,7 @@ export enum OBJECT {
   NULL = 'NULL',
   RETURN_VALUE = 'RETURN_VALUE',
   ERROR = 'ERROR',
-  // FUNCTION = 'FUNCTION',
+  FUNCTION = 'FUNCTION',
   STRING = 'STRING',
   BUILTIN = 'BUILTIN',
 }
@@ -90,6 +93,39 @@ export class ReturnValueObject extends Obj {
 
   get value() {
     return this._value;
+  }
+}
+
+export class FunctionObject extends Obj {
+  private _parameters: Identifier[];
+  private _body: BlockStatement;
+  private _env: Environment;
+
+  constructor(args: {
+    parameters: Identifier[];
+    body: BlockStatement;
+    env: Environment;
+  }) {
+    super();
+    this._parameters = args.parameters;
+    this._body = args.body;
+    this._env = args.env;
+  }
+
+  public type(): OBJECT {
+    return OBJECT.FUNCTION;
+  }
+
+  get parameters() {
+    return this._parameters;
+  }
+
+  get body() {
+    return this._body;
+  }
+
+  get env() {
+    return this._env;
   }
 }
 

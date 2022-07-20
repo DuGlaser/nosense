@@ -2,7 +2,9 @@ import {
   AssignStatement,
   BlockStatement,
   BooleanLiteral,
+  CallExpression,
   ExpressionStatement,
+  FunctionStatement,
   Identifier,
   IfStatement,
   InfixExpression,
@@ -19,6 +21,7 @@ import {
   BooleanObject,
   Environment,
   ErrorObject,
+  FunctionObject,
   getMatchedType,
   isTypeMatched,
   NullObject,
@@ -63,6 +66,10 @@ export class Evaluator {
       return this.evalBlockStatement(node, env);
     }
 
+    if (node instanceof FunctionStatement) {
+      return this.evalFunctionStatement(node, env);
+    }
+
     if (node instanceof ExpressionStatement) {
       return this.Eval(node.expression, env);
     }
@@ -73,6 +80,10 @@ export class Evaluator {
 
     if (node instanceof PrefixExpression) {
       return this.evalPrefixExpression(node, env);
+    }
+
+    if (node instanceof CallExpression) {
+      return this.evalCallExpression(node, env);
     }
 
     if (node instanceof NumberLiteral) {
@@ -116,10 +127,16 @@ export class Evaluator {
     const nestedEnv = new Environment(env);
     const condition = this.Eval(node.condition, nestedEnv);
 
+    let evaluated: Obj = NULL;
+
     if (condition === TRUE) {
-      this.Eval(node.consequence, nestedEnv);
+      evaluated = this.Eval(node.consequence, nestedEnv);
     } else if (node.alternative) {
-      this.Eval(node.alternative, nestedEnv);
+      evaluated = this.Eval(node.alternative, nestedEnv);
+    }
+
+    if (evaluated.type() === OBJECT.RETURN_VALUE) {
+      return evaluated;
     }
 
     return NULL;
@@ -133,8 +150,13 @@ export class Evaluator {
       return condition === TRUE;
     };
 
+    let evaluated: Obj = NULL;
     while (getCondition()) {
-      this.Eval(node.consequence, nestedEnv);
+      evaluated = this.Eval(node.consequence, nestedEnv);
+
+      if (evaluated.type() === OBJECT.RETURN_VALUE) {
+        return evaluated;
+      }
     }
 
     return NULL;
@@ -172,7 +194,7 @@ export class Evaluator {
     const value = this.Eval(node.valueExpression, env) ?? NULL;
     if (this.isError(value)) return value;
 
-    return value;
+    return new ReturnValueObject({ value });
   }
 
   private evalBlockStatement(node: BlockStatement, env: Environment): Obj {
@@ -186,12 +208,27 @@ export class Evaluator {
           result.type() === OBJECT.RETURN_VALUE ||
           result.type() === OBJECT.ERROR
         ) {
-          return result;
+          break;
         }
       }
     }
 
     return result;
+  }
+
+  private evalFunctionStatement(
+    node: FunctionStatement,
+    env: Environment
+  ): Obj {
+    const fn = new FunctionObject({
+      parameters: node.parameters,
+      body: node.body,
+      env,
+    });
+
+    env.set(node.name.value, fn);
+
+    return NULL;
   }
 
   private evalInfixExpression(node: InfixExpression, env: Environment): Obj {
@@ -299,6 +336,43 @@ export class Evaluator {
     }
   }
 
+  private evalCallExpression(node: CallExpression, env: Environment): Obj {
+    const fn = this.Eval(node.name, env);
+    if (this.isError(fn)) {
+      return fn;
+    }
+
+    if (!(fn instanceof FunctionObject)) {
+      return new ErrorObject({
+        message: 'not a function: ' + JSON.stringify(fn),
+      });
+    }
+
+    const args = node.args.map((arg) => this.Eval(arg, env));
+    const errors = args.filter((arg) => this.isError(arg));
+    if (errors.length > 0) {
+      return new ErrorObject({
+        message: 'invalid argument: ' + JSON.stringify(errors),
+      });
+    }
+
+    const extendEnv = fn.env.extend();
+
+    if (fn.parameters.length !== args.length) {
+      return new ErrorObject({
+        message: `wrong number of arguments for function: expected ${fn.parameters.length}, got ${args.length}`,
+      });
+    }
+
+    fn.parameters.forEach((params, index) => {
+      extendEnv.set(params.value, args[index]);
+    });
+
+    const evaluated = this.Eval(fn.body, extendEnv);
+
+    return this.unwrapReturnValue(evaluated);
+  }
+
   private nativeBoolToBooleanObject(b: boolean) {
     return b ? TRUE : FALSE;
   }
@@ -312,5 +386,13 @@ export class Evaluator {
 
   private isError(obj: Obj): boolean {
     return obj instanceof ErrorObject;
+  }
+
+  private unwrapReturnValue(obj: Obj): Obj {
+    if (obj instanceof ReturnValueObject) {
+      return obj.value;
+    }
+
+    return obj;
   }
 }
