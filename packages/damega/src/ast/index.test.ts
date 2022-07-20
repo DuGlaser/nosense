@@ -83,7 +83,7 @@ describe('Ast', () => {
     expect(`let test: bool = true;`).toBe(p.string());
   });
 
-  test('1 + 1', () => {
+  test('1 + 1;', () => {
     const p = new Program([
       new ExpressionStatement({
         token: new Token(TOKEN.NUMBER, '1'),
@@ -102,10 +102,10 @@ describe('Ast', () => {
       }),
     ]);
 
-    expect(`1 + 1`).toBe(p.string());
+    expect(`1 + 1;`).toBe(p.string());
   });
 
-  test('let x: number = 1 + 1', () => {
+  test('let x: number = 1 + 1;', () => {
     const p = new Program([
       new LetStatement({
         token: new Token(TOKEN.LET, 'let'),

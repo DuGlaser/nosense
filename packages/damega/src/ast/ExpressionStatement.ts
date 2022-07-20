@@ -13,7 +13,7 @@ export class ExpressionStatement extends Statement {
   }
 
   public lines(): string[] {
-    return [this._expression.string()];
+    return [this._expression.string() + ';'];
   }
 
   public tokenLiteral(): string {

@@ -29,7 +29,6 @@ export class CallExpression extends Expression {
       left: '(',
       right: ')',
     });
-    this.toStringConverter.write(';');
 
     return this.toStringConverter.toString();
   }
