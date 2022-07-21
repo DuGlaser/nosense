@@ -10,10 +10,10 @@ import {
 
 import { FALSE, NULL, TRUE } from '.';
 
-type Text = string | number | boolean | null;
+export type OutputText = string | number | boolean | null;
 
-export type InputEventCallback = () => Promise<Text>;
-export type OutputEventCallback = (text: Text) => void;
+export type InputEventCallback = () => Promise<OutputText>;
+export type OutputEventCallback = (text: OutputText) => void;
 
 export const builtins = ({
   outputEventCallback,
@@ -36,7 +36,7 @@ export const builtins = ({
     }),
     Input: new BuiltinObject({
       fn: async () => {
-        const value: Text = await inputEventCallback();
+        const value: OutputText = await inputEventCallback();
 
         return match(value)
           .with(P.number, (v) => new NumberObject({ value: v }))
