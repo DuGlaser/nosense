@@ -36,9 +36,9 @@ import {
 import { builtins, InputEventCallback, OutputEventCallback } from './builtins';
 
 export type {
-  OutputText,
   InputEventCallback,
   OutputEventCallback,
+  OutputText,
 } from './builtins';
 
 export const TRUE = new BooleanObject({ value: true });
