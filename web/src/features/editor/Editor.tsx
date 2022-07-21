@@ -1,59 +1,32 @@
+import { useParseCode } from '@editor/hooks/useParseCode';
 import { Box, Stack, styled } from '@mui/material';
-import { Lexer, Parser } from '@nosense/damega';
 
-import { convert2AstObject } from '@/lib/converter';
-
-import { calcLinesNumber } from './calcLineNumber';
-import {
-  BlockStatements,
-  EditorLineNumber,
-  EditorStatement,
-} from './components';
-
-const input = `
-let x: number = 10;
-
-while (x > 10) {
-  x = x + 1;
-}
-
-let pass: bool = true;
-
-if (x > 10) {
-  pass = false;
-} else {
-  pass = true;
-}
-`;
-
-const l = new Lexer(input);
-const p = new Parser(l);
-const program = p.parseToken();
-const astObjects = program.statements.map((_) => convert2AstObject(_));
-const lineNumber = calcLinesNumber(astObjects);
+import { BlockStatements, EditorStatement } from './components';
 
 const CStack = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.background[900],
   color: theme.background.contrast[900],
-  height: '100vh',
-}));
-
-const CBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.background[800],
-  width: '30px',
   height: '100%',
 }));
 
-export const Editor = () => {
+export const Editor: React.FC<{ code: string }> = ({ code }) => {
+  const [astObjects] = useParseCode(code);
+
   return (
     <CStack direction={'row'} spacing={'8px'}>
-      <CBox />
-      <EditorLineNumber lineNumber={lineNumber} />
-      <BlockStatements>
-        {astObjects.map((astObject, i) => (
-          <EditorStatement key={i} astObject={astObject} />
-        ))}
-      </BlockStatements>
+      <Box
+        sx={{
+          padding: '16px',
+          width: '100%',
+          overflowY: 'auto',
+        }}
+      >
+        <BlockStatements>
+          {astObjects.map((astObject, i) => (
+            <EditorStatement key={i} astObject={astObject} />
+          ))}
+        </BlockStatements>
+      </Box>
     </CStack>
   );
 };

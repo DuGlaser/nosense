@@ -17,7 +17,7 @@
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint:eslint": "TIMING=1 eslint .",
-    "lint-fix:eslint": "npm run lint:eslint --fix"
+    "lint-fix:eslint": "TIMING=1 eslint . --fix"
   },
   "devDependencies": {
     "@types/jest": "28.1.6",
