@@ -12,8 +12,18 @@ import { Parser } from '@/parser';
 
 import { Evaluator } from '.';
 
+const mockInputCallback = jest.fn();
+const mockOutputCallback = jest.fn((args) => {
+  console.log(args);
+});
+
 describe('Evaluator', () => {
-  test('let statement', () => {
+  beforeEach(() => {
+    mockInputCallback.mockClear();
+    mockOutputCallback.mockClear();
+  });
+
+  test('let statement', async () => {
     const tests = [
       {
         input: `let x: number = 10; x;`,
@@ -71,13 +81,13 @@ describe('Evaluator', () => {
       },
     ];
 
-    tests.forEach((test) => {
-      const evaluated = testEval(test.input);
+    for (const test of tests) {
+      const evaluated = await testEval(test.input);
       expect(test.expected).toEqual(evaluated);
-    });
+    }
   });
 
-  test('assign statement', () => {
+  test('assign statement', async () => {
     const tests = [
       {
         input: `
@@ -176,13 +186,13 @@ describe('Evaluator', () => {
       },
     ];
 
-    tests.forEach((test) => {
-      const evaluated = testEval(test.input);
+    for (const test of tests) {
+      const evaluated = await testEval(test.input);
       expect(test.expected).toEqual(evaluated);
-    });
+    }
   });
 
-  test('if statement', () => {
+  test('if statement', async () => {
     const tests = [
       {
         input: `
@@ -271,13 +281,13 @@ describe('Evaluator', () => {
       },
     ];
 
-    tests.forEach((test) => {
-      const evaluated = testEval(test.input);
+    for (const test of tests) {
+      const evaluated = await testEval(test.input);
       expect(test.expected).toEqual(evaluated);
-    });
+    }
   });
 
-  test('while statement', () => {
+  test('while statement', async () => {
     const tests = [
       {
         input: `
@@ -295,8 +305,8 @@ describe('Evaluator', () => {
         input: `
           let x: number = 0;
 
-          while (false) {
-            x = x + 1;
+          while(false) {
+            x = 10;
           }
 
           x;
@@ -305,13 +315,13 @@ describe('Evaluator', () => {
       },
     ];
 
-    tests.forEach((test) => {
-      const evaluated = testEval(test.input);
+    for (const test of tests) {
+      const evaluated = await testEval(test.input);
       expect(test.expected).toEqual(evaluated);
-    });
+    }
   });
 
-  test('call expression', () => {
+  test('call expression', async () => {
     const tests = [
       {
         input: `
@@ -402,14 +412,61 @@ describe('Evaluator', () => {
       },
     ];
 
-    tests.forEach((test) => {
-      const evaluated = testEval(test.input);
+    for (const test of tests) {
+      const evaluated = await testEval(test.input);
       expect(test.expected).toEqual(evaluated);
-    });
+    }
+  });
+
+  test('Println', async () => {
+    const tests = [
+      {
+        input: `
+          Println("test");
+        `,
+        expectedArgument: [['test']],
+      },
+      {
+        input: `
+          let message: string = "Hello, World!";
+          Println(message);
+        `,
+        expectedArgument: [['Hello, World!']],
+      },
+    ];
+
+    for (const test of tests) {
+      await testEval(test.input);
+      expect(test.expectedArgument).toEqual(mockOutputCallback.mock.calls);
+      mockOutputCallback.mockClear();
+    }
+  });
+
+  test('Input', async () => {
+    const tests = [
+      {
+        input: `
+          let input: number = Input();
+          input;
+        `,
+        inputValue: 10,
+        expectedValue: new NumberObject({ value: 10 }),
+      },
+    ];
+
+    for (const test of tests) {
+      mockInputCallback.mockResolvedValueOnce(test.inputValue);
+      const evaluated = await testEval(test.input);
+
+      expect(mockInputCallback).toHaveBeenCalledTimes(1);
+      expect(test.expectedValue).toEqual(evaluated);
+
+      mockInputCallback.mockClear();
+    }
   });
 });
 
-function testEval(input: string): Obj {
+async function testEval(input: string): Promise<Obj> {
   const l = new Lexer(input);
   const p = new Parser(l);
   const program = p.parseToken();
@@ -418,5 +475,8 @@ function testEval(input: string): Obj {
   }
   const env = new Environment();
 
-  return new Evaluator().Eval(program, env);
+  return await new Evaluator({
+    inputEventCallback: mockInputCallback,
+    outputEventCallback: mockOutputCallback,
+  }).Eval(program, env);
 }

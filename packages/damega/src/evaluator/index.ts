@@ -19,6 +19,7 @@ import {
 } from '@/ast';
 import {
   BooleanObject,
+  BuiltinObject,
   Environment,
   ErrorObject,
   FunctionObject,
@@ -32,12 +33,23 @@ import {
   StringObject,
 } from '@/object';
 
-const TRUE = new BooleanObject({ value: true });
-const FALSE = new BooleanObject({ value: false });
-const NULL = new NullObject();
+import { builtins, InputEventCallback, OutputEventCallback } from './builtins';
+
+export const TRUE = new BooleanObject({ value: true });
+export const FALSE = new BooleanObject({ value: false });
+export const NULL = new NullObject();
 
 export class Evaluator {
-  public Eval(node: Node, env: Environment): Obj {
+  private builtins: ReturnType<typeof builtins>;
+
+  constructor(args: {
+    inputEventCallback: InputEventCallback;
+    outputEventCallback: OutputEventCallback;
+  }) {
+    this.builtins = builtins(args);
+  }
+
+  public async Eval(node: Node, env: Environment): Promise<Obj> {
     if (node instanceof Program) {
       return this.evalProgram(node, env);
     }
@@ -83,7 +95,7 @@ export class Evaluator {
     }
 
     if (node instanceof CallExpression) {
-      return this.evalCallExpression(node, env);
+      return await this.evalCallExpression(node, env);
     }
 
     if (node instanceof NumberLiteral) {
@@ -105,11 +117,11 @@ export class Evaluator {
     return new ErrorObject({ message: 'cannot match node' });
   }
 
-  private evalProgram(program: Program, env: Environment): Obj {
+  private async evalProgram(program: Program, env: Environment): Promise<Obj> {
     let result: Obj = NULL;
 
     for (const stmt of program.statements) {
-      result = this.Eval(stmt, env);
+      result = await this.Eval(stmt, env);
 
       if (result instanceof ReturnValueObject) {
         return result.value;
@@ -123,16 +135,19 @@ export class Evaluator {
     return result;
   }
 
-  private evalIfStatement(node: IfStatement, env: Environment): Obj {
+  private async evalIfStatement(
+    node: IfStatement,
+    env: Environment
+  ): Promise<Obj> {
     const nestedEnv = new Environment(env);
-    const condition = this.Eval(node.condition, nestedEnv);
+    const condition = await this.Eval(node.condition, nestedEnv);
 
     let evaluated: Obj = NULL;
 
     if (condition === TRUE) {
-      evaluated = this.Eval(node.consequence, nestedEnv);
+      evaluated = await this.Eval(node.consequence, nestedEnv);
     } else if (node.alternative) {
-      evaluated = this.Eval(node.alternative, nestedEnv);
+      evaluated = await this.Eval(node.alternative, nestedEnv);
     }
 
     if (evaluated.type() === OBJECT.RETURN_VALUE) {
@@ -142,28 +157,38 @@ export class Evaluator {
     return NULL;
   }
 
-  private evalWhileStatement(node: WhileStatement, env: Environment): Obj {
+  private async evalWhileStatement(
+    node: WhileStatement,
+    env: Environment
+  ): Promise<Obj> {
     const nestedEnv = new Environment(env);
 
-    const getCondition = () => {
-      const condition = this.Eval(node.condition, env);
+    const getCondition = async () => {
+      const condition = await this.Eval(node.condition, env);
       return condition === TRUE;
     };
 
+    let condition = await getCondition();
+
     let evaluated: Obj = NULL;
-    while (getCondition()) {
-      evaluated = this.Eval(node.consequence, nestedEnv);
+    while (condition) {
+      evaluated = await this.Eval(node.consequence, nestedEnv);
 
       if (evaluated.type() === OBJECT.RETURN_VALUE) {
         return evaluated;
       }
+
+      condition = await getCondition();
     }
 
     return NULL;
   }
 
-  private evalLetStatement(node: LetStatement, env: Environment): Obj {
-    const value = this.Eval(node.value, env);
+  private async evalLetStatement(
+    node: LetStatement,
+    env: Environment
+  ): Promise<Obj> {
+    const value = await this.Eval(node.value, env);
     if (!value) throw new Error('invalid object.');
 
     if (this.isError(value)) {
@@ -182,26 +207,35 @@ export class Evaluator {
     return NULL;
   }
 
-  private evalAssignStatement(node: AssignStatement, env: Environment): Obj {
-    const value = this.Eval(node.value, env);
+  private async evalAssignStatement(
+    node: AssignStatement,
+    env: Environment
+  ): Promise<Obj> {
+    const value = await this.Eval(node.value, env);
 
     env.update(node.name.value, value);
 
     return NULL;
   }
 
-  private evalReturnStatement(node: ReturnStatement, env: Environment): Obj {
-    const value = this.Eval(node.valueExpression, env) ?? NULL;
+  private async evalReturnStatement(
+    node: ReturnStatement,
+    env: Environment
+  ): Promise<Obj> {
+    const value = (await this.Eval(node.valueExpression, env)) ?? NULL;
     if (this.isError(value)) return value;
 
     return new ReturnValueObject({ value });
   }
 
-  private evalBlockStatement(node: BlockStatement, env: Environment): Obj {
+  private async evalBlockStatement(
+    node: BlockStatement,
+    env: Environment
+  ): Promise<Obj> {
     let result: Obj = NULL;
 
     for (const stmt of node.statements) {
-      result = this.Eval(stmt, env) ?? NULL;
+      result = (await this.Eval(stmt, env)) ?? NULL;
 
       if (result) {
         if (
@@ -231,13 +265,16 @@ export class Evaluator {
     return NULL;
   }
 
-  private evalInfixExpression(node: InfixExpression, env: Environment): Obj {
-    const left = this.Eval(node.left, env);
+  private async evalInfixExpression(
+    node: InfixExpression,
+    env: Environment
+  ): Promise<Obj> {
+    const left = await this.Eval(node.left, env);
     if (this.isError(left)) {
       return left;
     }
 
-    const right = this.Eval(node.right, env);
+    const right = await this.Eval(node.right, env);
     if (this.isError(right)) {
       return right;
     }
@@ -269,8 +306,11 @@ export class Evaluator {
     });
   }
 
-  private evalPrefixExpression(node: PrefixExpression, env: Environment): Obj {
-    const right = this.Eval(node.right, env);
+  private async evalPrefixExpression(
+    node: PrefixExpression,
+    env: Environment
+  ): Promise<Obj> {
+    const right = await this.Eval(node.right, env);
     if (!right) return NULL;
 
     switch (node.operator) {
@@ -336,23 +376,31 @@ export class Evaluator {
     }
   }
 
-  private evalCallExpression(node: CallExpression, env: Environment): Obj {
-    const fn = this.Eval(node.name, env);
+  private async evalCallExpression(
+    node: CallExpression,
+    env: Environment
+  ): Promise<Obj> {
+    const fn = await this.Eval(node.name, env);
     if (this.isError(fn)) {
       return fn;
+    }
+
+    const args = await Promise.all(node.args.map((arg) => this.Eval(arg, env)));
+    const errors = args.filter((arg) => this.isError(arg));
+    if (errors.length > 0) {
+      return new ErrorObject({
+        message: 'invalid argument: ' + JSON.stringify(errors),
+      });
+    }
+
+    if (fn instanceof BuiltinObject) {
+      const builtinFn = fn.fn;
+      return await builtinFn(...args);
     }
 
     if (!(fn instanceof FunctionObject)) {
       return new ErrorObject({
         message: 'not a function: ' + JSON.stringify(fn),
-      });
-    }
-
-    const args = node.args.map((arg) => this.Eval(arg, env));
-    const errors = args.filter((arg) => this.isError(arg));
-    if (errors.length > 0) {
-      return new ErrorObject({
-        message: 'invalid argument: ' + JSON.stringify(errors),
       });
     }
 
@@ -368,7 +416,7 @@ export class Evaluator {
       extendEnv.set(params.value, args[index]);
     });
 
-    const evaluated = this.Eval(fn.body, extendEnv);
+    const evaluated = await this.Eval(fn.body, extendEnv);
 
     return this.unwrapReturnValue(evaluated);
   }
@@ -380,6 +428,9 @@ export class Evaluator {
   private evalIdentifier(node: Identifier, env: Environment): Obj {
     const value = env.get(node.value);
     if (value) return value;
+
+    const builtin = this.builtins[node.value];
+    if (builtin) return builtin;
 
     return new ErrorObject({ message: 'identifier not found: ' + node.value });
   }
