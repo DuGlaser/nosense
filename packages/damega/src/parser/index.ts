@@ -449,6 +449,7 @@ export class Parser {
     }
 
     if (this.peekTokenIs(TOKEN.RPAREN)) {
+      this.nextToken();
       return exps;
     }
 

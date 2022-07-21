@@ -560,7 +560,6 @@ func something(a ,b) {
 
       const stmt = program.statements[0];
       if (!(stmt instanceof AssignStatement)) {
-        console.error({ stmt });
         throw new Error(`stmt is not AssignStatement.`);
       }
 

@@ -129,6 +129,23 @@ export class FunctionObject extends Obj {
   }
 }
 
+export class BuiltinObject<T> extends Obj {
+  private _fn: T;
+
+  constructor(args: { fn: T }) {
+    super();
+    this._fn = args.fn;
+  }
+
+  public type(): OBJECT {
+    return OBJECT.BUILTIN;
+  }
+
+  get fn() {
+    return this._fn;
+  }
+}
+
 export class ErrorObject extends Obj {
   private _message: string;
 
