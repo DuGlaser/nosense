@@ -289,6 +289,10 @@ export class Evaluator {
       return this.evalNumberInfixExpression(node.operator, left, right);
     }
 
+    if (left instanceof StringObject && right instanceof StringObject) {
+      return this.evalStringInfixExpression(node.operator, left, right);
+    }
+
     if (node.operator === '==') {
       return this.nativeBoolToBooleanObject(left === right);
     }
@@ -367,6 +371,32 @@ export class Evaluator {
         return new NumberObject({ value: leftValue * rightValue });
       case '/':
         return new NumberObject({ value: leftValue / rightValue });
+      case '<':
+        return this.nativeBoolToBooleanObject(leftValue < rightValue);
+      case '>':
+        return this.nativeBoolToBooleanObject(leftValue > rightValue);
+      case '==':
+        return this.nativeBoolToBooleanObject(leftValue === rightValue);
+      case '!=':
+        return this.nativeBoolToBooleanObject(leftValue !== rightValue);
+      default:
+        return new ErrorObject({
+          message: `unknown operator: ${left.type()} ${operator} ${right.type()}`,
+        });
+    }
+  }
+
+  private evalStringInfixExpression(
+    operator: string,
+    left: StringObject,
+    right: StringObject
+  ): Obj {
+    const leftValue = left.value;
+    const rightValue = right.value;
+
+    switch (operator) {
+      case '+':
+        return new StringObject({ value: leftValue + rightValue });
       case '<':
         return this.nativeBoolToBooleanObject(leftValue < rightValue);
       case '>':
