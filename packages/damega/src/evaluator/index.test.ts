@@ -287,6 +287,68 @@ describe('Evaluator', () => {
     }
   });
 
+  test('infix expression', async () => {
+    const tests = [
+      {
+        input: '1 + 1;',
+        expected: new NumberObject({ value: 2 }),
+      },
+      {
+        input: '2 - 1;',
+        expected: new NumberObject({ value: 1 }),
+      },
+      {
+        input: '2 * 1;',
+        expected: new NumberObject({ value: 2 }),
+      },
+      {
+        input: '2 / 2;',
+        expected: new NumberObject({ value: 1 }),
+      },
+      {
+        input: '2 == 2;',
+        expected: new BooleanObject({ value: true }),
+      },
+      {
+        input: '2 != 2;',
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: 'true == true;',
+        expected: new BooleanObject({ value: true }),
+      },
+      {
+        input: 'true != true;',
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: '"a" + "b";',
+        expected: new StringObject({ value: 'ab' }),
+      },
+      {
+        input: '"aa" > "ab";',
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: '"aa" < "ab";',
+        expected: new BooleanObject({ value: true }),
+      },
+      {
+        input: '"a" == "b";',
+        expected: new BooleanObject({ value: false }),
+      },
+      {
+        input: '"a" != "b";',
+        expected: new BooleanObject({ value: true }),
+      },
+    ];
+
+    for (const test of tests) {
+      const evaluated = await testEval(test.input);
+      expect(test.expected).toEqual(evaluated);
+    }
+  });
+
   test('while statement', async () => {
     const tests = [
       {
