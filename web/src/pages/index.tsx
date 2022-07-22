@@ -32,19 +32,21 @@ const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row-reverse',
   background: theme.background[800],
-  boxShadow: `0px 4px 10px 0 rgba(0, 0, 0, 0.1), 0px 8px 20px 0 rgba(0, 0, 0, 0.07)`,
   zIndex: 10,
 }));
 
 const FooterPanel = styled(Drawer)(({ theme }) => ({
   height: '20vh',
   background: theme.background[900],
-  boxShadow: `0px 2px 7px 0 rgba(0, 0, 0, 0.15), 0px 3px 12px 0 rgba(0, 0, 0, 0.1)`,
+
+  boxShadow: `0px 5.1px 8.6px rgba(0, 0, 0, 0.347),
+  0px 10.3px 19.2px rgba(0, 0, 0, 0.439),
+  0px 24px 65px rgba(0, 0, 0, 0.6)`,
 
   '>div': {
     background: theme.background[900],
     height: '20vh',
-    border: 'none',
+    borderTop: `1px solid ${theme.background[800]}`,
   },
 }));
 
