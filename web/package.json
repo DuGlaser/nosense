@@ -25,7 +25,7 @@
     "@mui/icons-material": "5.8.4",
     "@mui/material": "5.9.1",
     "@nosense/damega": "*",
-    "next": "12.2.2",
+    "next": "12.2.3",
     "ts-pattern": "4.0.5"
   }
 }
