@@ -3,6 +3,7 @@ import {
   IfStatementComponent,
   LetStatementComponent,
   WhileStatementComponent,
+  ExpressionStatementComponent,
 } from '@editor/components';
 import { StatementProps } from '@editor/type';
 import { FC } from 'react';
@@ -25,6 +26,9 @@ export const EditorStatement: FC<StatementProps<AstObject>> = ({
     ))
     .with({ _type: 'AssignStatement' }, (_) => (
       <AssignStatementComponent astObject={_} />
+    ))
+    .with({ _type: 'ExpressionStatement' }, (_) => (
+      <ExpressionStatementComponent astObject={_} />
     ))
     .with(P.nullish, () => null)
     .exhaustive();
