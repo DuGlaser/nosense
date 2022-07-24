@@ -1,4 +1,4 @@
-import { Obj } from './object';
+import { ErrorObject, Obj } from './object';
 
 export class Environment {
   public outer: Environment | undefined;
@@ -9,7 +9,7 @@ export class Environment {
     this.store = {};
   }
 
-  public update(key: string, newValue: Obj) {
+  public update(key: string, newValue: Obj): Obj | undefined {
     const value = this.store[key];
 
     if (!value && this.outer) {
@@ -18,16 +18,18 @@ export class Environment {
     }
 
     if (!value && !this.outer) {
-      throw new Error(`${key} is not found.`);
+      return new ErrorObject({ message: `${key} is not found.` });
     }
 
     if (newValue.type() !== value.type()) {
-      throw new Error(
-        `type mismatch: got=${newValue.type()}, expected=${value.type()}`
-      );
+      return new ErrorObject({
+        message: `type mismatch: got=${newValue.type()}, expected=${value.type()}`,
+      });
     }
 
     this.store[key] = newValue;
+
+    return undefined;
   }
 
   public set(key: string, value: Obj) {

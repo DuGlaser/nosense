@@ -219,7 +219,10 @@ export class Evaluator {
   ): Promise<Obj> {
     const value = await this.Eval(node.value, env);
 
-    env.update(node.name.value, value);
+    const error = env.update(node.name.value, value);
+    if (error) {
+      return error;
+    }
 
     return NULL;
   }
