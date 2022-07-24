@@ -9,11 +9,17 @@ import { useDamegaInput } from '@/hooks/useDamegaInput';
 import { useDamegaOutput } from '@/hooks/useDamegaOutput';
 
 const code = `
-let x: number = 10;
-let y: number = Input();
-let z: number = 20;
+let x: number = 0;
+let y: number = 0;
+x = Input();
 
-Println(x + y * (-z * x));
+y = 1;
+while (x > 0) {
+  y = y * x;
+  x = x - 1;
+}
+
+Println(y);
 `;
 
 const Wrapper = styled('div')(({ theme }) => ({

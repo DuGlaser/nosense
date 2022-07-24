@@ -16,6 +16,7 @@ export const calcLineNumber = (astObject: AstObject): number => {
     .with({ _type: 'IfStatement' }, (stmt) => calcIfStatement(stmt))
     .with({ _type: 'WhileStatement' }, (stmt) => calcWhileStatement(stmt))
     .with({ _type: 'AssignStatement' }, () => 1)
+    .with({ _type: 'ExpressionStatement' }, () => 1)
     .with(P.nullish, () => 0)
     .exhaustive();
 };

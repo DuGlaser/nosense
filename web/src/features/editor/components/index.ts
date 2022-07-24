@@ -4,6 +4,7 @@ export * from './EditorLineNumber';
 export * from './EditorLinesWrapper';
 export * from './EditorLineWrapper';
 export * from './EditorStatement';
+export * from './ExpressionStatementComponent';
 export * from './IfStatementComponent';
 export * from './LetStatementComponent';
 export * from './WhileStatementComponent';
