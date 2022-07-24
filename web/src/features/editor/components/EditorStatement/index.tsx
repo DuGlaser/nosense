@@ -1,9 +1,9 @@
 import {
   AssignStatementComponent,
+  ExpressionStatementComponent,
   IfStatementComponent,
   LetStatementComponent,
   WhileStatementComponent,
-  ExpressionStatementComponent,
 } from '@editor/components';
 import { StatementProps } from '@editor/type';
 import { FC } from 'react';
