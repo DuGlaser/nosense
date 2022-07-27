@@ -55,7 +55,7 @@ export const IfStatementComponent: FC<StatementProps<IfStatementObject>> = ({
         </>
       )}
       <EditorLineWrapper>
-        <IfLabel>end</IfLabel>
+        <IfLabel>endif</IfLabel>
       </EditorLineWrapper>
     </BlockStatements>
   );

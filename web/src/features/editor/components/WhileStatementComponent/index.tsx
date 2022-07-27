@@ -43,7 +43,7 @@ export const WhileStatementComponent: FC<
         ))}
       </BlockStatements>
       <EditorLineWrapper>
-        <WhileLabel>end</WhileLabel>
+        <WhileLabel>endwhile</WhileLabel>
       </EditorLineWrapper>
     </BlockStatements>
   );
