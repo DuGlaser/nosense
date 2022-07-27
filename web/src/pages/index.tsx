@@ -1,6 +1,6 @@
 import { Editor } from '@editor';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { Box, Button, Drawer, styled } from '@mui/material';
+import { Box, Button, styled } from '@mui/material';
 import { ErrorObject } from '@nosense/damega';
 import { NextPage } from 'next';
 
@@ -29,6 +29,7 @@ const Wrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   background: theme.background[900],
+  position: 'relative',
 }));
 
 const Header = styled(Box)(({ theme }) => ({
@@ -41,28 +42,29 @@ const Header = styled(Box)(({ theme }) => ({
   zIndex: 10,
 }));
 
-const FooterPanel = styled(Drawer)(({ theme }) => ({
-  height: '20vh',
-  background: theme.background[900],
+const FooterPanel = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  bottom: 0,
 
+  height: '20vh',
+  width: '100%',
+  background: theme.background[900],
+  borderTop: `1px solid ${theme.background[800]}`,
   boxShadow: `0px 5.1px 8.6px rgba(0, 0, 0, 0.347),
   0px 10.3px 19.2px rgba(0, 0, 0, 0.439),
   0px 24px 65px rgba(0, 0, 0, 0.6)`,
-
-  '>div': {
-    background: theme.background[900],
-    height: '20vh',
-    borderTop: `1px solid ${theme.background[800]}`,
-  },
 }));
 
 const OutputLines = styled(Box)(({ theme }) => ({
+  width: '100%',
+  height: '100%',
   display: 'flex',
   flexDirection: 'column',
   gap: '8px',
   padding: '16px',
   background: theme.background[900],
   color: theme.background.contrast[900],
+  overflow: 'auto',
 }));
 
 const IndexPage: NextPage = () => {
@@ -103,7 +105,7 @@ const IndexPage: NextPage = () => {
       >
         <Editor code={code} />
       </Box>
-      <FooterPanel variant="persistent" anchor="bottom" open={true}>
+      <FooterPanel>
         <OutputLines>
           {outputs.map((output, i) => (
             <Box key={i}>{output}</Box>
