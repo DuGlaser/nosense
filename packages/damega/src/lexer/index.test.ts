@@ -37,6 +37,45 @@ describe('Lexer', () => {
     testLexer(input, tests);
   });
 
+  test('ident', () => {
+    const tests = [
+      {
+        input: 'test0',
+        expected: [
+          { expectedType: TOKEN.IDENT, expectedLiteral: 'test0' },
+          { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+        ],
+      },
+      {
+        input: 'test_0',
+        expected: [
+          { expectedType: TOKEN.IDENT, expectedLiteral: 'test_0' },
+          { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+        ],
+      },
+      {
+        input: '_test0',
+        expected: [
+          { expectedType: TOKEN.ILLEGAL, expectedLiteral: '' },
+          { expectedType: TOKEN.IDENT, expectedLiteral: 'test0' },
+          { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+        ],
+      },
+      {
+        input: '0test',
+        expected: [
+          { expectedType: TOKEN.NUMBER, expectedLiteral: '0' },
+          { expectedType: TOKEN.IDENT, expectedLiteral: 'test' },
+          { expectedType: TOKEN.EOF, expectedLiteral: 'EOF' },
+        ],
+      },
+    ];
+
+    tests.forEach((test) => {
+      testLexer(test.input, test.expected);
+    });
+  });
+
   test('bool', () => {
     const input = `
       let flag: bool = true;

@@ -53,7 +53,7 @@ export class Lexer {
       return token;
     }
 
-    if (this.isLetter(this.ch)) {
+    if (this.isHeadLetter(this.ch)) {
       const ident = this.readIdent();
       const type = LookUpKeyword(ident);
 
@@ -66,6 +66,7 @@ export class Lexer {
       return this.newToken(TOKEN.NUMBER, num);
     }
 
+    this.readChar();
     return this.newToken(TOKEN.ILLEGAL, '');
   }
 
@@ -141,8 +142,19 @@ export class Lexer {
     return char === ' ' || char === '\t' || char === '\n' || char === '\r';
   }
 
-  // NOTE: 英文字しか変数として使えない
   private isLetter(char: string): boolean {
+    if (char.length > 1) {
+      return false;
+    }
+
+    if (this.isHeadLetter(char)) {
+      return true;
+    }
+
+    return ('0' <= char && char <= '9') || char === '_';
+  }
+
+  private isHeadLetter(char: string): boolean {
     if (char.length > 1) {
       return false;
     }
@@ -152,6 +164,7 @@ export class Lexer {
 
   private readIdent() {
     const startPos = this.position;
+    this.readChar();
 
     while (this.isLetter(this.ch)) {
       this.readChar();
