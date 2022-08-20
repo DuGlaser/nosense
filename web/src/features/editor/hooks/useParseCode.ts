@@ -1,8 +1,7 @@
 import { Lexer, Parser } from '@nosense/damega';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import { convert2AstObject } from '@/lib/converter';
-import { AstObject } from '@/lib/models/astObjects';
 
 const parse = (code: string) => {
   if (code === '') return [];
@@ -18,12 +17,7 @@ const parse = (code: string) => {
 };
 
 export const useParseCode = (code: string) => {
-  const [astObjects, setAstObjects] = useState<AstObject[]>(() => parse(code));
-
-  useEffect(() => {
-    if (code === '') return;
-    setAstObjects(parse(code));
+  return useMemo(() => {
+    return parse(code);
   }, [code]);
-
-  return [astObjects, setAstObjects] as const;
 };

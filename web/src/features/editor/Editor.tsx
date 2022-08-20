@@ -10,7 +10,7 @@ const CStack = styled(Stack)(({ theme }) => ({
 }));
 
 export const Editor: React.FC<{ code: string }> = ({ code }) => {
-  const [astObjects] = useParseCode(code);
+  const astObjects = useParseCode(code);
 
   return (
     <CStack direction={'row'} spacing={'8px'}>
