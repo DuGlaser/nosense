@@ -25,6 +25,6 @@
   "devDependencies": {
     "electron": "20.3.3",
     "electron-builder": "23.6.0",
-    "eslint-plugin-custom": "*"
+    "eslint-plugin-custom": "0.0.6"
   }
 }
