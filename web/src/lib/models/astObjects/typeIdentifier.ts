@@ -1,5 +1,5 @@
 export enum TYPE_IDENTIFIER {
-  STRING = 'STRING',
-  NUMBER = 'NUMBER',
-  BOOLEAN = 'BOOLEAN',
+  STRING = '文字列型',
+  NUMBER = '数値型',
+  BOOLEAN = '論理型',
 }
