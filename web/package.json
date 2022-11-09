@@ -16,17 +16,17 @@
     "@types/uuid": "^8.3.4",
     "eslint-plugin-custom": "*",
     "eslint-plugin-jsx-a11y": "6.6.1",
-    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-react": "7.31.10",
     "eslint-plugin-react-hooks": "4.6.0",
-    "jest-environment-jsdom": "28.1.3"
+    "jest-environment-jsdom": "29.2.2"
   },
   "dependencies": {
-    "@emotion/react": "11.9.3",
-    "@emotion/styled": "11.9.3",
-    "@mui/icons-material": "5.8.4",
-    "@mui/material": "5.9.1",
+    "@emotion/react": "11.10.5",
+    "@emotion/styled": "11.10.5",
+    "@mui/icons-material": "5.10.9",
+    "@mui/material": "5.10.12",
     "@nosense/damega": "*",
-    "next": "12.2.3",
+    "next": "12.3.2",
     "recoil": "^0.7.6",
     "ts-pattern": "4.0.5",
     "uuid": "^9.0.0"
