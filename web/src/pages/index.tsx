@@ -10,16 +10,17 @@ import { useDamegaOutput } from '@/hooks/useDamegaOutput';
 
 const code = `
 let x: number = 0;
-let y: number = 0;
-x = Input();
-
-y = 1;
-while (x > 0) {
-  y = y * x;
-  x = x - 1;
+let y: string = "x";
+let z: bool = true;
+x = 10;
+if (x) {
+  y = 20;
+  if (y > 10) {
+    z = true;
+  } else {
+    z = false;
+  }
 }
-
-Println(y);
 `;
 
 const Wrapper = styled('div')(({ theme }) => ({

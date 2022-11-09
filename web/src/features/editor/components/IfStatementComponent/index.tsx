@@ -1,62 +1,51 @@
 import {
-  BlockStatements,
-  EditorLineWrapper,
-  EditorStatement,
+  CursorNodeComponent,
+  EditableNodeComponent,
+  StatementWrapper,
 } from '@editor/components';
-import { StatementProps } from '@editor/type';
-import { Box, Stack } from '@mui/material';
-import { FC, PropsWithChildren } from 'react';
+import { IfStatementElse, IfStatementEnd, IfStatementStart } from '@editor/lib';
+import { useStatement } from '@editor/store';
 
-import { IfStatementObject } from '@/lib/models/astObjects';
+export const IfStatementStartComponent: React.FC<{
+  id: IfStatementStart['id'];
+}> = ({ id }) => {
+  const statement = useStatement<IfStatementStart>(id);
+  const [cursor, conditionExp] = statement.nodes;
 
-const IfLabel: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <Box
-      sx={{
-        display: 'inline-block',
-        bgcolor: '#EF557A',
-        fontWeight: 'bold',
-        px: '24px',
-        height: '100%',
-        borderRadius: '4px',
-      }}
-    >
-      {children}
-    </Box>
+    <StatementWrapper indent={statement.indent}>
+      <CursorNodeComponent id={cursor} />
+      <span>IfStart (</span>
+      <EditableNodeComponent id={conditionExp} />
+      <span>)</span>
+    </StatementWrapper>
   );
 };
 
-export const IfStatementComponent: FC<StatementProps<IfStatementObject>> = ({
-  astObject,
-}) => {
+export const IfStatementElseComponent: React.FC<{
+  id: IfStatementElse['id'];
+}> = ({ id }) => {
+  const statement = useStatement<IfStatementElse>(id);
+  const [cursor] = statement.nodes;
+
   return (
-    <BlockStatements>
-      <EditorLineWrapper>
-        <Stack direction={'row'} spacing={'4px'}>
-          <IfLabel>if</IfLabel>
-          <Box>({astObject.condition})</Box>
-        </Stack>
-      </EditorLineWrapper>
-      <BlockStatements nested>
-        {astObject.consequence.map((stmt, i) => (
-          <EditorStatement key={i} astObject={stmt} />
-        ))}
-      </BlockStatements>
-      {astObject.alternative && (
-        <>
-          <EditorLineWrapper>
-            <IfLabel>else</IfLabel>
-          </EditorLineWrapper>
-          <BlockStatements nested>
-            {astObject.alternative.map((stmt, i) => (
-              <EditorStatement key={i} astObject={stmt} />
-            ))}
-          </BlockStatements>
-        </>
-      )}
-      <EditorLineWrapper>
-        <IfLabel>endif</IfLabel>
-      </EditorLineWrapper>
-    </BlockStatements>
+    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
+      <div>else</div>
+      <CursorNodeComponent id={cursor} />
+    </StatementWrapper>
+  );
+};
+
+export const IfStatementEndComponent: React.FC<{
+  id: IfStatementEnd['id'];
+}> = ({ id }) => {
+  const statement = useStatement<IfStatementEnd>(id);
+  const [cursor] = statement.nodes;
+
+  return (
+    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
+      <div>endif</div>
+      <CursorNodeComponent id={cursor} />
+    </StatementWrapper>
   );
 };
