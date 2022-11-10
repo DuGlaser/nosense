@@ -13,11 +13,32 @@ type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
   nodes: Node['id'][];
 };
 
+type ListStatementItem = Pick<Statement, 'id' | '_type'>;
+type ListNodeItem = Pick<Node, 'id' | '_type'>;
+
+const convert2ListStatementItem = (statement: Statement): ListStatementItem => {
+  return {
+    id: statement.id,
+    _type: statement._type,
+  };
+};
+
+const convert2ListNodeItem = (node: Node): ListNodeItem => {
+  return {
+    id: node.id,
+    _type: node._type,
+  };
+};
+
+const convert2ListNode = (statement: Statement): ListNodeItem[] => {
+  return statement.nodes.map(convert2ListNodeItem);
+};
+
 const statementsState = atomFamily<AtomStatement<Statement>, Statement['id']>({
   key: 'statements',
 });
 
-const statementListState = atom<Pick<Statement, 'id' | '_type'>[]>({
+const statementListState = atom<ListStatementItem[]>({
   key: 'statementList',
   default: [],
 });
@@ -26,7 +47,7 @@ const nodesState = atomFamily<Node, Node['id']>({
   key: 'nodes',
 });
 
-const nodeListState = atom<Pick<Node, 'id' | '_type'>[]>({
+const nodeListState = atom<ListNodeItem[]>({
   key: 'nodeList',
   default: [],
 });
@@ -86,7 +107,7 @@ export const useInsertNode = <T extends Statement>(statementId: T['id']) => {
             const right = nodes.slice(beforeNodeIndex + 1);
             return {
               ...cur,
-              nodes: [...left, newNode.id, ...right],
+              nodes: left.concat(newNode.id, right),
             };
           }
         );
@@ -99,7 +120,7 @@ export const useInsertNode = <T extends Statement>(statementId: T['id']) => {
 
           const left = nodeList.slice(0, beforeNodeIndex + 1);
           const right = nodeList.slice(beforeNodeIndex + 1);
-          return [...left, { id: newNode.id, _type: newNode._type }, ...right];
+          return left.concat([convert2ListNodeItem(newNode)], right);
         });
       },
     [statementId]
@@ -133,7 +154,7 @@ export const useInsertStatement = () => {
     ({ set, snapshot }) =>
       async (
         beforeStatementId: Statement['id'] | undefined,
-        newStmt: Statement
+        newStmts: Statement[]
       ) => {
         set(statementListState, (cur) => {
           const beforeStmtIndex = beforeStatementId
@@ -142,16 +163,17 @@ export const useInsertStatement = () => {
           const left = cur.slice(0, beforeStmtIndex + 1);
           const right = cur.slice(beforeStmtIndex + 1);
 
-          return [...left, { id: newStmt.id, _type: newStmt._type }, ...right];
+          return left.concat(newStmts.map(convert2ListStatementItem), right);
         });
 
-        set(statementsState(newStmt.id), {
-          ...newStmt,
-          nodes: newStmt.nodes.map((node) => node.id),
-        });
-
-        newStmt.nodes.map((node) => {
-          set(nodesState(node.id), node);
+        newStmts.forEach((newStmt) => {
+          set(statementsState(newStmt.id), {
+            ...newStmt,
+            nodes: newStmt.nodes.map((node) => node.id),
+          });
+          newStmt.nodes.forEach((node) => {
+            set(nodesState(node.id), node);
+          });
         });
 
         const beforeStmtLastNodeId = !beforeStatementId
@@ -168,14 +190,7 @@ export const useInsertStatement = () => {
           const left = cur.slice(0, beforeNodeIndex + 1);
           const right = cur.slice(beforeNodeIndex + 1);
 
-          return [
-            ...left,
-            ...newStmt.nodes.map((node) => ({
-              id: node.id,
-              _type: node._type,
-            })),
-            ...right,
-          ];
+          return left.concat(newStmts.flatMap(convert2ListNode), right);
         });
       },
     []

@@ -28,7 +28,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
       displayName: '代入文',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, createLetStatement(''));
+        insertStmt(id, [createLetStatement('')]);
         deleteStmt(id);
       },
     },
