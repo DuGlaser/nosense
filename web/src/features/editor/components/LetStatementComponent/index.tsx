@@ -85,7 +85,9 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
             id={varName}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                insertStmt(statement.id, createNewStatement(statement.indent));
+                insertStmt(statement.id, [
+                  createNewStatement(statement.indent),
+                ]);
                 e.preventDefault();
                 return;
               }

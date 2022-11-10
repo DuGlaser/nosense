@@ -8,13 +8,13 @@ import {
 } from '@editor/lib';
 import { useInsertStatement } from '@editor/store';
 import { Lexer, Parser } from '@nosense/damega';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { match } from 'ts-pattern';
 
 import { convert2AstObject } from '@/lib/converter';
 import { AstObject } from '@/lib/models/astObjects';
 
-const parse = (code: string): AstObject[] => {
+const parse2AstObjects = (code: string): AstObject[] => {
   if (code === '') return [];
 
   const l = new Lexer(code);
@@ -28,55 +28,54 @@ const parse = (code: string): AstObject[] => {
 };
 
 export const useParseCode = (code: string) => {
-  const lastId = useRef<string | undefined>(undefined);
-  const _insertStatement = useInsertStatement();
+  const insertStatement = useInsertStatement();
 
-  const insertStatement = (stmt: Statement) => {
-    _insertStatement(lastId.current, stmt);
-    lastId.current = stmt.id;
-  };
-
-  const insertStatements = (astObjects: AstObject[], indent: number) => {
+  const parse2EditorStatements = (
+    astObjects: AstObject[],
+    indent: number
+  ): Statement[] => {
     const currentIndent = indent;
-    astObjects.forEach((astObject) => {
-      if (!astObject?._type) return;
-
-      match(astObject)
+    return astObjects.reduce((statements, astObject) => {
+      const parsed = match(astObject)
         .with({ _type: 'LetStatement' }, (stmt) => {
-          const letStmt = createLetStatement(stmt.typeIdentifier, stmt.name);
-          insertStatement(letStmt);
+          return createLetStatement(stmt.typeIdentifier, stmt.name);
         })
         .with({ _type: 'AssignStatement' }, (stmt) => {
-          const assignStmt = createAssignStatement(
-            stmt.name,
-            stmt.value,
-            currentIndent
-          );
-          insertStatement(assignStmt);
+          return createAssignStatement(stmt.name, stmt.value, currentIndent);
         })
         .with({ _type: 'IfStatement' }, (stmt) => {
-          const ifStartStmt = createIfStatementStart(
-            stmt.condition,
-            currentIndent
+          let statements: Statement[] = [];
+          statements.push(
+            createIfStatementStart(stmt.condition, currentIndent)
           );
-          insertStatement(ifStartStmt);
-          insertStatements(stmt.consequence, currentIndent + 1);
+          statements = statements.concat(
+            parse2EditorStatements(stmt.consequence, currentIndent + 1)
+          );
 
           if (stmt.alternative) {
-            const ifElseStmt = createIfStatementElse(currentIndent);
-            insertStatement(ifElseStmt);
-            insertStatements(stmt.alternative, currentIndent + 1);
+            statements.push(createIfStatementElse(currentIndent));
+            statements = statements.concat(
+              parse2EditorStatements(stmt.alternative, currentIndent + 1)
+            );
           }
 
-          const ifEndStmt = createIfStatementEnd(currentIndent);
-          insertStatement(ifEndStmt);
+          statements.push(createIfStatementEnd(currentIndent));
+
+          return statements;
         })
         .run();
-    });
+
+      if (Array.isArray(parsed)) {
+        return statements.concat(parsed);
+      }
+
+      return statements.concat([parsed]);
+    }, [] as Statement[]);
   };
 
   useEffect(() => {
-    const parsed = parse(code);
-    insertStatements(parsed, 0);
+    const astObjects = parse2AstObjects(code);
+    const editorStatemnts = parse2EditorStatements(astObjects, 0);
+    insertStatement(undefined, editorStatemnts);
   }, [code]);
 };
