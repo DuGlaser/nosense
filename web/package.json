@@ -26,7 +26,7 @@
     "@mui/icons-material": "5.10.9",
     "@mui/material": "5.10.13",
     "@nosense/damega": "*",
-    "next": "12.3.2",
+    "next": "12.3.3",
     "recoil": "^0.7.6",
     "ts-pattern": "4.0.5",
     "uuid": "^9.0.0"
