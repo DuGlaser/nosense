@@ -3,17 +3,18 @@ import {
   BlockStatement,
   BooleanLiteral,
   CallExpression,
+  Expression,
   ExpressionStatement,
   FunctionStatement,
   Identifier,
   IfStatement,
   InfixExpression,
   LetStatement,
-  Node,
   NumberLiteral,
   PrefixExpression,
   Program,
   ReturnStatement,
+  Statement,
   StringLiteral,
   WhileStatement,
 } from '@/ast';
@@ -41,9 +42,19 @@ export type {
   OutputText,
 } from './builtins';
 
+type EvaluatorGenerator = AsyncGenerator<
+  {
+    node: Statement;
+    env: Environment;
+  },
+  Obj
+>;
+
 export const TRUE = new BooleanObject({ value: true });
 export const FALSE = new BooleanObject({ value: false });
 export const NULL = new NullObject();
+
+const MAX_CALL_STACK = 3000_000_000 as const;
 
 export class Evaluator {
   private builtins: ReturnType<typeof builtins>;
@@ -55,79 +66,30 @@ export class Evaluator {
     this.builtins = builtins(args);
   }
 
-  public async Eval(node: Node, env: Environment): Promise<Obj> {
-    if (node instanceof Program) {
-      return this.evalProgram(node, env);
+  public async Eval(program: Program, env: Environment): Promise<Obj> {
+    const generator = this.EvalGenerator(program, env);
+    let count = 0;
+
+    while (MAX_CALL_STACK > count) {
+      count++;
+      const result = await generator.next();
+
+      if (result.done) {
+        return result.value;
+      }
     }
 
-    if (node instanceof IfStatement) {
-      return this.evalIfStatement(node, env);
-    }
-
-    if (node instanceof WhileStatement) {
-      return this.evalWhileStatement(node, env);
-    }
-
-    if (node instanceof LetStatement) {
-      return this.evalLetStatement(node, env);
-    }
-
-    if (node instanceof AssignStatement) {
-      return this.evalAssignStatement(node, env);
-    }
-
-    if (node instanceof ReturnStatement) {
-      return this.evalReturnStatement(node, env);
-    }
-
-    if (node instanceof BlockStatement) {
-      return this.evalBlockStatement(node, env);
-    }
-
-    if (node instanceof FunctionStatement) {
-      return this.evalFunctionStatement(node, env);
-    }
-
-    if (node instanceof ExpressionStatement) {
-      return this.Eval(node.expression, env);
-    }
-
-    if (node instanceof InfixExpression) {
-      return this.evalInfixExpression(node, env);
-    }
-
-    if (node instanceof PrefixExpression) {
-      return this.evalPrefixExpression(node, env);
-    }
-
-    if (node instanceof CallExpression) {
-      return await this.evalCallExpression(node, env);
-    }
-
-    if (node instanceof NumberLiteral) {
-      return new NumberObject({ value: node.value });
-    }
-
-    if (node instanceof StringLiteral) {
-      return new StringObject({ value: node.value });
-    }
-
-    if (node instanceof BooleanLiteral) {
-      return this.nativeBoolToBooleanObject(node.value);
-    }
-
-    if (node instanceof Identifier) {
-      return this.evalIdentifier(node, env);
-    }
-
-    return new ErrorObject({ message: 'cannot match node' });
+    throw new Error('Infinity loop');
   }
 
-  private async evalProgram(program: Program, env: Environment): Promise<Obj> {
+  public async *EvalGenerator(
+    program: Program,
+    env: Environment
+  ): EvaluatorGenerator {
     let result: Obj = NULL;
 
     for (const stmt of program.statements) {
-      result = await this.Eval(stmt, env);
+      result = yield* this.evalStatement(stmt, env);
 
       if (result instanceof ReturnValueObject) {
         return result.value;
@@ -141,19 +103,102 @@ export class Evaluator {
     return result;
   }
 
-  private async evalIfStatement(
-    node: IfStatement,
+  private async *evalStatement(
+    stmt: Statement,
     env: Environment
-  ): Promise<Obj> {
+  ): EvaluatorGenerator {
+    let returnValue: Obj = new ErrorObject({
+      message: `cannot match node: ${JSON.stringify(stmt)}`,
+    });
+
+    if (stmt instanceof AssignStatement) {
+      returnValue = yield* this.evalAssignStatement(stmt, env);
+    }
+    if (stmt instanceof BlockStatement) {
+      returnValue = yield* this.evalBlockStatement(stmt, env);
+    }
+    if (stmt instanceof ExpressionStatement) {
+      returnValue = yield* this.evalExpression(stmt.expression, env);
+      yield { node: stmt, env };
+    }
+    if (stmt instanceof FunctionStatement) {
+      returnValue = this.evalFunctionStatement(stmt, env);
+    }
+    if (stmt instanceof IfStatement) {
+      returnValue = yield* this.evalIfStatement(stmt, env);
+    }
+    if (stmt instanceof LetStatement) {
+      returnValue = yield* this.evalLetStatement(stmt, env);
+    }
+    if (stmt instanceof ReturnStatement) {
+      returnValue = yield* this.evalReturnStatement(stmt, env);
+    }
+    if (stmt instanceof WhileStatement) {
+      returnValue = yield* this.evalWhileStatement(stmt, env);
+    }
+
+    return returnValue;
+  }
+
+  private async *evalExpression(
+    exp: Expression,
+    env: Environment
+  ): EvaluatorGenerator {
+    if (exp instanceof NumberLiteral) {
+      return new Promise((resolve) =>
+        resolve(new NumberObject({ value: exp.value }))
+      );
+    }
+
+    if (exp instanceof StringLiteral) {
+      return new Promise((resolve) =>
+        resolve(new StringObject({ value: exp.value }))
+      );
+    }
+
+    if (exp instanceof BooleanLiteral) {
+      return new Promise((resolve) =>
+        resolve(this.nativeBoolToBooleanObject(exp.value))
+      );
+    }
+
+    if (exp instanceof Identifier) {
+      return new Promise((resolve) => resolve(this.evalIdentifier(exp, env)));
+    }
+
+    if (exp instanceof CallExpression) {
+      return yield* this.evalCallExpression(exp, env);
+    }
+
+    if (exp instanceof InfixExpression) {
+      return yield* this.evalInfixExpression(exp, env);
+    }
+
+    if (exp instanceof PrefixExpression) {
+      return yield* this.evalPrefixExpression(exp, env);
+    }
+
+    return new Promise((resolve) =>
+      resolve(
+        new ErrorObject({
+          message: `cannot match node: ${JSON.stringify(exp)}`,
+        })
+      )
+    );
+  }
+
+  private async *evalIfStatement(node: IfStatement, env: Environment) {
     const nestedEnv = new Environment(env);
-    const condition = await this.Eval(node.condition, nestedEnv);
+    const condition = yield* this.evalExpression(node.condition, nestedEnv);
+
+    yield { node, env };
 
     let evaluated: Obj = NULL;
 
     if (condition === TRUE) {
-      evaluated = await this.Eval(node.consequence, nestedEnv);
+      evaluated = yield* this.evalStatement(node.consequence, nestedEnv);
     } else if (node.alternative) {
-      evaluated = await this.Eval(node.alternative, nestedEnv);
+      evaluated = yield* this.evalStatement(node.alternative, nestedEnv);
     }
 
     if (evaluated.type() === OBJECT.RETURN_VALUE) {
@@ -163,38 +208,35 @@ export class Evaluator {
     return NULL;
   }
 
-  private async evalWhileStatement(
-    node: WhileStatement,
-    env: Environment
-  ): Promise<Obj> {
+  private async *evalWhileStatement(node: WhileStatement, env: Environment) {
     const nestedEnv = new Environment(env);
 
-    const getCondition = async () => {
-      const condition = await this.Eval(node.condition, env);
-      return condition === TRUE;
-    };
+    const evalExpression = this.evalExpression.bind(this);
 
-    let condition = await getCondition();
+    async function* getCondition() {
+      const condition = yield* evalExpression(node.condition, env);
+      yield { node, env };
+      return condition === TRUE;
+    }
+
+    let condition = yield* getCondition();
 
     let evaluated: Obj = NULL;
     while (condition) {
-      evaluated = await this.Eval(node.consequence, nestedEnv);
+      evaluated = yield* this.evalStatement(node.consequence, nestedEnv);
 
       if (evaluated.type() === OBJECT.RETURN_VALUE) {
         return evaluated;
       }
 
-      condition = await getCondition();
+      condition = yield* getCondition();
     }
 
     return NULL;
   }
 
-  private async evalLetStatement(
-    node: LetStatement,
-    env: Environment
-  ): Promise<Obj> {
-    const value = await this.Eval(node.value, env);
+  private async *evalLetStatement(node: LetStatement, env: Environment) {
+    const value = yield* this.evalExpression(node.value, env);
     if (!value) throw new Error('invalid object.');
 
     if (this.isError(value)) {
@@ -210,41 +252,36 @@ export class Evaluator {
     }
 
     env.set(node.name.value, value);
+    yield { node, env };
     return NULL;
   }
 
-  private async evalAssignStatement(
-    node: AssignStatement,
-    env: Environment
-  ): Promise<Obj> {
-    const value = await this.Eval(node.value, env);
+  private async *evalAssignStatement(node: AssignStatement, env: Environment) {
+    const value = yield* this.evalExpression(node.value, env);
 
     const error = env.update(node.name.value, value);
     if (error) {
       return error;
     }
 
+    yield { node, env };
     return NULL;
   }
 
-  private async evalReturnStatement(
-    node: ReturnStatement,
-    env: Environment
-  ): Promise<Obj> {
-    const value = (await this.Eval(node.valueExpression, env)) ?? NULL;
+  private async *evalReturnStatement(node: ReturnStatement, env: Environment) {
+    const value =
+      (yield* this.evalExpression(node.valueExpression, env)) ?? NULL;
     if (this.isError(value)) return value;
 
+    yield { node, env };
     return new ReturnValueObject({ value });
   }
 
-  private async evalBlockStatement(
-    node: BlockStatement,
-    env: Environment
-  ): Promise<Obj> {
+  private async *evalBlockStatement(node: BlockStatement, env: Environment) {
     let result: Obj = NULL;
 
     for (const stmt of node.statements) {
-      result = (await this.Eval(stmt, env)) ?? NULL;
+      result = (yield* this.evalStatement(stmt, env)) ?? NULL;
 
       if (result) {
         if (
@@ -274,16 +311,13 @@ export class Evaluator {
     return NULL;
   }
 
-  private async evalInfixExpression(
-    node: InfixExpression,
-    env: Environment
-  ): Promise<Obj> {
-    const left = await this.Eval(node.left, env);
+  private async *evalInfixExpression(node: InfixExpression, env: Environment) {
+    const left = yield* this.evalExpression(node.left, env);
     if (this.isError(left)) {
       return left;
     }
 
-    const right = await this.Eval(node.right, env);
+    const right = yield* this.evalExpression(node.right, env);
     if (this.isError(right)) {
       return right;
     }
@@ -319,11 +353,11 @@ export class Evaluator {
     });
   }
 
-  private async evalPrefixExpression(
+  private async *evalPrefixExpression(
     node: PrefixExpression,
     env: Environment
-  ): Promise<Obj> {
-    const right = await this.Eval(node.right, env);
+  ) {
+    const right = yield* this.evalExpression(node.right, env);
     if (!right) return NULL;
 
     switch (node.operator) {
@@ -415,16 +449,20 @@ export class Evaluator {
     }
   }
 
-  private async evalCallExpression(
-    node: CallExpression,
-    env: Environment
-  ): Promise<Obj> {
-    const fn = await this.Eval(node.name, env);
+  private async *evalCallExpression(node: CallExpression, env: Environment) {
+    const fn = yield* this.evalExpression(node.name, env);
     if (this.isError(fn)) {
       return fn;
     }
 
-    const args = await Promise.all(node.args.map((arg) => this.Eval(arg, env)));
+    const args: Obj[] = [];
+    for (const asyncGenerator of node.args.map((arg) =>
+      this.evalExpression(arg, env)
+    )) {
+      const arg = yield* asyncGenerator;
+      args.push(arg);
+    }
+
     const errors = args.filter((arg) => this.isError(arg));
     if (errors.length > 0) {
       return new ErrorObject({
@@ -455,7 +493,7 @@ export class Evaluator {
       extendEnv.set(params.value, args[index]);
     });
 
-    const evaluated = await this.Eval(fn.body, extendEnv);
+    const evaluated = yield* this.evalStatement(fn.body, extendEnv);
 
     return this.unwrapReturnValue(evaluated);
   }
