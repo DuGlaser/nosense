@@ -1,3 +1,4 @@
+import { PositionContext } from '@/contexts';
 import { Token } from '@/token';
 
 import { Statement } from './base';
@@ -5,6 +6,7 @@ import { Statement } from './base';
 export class BlockStatement extends Statement {
   private _token: Token;
   private _statements: Statement[];
+  readonly ctx: PositionContext;
 
   constructor({
     token,
@@ -16,6 +18,7 @@ export class BlockStatement extends Statement {
     super();
     this._token = token;
     this._statements = statements;
+    this.ctx = token.ctx;
   }
 
   public lines(): string[] {

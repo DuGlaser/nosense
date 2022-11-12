@@ -1,3 +1,4 @@
+import { PositionContext } from '@/contexts';
 import { Token } from '@/token';
 
 import { Expression, Statement } from './base';
@@ -6,10 +7,13 @@ export class ExpressionStatement extends Statement {
   private _token: Token;
   private _expression: Expression;
 
-  constructor(arg: { token: Token; expression: Expression }) {
+  readonly ctx: PositionContext;
+
+  constructor(args: { token: Token; expression: Expression }) {
     super();
-    this._token = arg.token;
-    this._expression = arg.expression;
+    this._token = args.token;
+    this._expression = args.expression;
+    this.ctx = args.token.ctx;
   }
 
   public lines(): string[] {

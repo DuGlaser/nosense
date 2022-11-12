@@ -1,3 +1,5 @@
+import { INITIAL_POSITION_CONTEXT, PositionContext } from '@/contexts';
+
 export enum TOKEN {
   ILLEGAL = 'ILLEGAL',
   EOF = 'EOF',
@@ -46,10 +48,12 @@ export enum TOKEN {
 export class Token {
   readonly type: TOKEN;
   readonly ch: string;
+  readonly ctx: PositionContext;
 
-  constructor(type: TOKEN, ch: string) {
+  constructor(type: TOKEN, ch: string, ctx?: PositionContext) {
     this.type = type;
     this.ch = ch;
+    this.ctx = ctx ?? { ...INITIAL_POSITION_CONTEXT };
   }
 }
 

@@ -1,3 +1,4 @@
+import { PositionContext } from '@/contexts';
 import { Ast2StringConverter } from '@/utils/Ast2StringConverter';
 
 export abstract class Node {
@@ -20,6 +21,7 @@ export abstract class Statement extends Node {
   });
 
   public abstract lines(): string[];
+  abstract get ctx(): PositionContext;
 }
 
 export class Program extends Node {

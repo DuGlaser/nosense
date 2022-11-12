@@ -1,3 +1,4 @@
+import { PositionContext } from '@/contexts';
 import { Token } from '@/token';
 
 import { Expression, Statement } from './base';
@@ -9,6 +10,8 @@ export class LetStatement extends Statement {
   private _value: Expression;
   private _name: Identifier;
   private _type: TypeIdentifier;
+
+  readonly ctx: PositionContext;
 
   constructor({
     token,
@@ -26,6 +29,7 @@ export class LetStatement extends Statement {
     this._value = value;
     this._name = name;
     this._type = type;
+    this.ctx = token.ctx;
   }
 
   public lines(): string[] {

@@ -1,3 +1,4 @@
+import { INITIAL_POSITION_CONTEXT, PositionContext } from '@/contexts';
 import { LookUpKeyword, TOKEN, Token } from '@/token';
 
 type ToTokenFn = () => Token;
@@ -7,6 +8,7 @@ export class Lexer {
   private position: number;
   private readPosition: number;
   private ch: string;
+  private ctx: PositionContext;
 
   private toTokenMap = new Map<string, ToTokenFn>();
 
@@ -15,6 +17,7 @@ export class Lexer {
     this.readPosition = 0;
     this.position = 0;
     this.ch = '';
+    this.ctx = { ...INITIAL_POSITION_CONTEXT };
 
     this.readChar();
 
@@ -119,17 +122,22 @@ export class Lexer {
   }
 
   private readChar() {
+    if (this.isReturn(this.ch)) {
+      this.ctx.line++;
+    }
+
     if (this.readPosition >= this.input.length) {
       this.ch = 'EOF';
     } else {
       this.ch = this.input[this.readPosition];
     }
+
     this.position = this.readPosition;
     this.readPosition++;
   }
 
   private newToken(type: TOKEN, ch: string = this.ch) {
-    return new Token(type, ch);
+    return new Token(type, ch, { ...this.ctx });
   }
 
   private skipWhiteSpace() {
@@ -138,8 +146,12 @@ export class Lexer {
     }
   }
 
+  private isReturn(char: string) {
+    return char === '\n' || char === '\r';
+  }
+
   private isWhiteSpace(char: string) {
-    return char === ' ' || char === '\t' || char === '\n' || char === '\r';
+    return char === ' ' || char === '\t' || this.isReturn(char);
   }
 
   private isLetter(char: string): boolean {

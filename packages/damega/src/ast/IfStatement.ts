@@ -1,3 +1,4 @@
+import { PositionContext } from '@/contexts';
 import { Token } from '@/token';
 
 import { Expression, Statement } from './base';
@@ -8,6 +9,8 @@ export class IfStatement extends Statement {
   private _condition: Expression;
   private _consequence: BlockStatement;
   private _alternative: BlockStatement | undefined;
+
+  readonly ctx: PositionContext;
 
   constructor(args: {
     token: Token;
@@ -20,6 +23,7 @@ export class IfStatement extends Statement {
     this._condition = args.condition;
     this._consequence = args.consequence;
     this._alternative = args.alternative;
+    this.ctx = args.token.ctx;
   }
 
   public lines(): string[] {
