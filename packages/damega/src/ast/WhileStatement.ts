@@ -1,3 +1,4 @@
+import { PositionContext } from '@/contexts';
 import { Token } from '@/token';
 
 import { Expression, Statement } from './base';
@@ -8,6 +9,8 @@ export class WhileStatement extends Statement {
   private _condition: Expression;
   private _consequence: BlockStatement;
 
+  readonly ctx: PositionContext;
+
   constructor(args: {
     token: Token;
     condition: Expression;
@@ -17,6 +20,7 @@ export class WhileStatement extends Statement {
     this._token = args.token;
     this._condition = args.condition;
     this._consequence = args.consequence;
+    this.ctx = args.token.ctx;
   }
 
   public lines(): string[] {
