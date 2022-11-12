@@ -119,6 +119,7 @@ export class Evaluator {
     }
     if (stmt instanceof ExpressionStatement) {
       returnValue = yield* this.evalExpression(stmt.expression, env);
+      yield { node: stmt, env };
     }
     if (stmt instanceof FunctionStatement) {
       returnValue = this.evalFunctionStatement(stmt, env);
@@ -136,7 +137,6 @@ export class Evaluator {
       returnValue = yield* this.evalWhileStatement(stmt, env);
     }
 
-    yield { node: stmt, env };
     return returnValue;
   }
 
@@ -191,6 +191,8 @@ export class Evaluator {
     const nestedEnv = new Environment(env);
     const condition = yield* this.evalExpression(node.condition, nestedEnv);
 
+    yield { node, env };
+
     let evaluated: Obj = NULL;
 
     if (condition === TRUE) {
@@ -213,6 +215,7 @@ export class Evaluator {
 
     async function* getCondition() {
       const condition = yield* evalExpression(node.condition, env);
+      yield { node, env };
       return condition === TRUE;
     }
 
@@ -249,6 +252,7 @@ export class Evaluator {
     }
 
     env.set(node.name.value, value);
+    yield { node, env };
     return NULL;
   }
 
@@ -260,6 +264,7 @@ export class Evaluator {
       return error;
     }
 
+    yield { node, env };
     return NULL;
   }
 
@@ -268,6 +273,7 @@ export class Evaluator {
       (yield* this.evalExpression(node.valueExpression, env)) ?? NULL;
     if (this.isError(value)) return value;
 
+    yield { node, env };
     return new ReturnValueObject({ value });
   }
 
