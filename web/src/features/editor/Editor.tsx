@@ -6,9 +6,10 @@ import {
   LetStatementComponent,
 } from '@editor/components';
 import { useParseCode } from '@editor/hooks/useParseCode';
-import { Statement, statementType } from '@editor/lib';
 import { Box, Stack, styled } from '@mui/material';
 import { match } from 'ts-pattern';
+
+import { Statement, statementType } from '@/lib/models/editorObject';
 
 import { NewStatementComponent } from './components/NewStatementComponent';
 import { useStatementList } from './store';
@@ -38,6 +39,8 @@ const StatementComponent: React.FC<{
       <IfStatementEndComponent id={id} />
     ))
     .with(statementType.NewStatement, () => <NewStatementComponent id={id} />)
+    .with(statementType.WhileStatementEnd, () => null)
+    .with(statementType.WhileStatementStart, () => null)
     .exhaustive();
 };
 

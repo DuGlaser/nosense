@@ -1,4 +1,3 @@
-import { Node, Statement } from '@editor/lib';
 import { useCallback } from 'react';
 import {
   atom,
@@ -8,6 +7,8 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+
+import { Node, Statement } from '@/lib/models/editorObject';
 
 type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
   nodes: Node['id'][];
@@ -77,6 +78,21 @@ const prevNodeState = selectorFamily<Node | undefined, Node['id']>({
     },
 });
 
+const statementDetailState = selectorFamily<Statement, Statement['id']>({
+  key: 'statementDetail',
+  get:
+    (id) =>
+    ({ get }) => {
+      const statement = get(statementsState(id));
+      const nodes = statement.nodes.map((node) => get(nodesState(node)));
+
+      return {
+        ...statement,
+        nodes,
+      } as Statement;
+    },
+});
+
 const statementLastNodeIdState = selectorFamily<
   Node['id'] | undefined,
   AtomStatement<Statement>['id']
@@ -125,6 +141,17 @@ export const useInsertNode = <T extends Statement>(statementId: T['id']) => {
       },
     [statementId]
   );
+};
+
+export const useStatements = () => {
+  return useRecoilCallback(({ snapshot }) => async () => {
+    const list = await snapshot.getPromise(statementListState);
+    const statements = await Promise.all(
+      list.map((item) => snapshot.getPromise(statementDetailState(item.id)))
+    );
+
+    return statements;
+  });
 };
 
 export const useStatement = <T extends Statement>(id: T['id']) => {

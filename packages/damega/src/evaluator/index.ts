@@ -42,7 +42,7 @@ export type {
   OutputText,
 } from './builtins';
 
-type EvaluatorGenerator = AsyncGenerator<
+export type EvaluatorGenerator = AsyncGenerator<
   {
     node: Statement;
     env: Environment;

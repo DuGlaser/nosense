@@ -1,8 +1,9 @@
 import { Editor } from '@editor';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Box, Button, styled } from '@mui/material';
-import { ErrorObject } from '@nosense/damega';
+import { ErrorObject, EvaluatorGenerator } from '@nosense/damega';
 import { NextPage } from 'next';
+import { useRef } from 'react';
 
 import { useDamega } from '@/hooks/useDamega';
 import { useDamegaInput } from '@/hooks/useDamegaInput';
@@ -10,16 +11,10 @@ import { useDamegaOutput } from '@/hooks/useDamegaOutput';
 
 const code = `
 let x: number = 0;
-let y: string = "x";
-let z: bool = true;
+let y: bool = true;
 x = 10;
 if (x) {
-  y = 20;
-  if (y > 10) {
-    z = true;
-  } else {
-    z = false;
-  }
+  y = false;
 }
 `;
 
@@ -69,10 +64,11 @@ const OutputLines = styled(Box)(({ theme }) => ({
 }));
 
 const IndexPage: NextPage = () => {
+  const generator = useRef<EvaluatorGenerator>();
   const { getInputEventCallback } = useDamegaInput();
   const { getOutputEventCallback, outputs } = useDamegaOutput();
 
-  const execCode = useDamega({
+  const { execCode, getExecCodeGenerator } = useDamega({
     returnInputEventFn: getInputEventCallback,
     returnOutputEventFn: getOutputEventCallback,
   });
@@ -87,7 +83,7 @@ const IndexPage: NextPage = () => {
           variant={'contained'}
           startIcon={<PlayArrowIcon />}
           onClick={async () => {
-            const { evaluated } = execCode(code);
+            const { evaluated } = await execCode();
             const result = await evaluated;
 
             if (result instanceof ErrorObject) {
@@ -96,6 +92,23 @@ const IndexPage: NextPage = () => {
           }}
         >
           実行
+        </Button>
+        <Button
+          sx={{
+            borderRadius: 0,
+          }}
+          variant={'contained'}
+          startIcon={<PlayArrowIcon />}
+          onClick={async () => {
+            if (generator.current) {
+              const result = await generator.current.next();
+              console.log({ result });
+            } else {
+              generator.current = await getExecCodeGenerator();
+            }
+          }}
+        >
+          ステップ実行
         </Button>
       </Header>
       <Box

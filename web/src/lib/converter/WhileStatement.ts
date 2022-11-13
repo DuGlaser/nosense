@@ -1,15 +1,37 @@
-import { WhileStatement } from '@nosense/damega';
+import { WhileStatement as DamegawhileStatemest } from '@nosense/damega';
 
-import { WhileStatementObject } from '@/lib/models/astObjects';
+import {
+  createWhileStatementEnd,
+  createWhileStatementStart,
+  Statement,
+  WhileStatementEnd,
+  WhileStatementStart,
+} from '@/lib/models/editorObject';
 
-import { convert2AstObject } from './convert2AstObject';
+import { statementConvertor } from '.';
 
-export const convert2WhileStatementObject = (
-  stmt: WhileStatement
-): WhileStatementObject => {
-  return {
-    _type: 'WhileStatement',
-    condition: stmt.condition.string(),
-    consequence: stmt.consequence.statements.map((_) => convert2AstObject(_)),
-  };
+export const whileStatemestConvertor = {
+  fromDamega: (
+    stmt: DamegawhileStatemest,
+    indent: number
+  ): [WhileStatementStart, ...Statement[], WhileStatementEnd] => {
+    return [
+      createWhileStatementStart({ condition: stmt.condition.string(), indent }),
+      ...statementConvertor.fromDamega(stmt.consequence, indent + 1),
+      createWhileStatementEnd({ indent }),
+    ];
+  },
+};
+
+export const whileStatemestStartConvertor = {
+  toDamega: (stmt: WhileStatementStart): string => {
+    const [, condition] = stmt.nodes;
+    return `while (${condition.content}) {`;
+  },
+};
+
+export const whileStatemestEndConvertor = {
+  toDamega: (): string => {
+    return `}`;
+  },
 };
