@@ -6,7 +6,7 @@ import {
   OutputEventCallback,
   Parser,
 } from '@nosense/damega';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useStatements } from '@/features/editor/store';
 import { programConvertor } from '@/lib/converter';
@@ -16,21 +16,38 @@ export const useDamega = (args: {
   returnOutputEventFn: () => OutputEventCallback;
 }) => {
   const getStatements = useStatements();
-  const execCode = useCallback(async () => {
+
+  const parseToken = useCallback(async () => {
     const statements = await getStatements();
     const code = programConvertor.toDamega(statements);
     const l = new Lexer(code);
-    const p = new Parser(l);
+    return new Parser(l).parseToken();
+  }, [getStatements]);
 
-    const e = new Evaluator({
+  const evaluator = useMemo(() => {
+    return new Evaluator({
       inputEventCallback: args.returnInputEventFn(),
       outputEventCallback: args.returnOutputEventFn(),
     });
-    const env = new Environment();
-
-    const evaluated = e.Eval(p.parseToken(), env);
-    return { evaluated, env };
   }, [JSON.stringify(args)]);
 
-  return execCode;
+  const execCode = useCallback(async () => {
+    const parsed = await parseToken();
+    const env = new Environment();
+
+    const evaluated = evaluator.Eval(parsed, env);
+    return { evaluated, env };
+  }, [evaluator, parseToken]);
+
+  const getExecCodeGenerator = useCallback(async () => {
+    const parsed = await parseToken();
+    const env = new Environment();
+
+    return evaluator.EvalGenerator(parsed, env);
+  }, [evaluator, parseToken]);
+
+  return {
+    execCode,
+    getExecCodeGenerator,
+  };
 };

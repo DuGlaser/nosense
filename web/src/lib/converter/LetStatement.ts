@@ -15,7 +15,7 @@ const token2EditorType = {
 const editorType2Damega = {
   [TYPE_NUMBER]: 'number',
   [TYPE_STRING]: 'string',
-  [TYPE_BOOLEAN]: 'boolean',
+  [TYPE_BOOLEAN]: 'bool',
 };
 
 // TODO: そろそろlet文の形式を変えたほうがいいと思う。
@@ -56,6 +56,9 @@ export const letStatementConvertor = {
       throw new Error(`${typeIdent}は変数の型として正しくありません。`);
     }
 
-    return `let ${varNames[0].content}: ${editorType2Damega[typeIdent]} = 0;`;
+    const value =
+      typeIdent === TYPE_NUMBER ? 0 : typeIdent === TYPE_STRING ? '""' : true;
+
+    return `let ${varNames[0].content}: ${editorType2Damega[typeIdent]} = ${value};`;
   },
 };
