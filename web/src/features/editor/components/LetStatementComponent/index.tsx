@@ -4,13 +4,13 @@ import {
   StatementWrapper,
   ValidateFn,
 } from '@editor/components';
-import { createNewStatement, LetStatement } from '@editor/lib';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Button, Stack, styled } from '@mui/material';
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { createNewStatement, LetStatement } from '@/lib/models/editorObject';
 import { hexToRgba } from '@/styles/utils';
 
 const typeIdentOption: CompleteOption[] = [
@@ -86,7 +86,7 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 insertStmt(statement.id, [
-                  createNewStatement(statement.indent),
+                  createNewStatement({ indent: statement.indent }),
                 ]);
                 e.preventDefault();
                 return;

@@ -87,7 +87,7 @@ const IndexPage: NextPage = () => {
           variant={'contained'}
           startIcon={<PlayArrowIcon />}
           onClick={async () => {
-            const { evaluated } = execCode(code);
+            const { evaluated } = await execCode();
             const result = await evaluated;
 
             if (result instanceof ErrorObject) {

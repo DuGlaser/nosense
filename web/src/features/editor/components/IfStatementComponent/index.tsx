@@ -3,8 +3,13 @@ import {
   EditableNodeComponent,
   StatementWrapper,
 } from '@editor/components';
-import { IfStatementElse, IfStatementEnd, IfStatementStart } from '@editor/lib';
 import { useStatement } from '@editor/store';
+
+import {
+  IfStatementElse,
+  IfStatementEnd,
+  IfStatementStart,
+} from '@/lib/models/editorObject';
 
 export const IfStatementStartComponent: React.FC<{
   id: IfStatementStart['id'];

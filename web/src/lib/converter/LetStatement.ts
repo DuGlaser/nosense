@@ -1,25 +1,61 @@
-import { LetStatement, TOKEN } from '@nosense/damega';
-import { match } from 'ts-pattern';
+import { LetStatement as DamegaLetStatement, TOKEN } from '@nosense/damega';
 
-import { LetStatementObject, TYPE_IDENTIFIER } from '@/lib/models/astObjects';
+import { createLetStatement, LetStatement } from '@/lib/models/editorObject';
 
-export const convert2LetStatementObject = (
-  stmt: LetStatement
-): LetStatementObject => {
-  const typeIdentifier = match(stmt.type.token.type)
-    .with(TOKEN.TYPE_NUMBER, () => TYPE_IDENTIFIER.NUMBER)
-    .with(TOKEN.TYPE_STRING, () => TYPE_IDENTIFIER.STRING)
-    .with(TOKEN.TYPE_BOOLEAN, () => TYPE_IDENTIFIER.BOOLEAN)
-    .run();
+const TYPE_NUMBER = '数値型';
+const TYPE_STRING = '文字列型';
+const TYPE_BOOLEAN = '論理型';
 
-  if (!typeIdentifier) {
-    console.error(`typeIdentifier is invalid.`, stmt.type.token);
-  }
+const token2EditorType = {
+  [TOKEN.TYPE_NUMBER]: TYPE_NUMBER,
+  [TOKEN.TYPE_STRING]: TYPE_STRING,
+  [TOKEN.TYPE_BOOLEAN]: TYPE_BOOLEAN,
+} as const;
 
-  return {
-    _type: 'LetStatement',
-    typeIdentifier,
-    expression: stmt.value.string(),
-    name: stmt.name.string(),
-  };
+const editorType2Damega = {
+  [TYPE_NUMBER]: 'number',
+  [TYPE_STRING]: 'string',
+  [TYPE_BOOLEAN]: 'boolean',
+};
+
+// TODO: そろそろlet文の形式を変えたほうがいいと思う。
+export const letStatementConvertor = {
+  fromDamega: (stmt: DamegaLetStatement): [LetStatement] => {
+    const typeIdentToken = stmt.type.token.type;
+
+    if (
+      !(
+        TOKEN.TYPE_NUMBER === typeIdentToken ||
+        TOKEN.TYPE_STRING === typeIdentToken ||
+        TOKEN.TYPE_BOOLEAN === typeIdentToken
+      )
+    ) {
+      throw new Error(
+        `${stmt.type.string()}は変数の型として正しくありません。`
+      );
+    }
+
+    return [
+      createLetStatement({
+        type: token2EditorType[typeIdentToken],
+        varNames: [stmt.name.string()],
+      }),
+    ];
+  },
+  toDamega: (stmt: LetStatement): string => {
+    const [typeNode, ...varNames] = stmt.nodes;
+    const typeIdent = typeNode.content;
+
+    if (
+      !(
+        TYPE_NUMBER === typeIdent ||
+        TYPE_STRING === typeIdent ||
+        TYPE_BOOLEAN === typeIdent
+      )
+    ) {
+      throw new Error(`${typeIdent}は変数の型として正しくありません。`);
+    }
+
+    return `let ${varNames[0].content}: ${editorType2Damega[typeIdent]} = 0;`;
+  },
 };

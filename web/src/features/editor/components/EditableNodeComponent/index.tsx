@@ -1,4 +1,3 @@
-import { EditableNode } from '@editor/lib';
 import { useNode } from '@editor/store';
 import { styled } from '@mui/material';
 import {
@@ -11,6 +10,7 @@ import {
   useState,
 } from 'react';
 
+import { EditableNode } from '@/lib/models/editorObject';
 import { hexToRgba } from '@/styles/utils';
 
 const EditableDiv = styled('div')(() => ({

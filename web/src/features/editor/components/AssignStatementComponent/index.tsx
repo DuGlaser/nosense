@@ -1,6 +1,7 @@
 import { EditableNodeComponent, StatementWrapper } from '@editor/components';
-import { AssignStatement } from '@editor/lib';
 import { useStatement } from '@editor/store';
+
+import { AssignStatement } from '@/lib/models/editorObject';
 
 export const AssignStatementComponent: React.FC<{
   id: AssignStatement['id'];

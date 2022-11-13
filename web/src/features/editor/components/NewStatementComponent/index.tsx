@@ -3,13 +3,14 @@ import {
   CursorNodeComponent,
   StatementWrapper,
 } from '@editor/components';
-import { createLetStatement, CursorNode } from '@editor/lib';
 import {
   useDeleteStatement,
   useInsertStatement,
   useStatement,
 } from '@editor/store';
 import { styled } from '@mui/material';
+
+import { createLetStatement, CursorNode } from '@/lib/models/editorObject';
 
 const Placeholder = styled('div')({
   opacity: 0.5,
@@ -28,7 +29,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
       displayName: '代入文',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [createLetStatement('')]);
+        insertStmt(id, [createLetStatement({ type: '', varNames: [''] })]);
         deleteStmt(id);
       },
     },
