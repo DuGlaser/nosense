@@ -1,6 +1,4 @@
-import { NULL } from '@/evaluator';
-
-import { ErrorObject, Obj } from './object';
+import { ErrorObject, Obj, OBJECT } from './object';
 
 export class Environment {
   public outer: Environment | undefined;
@@ -23,7 +21,7 @@ export class Environment {
       return new ErrorObject({ message: `${key} is not found.` });
     }
 
-    if (value !== NULL && newValue.type() !== value.type()) {
+    if (value.type() !== OBJECT.NULL && newValue.type() !== value.type()) {
       return new ErrorObject({
         message: `type mismatch: got=${newValue.type()}, expected=${value.type()}`,
       });
