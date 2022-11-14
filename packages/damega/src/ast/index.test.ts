@@ -28,10 +28,12 @@ describe('Ast', () => {
           token: new Token(TOKEN.STRING, 'test'),
           value: 'test',
         }),
-        name: new Identifier({
-          token: new Token(TOKEN.IDENT, 'test'),
-          value: 'test',
-        }),
+        names: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'test'),
+            value: 'test',
+          }),
+        ],
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_STRING, 'string'),
         }),
@@ -49,10 +51,12 @@ describe('Ast', () => {
           token: new Token(TOKEN.NUMBER, '5'),
           value: 5,
         }),
-        name: new Identifier({
-          token: new Token(TOKEN.IDENT, 'test'),
-          value: 'test',
-        }),
+        names: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'test'),
+            value: 'test',
+          }),
+        ],
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_NUMBER, 'number'),
         }),
@@ -70,10 +74,12 @@ describe('Ast', () => {
           token: new Token(TOKEN.TRUE, 'true'),
           value: true,
         }),
-        name: new Identifier({
-          token: new Token(TOKEN.IDENT, 'test'),
-          value: 'test',
-        }),
+        names: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'test'),
+            value: 'test',
+          }),
+        ],
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_BOOLEAN, 'bool'),
         }),
@@ -121,10 +127,12 @@ describe('Ast', () => {
             value: 1,
           }),
         }),
-        name: new Identifier({
-          token: new Token(TOKEN.IDENT, 'x'),
-          value: 'x',
-        }),
+        names: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'x'),
+            value: 'x',
+          }),
+        ],
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_NUMBER, 'number'),
         }),
@@ -172,10 +180,12 @@ if (true) {
                   value: 1,
                 }),
               }),
-              name: new Identifier({
-                token: new Token(TOKEN.IDENT, 'x'),
-                value: 'x',
-              }),
+              names: [
+                new Identifier({
+                  token: new Token(TOKEN.IDENT, 'x'),
+                  value: 'x',
+                }),
+              ],
               type: new TypeIdentifier({
                 token: new Token(TOKEN.TYPE_NUMBER, 'number'),
               }),
@@ -211,10 +221,12 @@ if (true) {
                         value: 1,
                       }),
                     }),
-                    name: new Identifier({
-                      token: new Token(TOKEN.IDENT, 'x'),
-                      value: 'x',
-                    }),
+                    names: [
+                      new Identifier({
+                        token: new Token(TOKEN.IDENT, 'x'),
+                        value: 'x',
+                      }),
+                    ],
                     type: new TypeIdentifier({
                       token: new Token(TOKEN.TYPE_NUMBER, 'number'),
                     }),
@@ -281,10 +293,12 @@ while (1 > 10) {
                 token: new Token(TOKEN.NUMBER, '10'),
                 value: 10,
               }),
-              name: new Identifier({
-                token: new Token(TOKEN.IDENT, 'x'),
-                value: 'x',
-              }),
+              names: [
+                new Identifier({
+                  token: new Token(TOKEN.IDENT, 'x'),
+                  value: 'x',
+                }),
+              ],
               type: new TypeIdentifier({
                 token: new Token(TOKEN.TYPE_NUMBER, 'number'),
               }),
@@ -318,10 +332,12 @@ while (1 > 10) {
             value: true,
           }),
         }),
-        name: new Identifier({
-          token: new Token(TOKEN.IDENT, 'x'),
-          value: 'x',
-        }),
+        names: [
+          new Identifier({
+            token: new Token(TOKEN.IDENT, 'x'),
+            value: 'x',
+          }),
+        ],
         type: new TypeIdentifier({
           token: new Token(TOKEN.TYPE_BOOLEAN, 'bool'),
         }),

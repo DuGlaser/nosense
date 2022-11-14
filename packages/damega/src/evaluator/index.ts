@@ -236,14 +236,16 @@ export class Evaluator {
   }
 
   private async *evalLetStatement(node: LetStatement, env: Environment) {
-    const value = yield* this.evalExpression(node.value, env);
+    const value = node.value
+      ? yield* this.evalExpression(node.value, env)
+      : NULL;
     if (!value) throw new Error('invalid object.');
 
     if (this.isError(value)) {
       return value;
     }
 
-    if (!isTypeMatched(node.type.token.type, value)) {
+    if (value !== NULL && !isTypeMatched(node.type.token.type, value)) {
       const expectedType = getMatchedType(node.type.token.type);
 
       return new ErrorObject({
@@ -251,7 +253,10 @@ export class Evaluator {
       });
     }
 
-    env.set(node.name.value, value);
+    node.names.forEach((name) => {
+      env.set(name.value, value);
+    });
+
     yield { node, env };
     return NULL;
   }
