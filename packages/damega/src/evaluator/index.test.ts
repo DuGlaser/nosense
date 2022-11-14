@@ -10,7 +10,7 @@ import {
 } from '@/object';
 import { Parser } from '@/parser';
 
-import { Evaluator } from '.';
+import { Evaluator, NULL } from '.';
 
 const mockInputCallback = jest.fn();
 const mockOutputCallback = jest.fn((args) => {
@@ -79,6 +79,18 @@ describe('Evaluator', () => {
         {
           input: `let x: string = "test"; x;`,
           expected: new StringObject({ value: 'test' }),
+        },
+        {
+          input: `let x: string; x;`,
+          expected: NULL,
+        },
+        {
+          input: `let x, y: string; x;`,
+          expected: NULL,
+        },
+        {
+          input: `let x, y: string; y;`,
+          expected: NULL,
         },
       ];
 
@@ -228,9 +240,8 @@ describe('Evaluator', () => {
         },
         {
           input: `
-          let x: number = 0;
+          let x, z: number = 0;
           let y: number = 1;
-          let z: number = 0;
           if (y > x) {
             z = 10;
           } else {
@@ -242,9 +253,8 @@ describe('Evaluator', () => {
         },
         {
           input: `
-          let x: number = 0;
+          let x, z: number = 0;
           let y: number = 1;
-          let z: number = 0;
           if (y < x) {
             z = 10;
           } else {

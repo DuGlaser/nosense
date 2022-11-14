@@ -18,7 +18,6 @@ const editorType2Damega = {
   [TYPE_BOOLEAN]: 'bool',
 };
 
-// TODO: そろそろlet文の形式を変えたほうがいいと思う。
 export const letStatementConvertor = {
   fromDamega: (stmt: DamegaLetStatement): [LetStatement] => {
     const typeIdentToken = stmt.type.token.type;
@@ -38,7 +37,7 @@ export const letStatementConvertor = {
     return [
       createLetStatement({
         type: token2EditorType[typeIdentToken],
-        varNames: [stmt.name.string()],
+        varNames: stmt.names.map((name) => name.value),
       }),
     ];
   },
@@ -56,9 +55,8 @@ export const letStatementConvertor = {
       throw new Error(`${typeIdent}は変数の型として正しくありません。`);
     }
 
-    const value =
-      typeIdent === TYPE_NUMBER ? 0 : typeIdent === TYPE_STRING ? '""' : true;
-
-    return `let ${varNames[0].content}: ${editorType2Damega[typeIdent]} = ${value};`;
+    return `let ${varNames.map((varName) => varName.content).join(',')}: ${
+      editorType2Damega[typeIdent]
+    };`;
   },
 };

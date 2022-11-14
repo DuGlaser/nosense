@@ -182,17 +182,27 @@ export class Parser {
     return new ExpressionStatement({ token, expression });
   }
 
+  // let x, y, z: string;
   private parseLetStatement(): LetStatement | undefined {
     const token = this.curToken;
 
-    if (!this.expectPeek(TOKEN.IDENT)) {
-      return undefined;
-    }
+    const names: Identifier[] = [];
 
-    const name = new Identifier({
-      token: this.curToken,
-      value: this.curToken.ch,
-    });
+    while (this.peekTokenIs(TOKEN.IDENT)) {
+      this.nextToken();
+      names.push(
+        new Identifier({
+          token: this.curToken,
+          value: this.curToken.ch,
+        })
+      );
+
+      if (!this.peekTokenIs(TOKEN.COMMA)) {
+        break;
+      }
+
+      this.nextToken();
+    }
 
     if (!this.expectPeek(TOKEN.COLON)) {
       return undefined;
@@ -203,21 +213,22 @@ export class Parser {
       token: this.curToken,
     });
 
-    if (!this.expectPeek(TOKEN.ASSIGN)) {
-      return undefined;
-    }
-    this.nextToken();
+    let value: Expression | undefined = undefined;
+    if (this.peekTokenIs(TOKEN.ASSIGN)) {
+      this.nextToken();
+      this.nextToken();
 
-    const value = this.parseExpression(Precedence.LOWEST);
-    if (!value) {
-      return undefined;
+      value = this.parseExpression(Precedence.LOWEST);
+      if (!value) {
+        return undefined;
+      }
     }
 
     if (!this.expectPeek(TOKEN.SEMICOLON)) {
       return undefined;
     }
 
-    return new LetStatement({ token, value, name, type });
+    return new LetStatement({ token, value, names, type });
   }
 
   private parseIfStatement(): IfStatement | undefined {

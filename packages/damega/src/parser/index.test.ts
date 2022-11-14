@@ -26,13 +26,18 @@ describe('Parser', () => {
     const tests = [
       {
         input: `let test: string = "test";`,
-        expectedIdentifier: 'test',
+        expectedIdentifier: ['test'],
         expectedValue: 'test',
       },
       {
-        input: `let test: string = "";`,
-        expectedIdentifier: 'test',
+        input: `let test, test2: string = "";`,
+        expectedIdentifier: ['test', 'test2'],
         expectedValue: '',
+      },
+      {
+        input: `let test, test2: string;`,
+        expectedIdentifier: ['test', 'test2'],
+        expectedValue: undefined,
       },
     ];
 
@@ -48,7 +53,9 @@ describe('Parser', () => {
         throw new Error(`stmt is not StringStatement.`);
       }
 
-      expect(stmt.name.value).toBe(test.expectedIdentifier);
+      expect(stmt.names.map((name) => name.value)).toStrictEqual(
+        test.expectedIdentifier
+      );
       expect(stmt.type.token.type).toBe(TOKEN.TYPE_STRING);
       testStringLiteral(test.expectedValue, stmt.value);
     });
@@ -58,12 +65,12 @@ describe('Parser', () => {
     const tests = [
       {
         input: `let test: number = 1;`,
-        expectedIdentifier: 'test',
+        expectedIdentifier: ['test'],
         expectedValue: 1,
       },
       {
         input: `let test: number = 100;`,
-        expectedIdentifier: 'test',
+        expectedIdentifier: ['test'],
         expectedValue: 100,
       },
     ];
@@ -80,7 +87,9 @@ describe('Parser', () => {
         throw new Error(`stmt is not NumberStatement.`);
       }
 
-      expect(stmt.name.value).toBe(test.expectedIdentifier);
+      expect(stmt.names.map((name) => name.value)).toStrictEqual(
+        test.expectedIdentifier
+      );
       testNumberLiteral(test.expectedValue, stmt.value);
     });
   });
@@ -89,12 +98,12 @@ describe('Parser', () => {
     const tests = [
       {
         input: `let test: bool = true;`,
-        expectedIdentifier: 'test',
+        expectedIdentifier: ['test'],
         expectedValue: true,
       },
       {
         input: `let test: bool = false;`,
-        expectedIdentifier: 'test',
+        expectedIdentifier: ['test'],
         expectedValue: false,
       },
     ];
@@ -111,7 +120,9 @@ describe('Parser', () => {
         throw new Error(`stmt is not BooleanStatement.`);
       }
 
-      expect(stmt.name.value).toBe(test.expectedIdentifier);
+      expect(stmt.names.map((name) => name.value)).toStrictEqual(
+        test.expectedIdentifier
+      );
       testBooleanLiteral(test.expectedValue, stmt.value);
     });
   });
@@ -579,7 +590,15 @@ function testParse(input: string): Program {
   return program;
 }
 
-function testStringLiteral(expected: string, literal: Expression) {
+function testStringLiteral(
+  expected: string | undefined,
+  literal: Expression | undefined
+) {
+  if (expected === undefined && literal === undefined) {
+    expect(expected).toBe(literal);
+    return;
+  }
+
   if (!(literal instanceof StringLiteral)) {
     throw new Error(`literal is not StringLiteral.`);
   }
@@ -587,7 +606,10 @@ function testStringLiteral(expected: string, literal: Expression) {
   expect(literal.value).toBe(expected);
 }
 
-function testNumberLiteral(expected: number, literal: Expression) {
+function testNumberLiteral(
+  expected: number | undefined,
+  literal: Expression | undefined
+) {
   if (!(literal instanceof NumberLiteral)) {
     throw new Error(`literal is not NumberLiteral.`);
   }
@@ -595,7 +617,10 @@ function testNumberLiteral(expected: number, literal: Expression) {
   expect(literal.value).toBe(expected);
 }
 
-function testBooleanLiteral(expected: boolean, literal: Expression) {
+function testBooleanLiteral(
+  expected: boolean | undefined,
+  literal: Expression | undefined
+) {
   if (!(literal instanceof BooleanLiteral)) {
     throw new Error(`literal is not NumberLiteral.`);
   }
@@ -603,7 +628,7 @@ function testBooleanLiteral(expected: boolean, literal: Expression) {
   expect(literal.value).toBe(expected);
 }
 
-function testLiteral<T>(exp: Expression, expected: T) {
+function testLiteral<T>(exp: Expression | undefined, expected: T) {
   if (exp instanceof StringLiteral && typeof expected === 'string') {
     return testStringLiteral(expected, exp);
   }
@@ -649,8 +674,8 @@ function testLetStatement(args: LetParameter) {
 
   expect(expectedType).toBe(t.ch);
 
-  const name = statement.name;
-  expect(expectedIdentifier).toBe(name.string());
+  const names = statement.names;
+  expect(expectedIdentifier).toBe(names[0].string());
 
   testLiteral(statement.value, expectedValue);
 }
