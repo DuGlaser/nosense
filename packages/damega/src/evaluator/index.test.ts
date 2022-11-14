@@ -197,6 +197,14 @@ describe('Evaluator', () => {
         `,
           expected: new BooleanObject({ value: false }),
         },
+        {
+          input: `
+          let x: bool;
+          x = true;
+          x;
+        `,
+          expected: new BooleanObject({ value: true }),
+        },
       ];
 
       for (const test of tests) {
