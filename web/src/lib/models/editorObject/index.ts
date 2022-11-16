@@ -1,6 +1,7 @@
 import { AssignStatement } from './AssignStatement';
 import { CursorNode } from './CursorNode';
 import { EditableNode } from './EditableNode';
+import { ExpressionStatement } from './ExpressionStatement';
 import {
   IfStatementElse,
   IfStatementEnd,
@@ -32,6 +33,7 @@ export interface BaseNode<T = NodeType> {
 
 export const statementType = {
   AssignStatement: 'AssignStatement',
+  ExpressionStatement: 'ExpressionStatement',
   IfStatementElse: 'IfStatementElse',
   IfStatementEnd: 'IfStatementEnd',
   IfStatementStart: 'IfStatementStart',
@@ -47,6 +49,7 @@ export type PickStatementType<T extends keyof typeof statementType> =
 
 export type Statement =
   | AssignStatement
+  | ExpressionStatement
   | IfStatementElse
   | IfStatementEnd
   | IfStatementStart
@@ -65,6 +68,7 @@ export interface BaseStatement<T = StatementType> {
 export * from './AssignStatement';
 export * from './CursorNode';
 export * from './EditableNode';
+export * from './ExpressionStatement';
 export * from './IfStatement';
 export * from './LetStatement';
 export * from './NewStatement';

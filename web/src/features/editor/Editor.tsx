@@ -1,9 +1,12 @@
 import {
   AssignStatementComponent,
+  ExpressionStatementComponent,
   IfStatementElseComponent,
   IfStatementEndComponent,
   IfStatementStartComponent,
   LetStatementComponent,
+  WhileStatementEndComponent,
+  WhileStatementStartComponent,
 } from '@editor/components';
 import { useParseCode } from '@editor/hooks/useParseCode';
 import { Box, Stack, styled } from '@mui/material';
@@ -29,6 +32,9 @@ const StatementComponent: React.FC<{
     .with(statementType.AssignStatement, () => (
       <AssignStatementComponent id={id} />
     ))
+    .with(statementType.ExpressionStatement, () => (
+      <ExpressionStatementComponent id={id} />
+    ))
     .with(statementType.IfStatementStart, () => (
       <IfStatementStartComponent id={id} />
     ))
@@ -39,8 +45,12 @@ const StatementComponent: React.FC<{
       <IfStatementEndComponent id={id} />
     ))
     .with(statementType.NewStatement, () => <NewStatementComponent id={id} />)
-    .with(statementType.WhileStatementEnd, () => null)
-    .with(statementType.WhileStatementStart, () => null)
+    .with(statementType.WhileStatementEnd, () => (
+      <WhileStatementEndComponent id={id} />
+    ))
+    .with(statementType.WhileStatementStart, () => (
+      <WhileStatementStartComponent id={id} />
+    ))
     .exhaustive();
 };
 

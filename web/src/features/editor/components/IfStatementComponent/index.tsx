@@ -20,7 +20,7 @@ export const IfStatementStartComponent: React.FC<{
   return (
     <StatementWrapper indent={statement.indent}>
       <CursorNodeComponent id={cursor} />
-      <span>IfStart (</span>
+      <span>if (</span>
       <EditableNodeComponent id={conditionExp} />
       <span>)</span>
     </StatementWrapper>
