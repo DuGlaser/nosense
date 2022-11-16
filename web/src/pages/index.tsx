@@ -16,6 +16,7 @@ x = 10;
 if (x) {
   y = false;
 }
+Println(x);
 `;
 
 const Wrapper = styled('div')(({ theme }) => ({

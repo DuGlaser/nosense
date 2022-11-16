@@ -1,6 +1,7 @@
 import {
   AssignStatement,
   BlockStatement,
+  ExpressionStatement,
   IfStatement,
   LetStatement,
   Program,
@@ -13,6 +14,7 @@ import { Statement, statementType } from '@/lib/models/editorObject';
 
 import { assignStatementConvertor } from './AssignStatement';
 import { blockStatementConvertor } from './BlockStatement';
+import { expressionStatementConvertor } from './ExpressionStatement';
 import {
   ifStatemestConvertor,
   ifStatemestElseConvertor,
@@ -44,12 +46,18 @@ export const statementConvertor = {
       .with(P.instanceOf(WhileStatement), (n) =>
         whileStatemestConvertor.fromDamega(n, indent)
       )
+      .with(P.instanceOf(ExpressionStatement), (n) =>
+        expressionStatementConvertor.fromDamega(n, indent)
+      )
       .otherwise(() => []);
   },
   toDamega: (stmt: Statement): string => {
     return match(stmt)
       .with({ _type: statementType.AssignStatement }, (n) =>
         assignStatementConvertor.toDamega(n)
+      )
+      .with({ _type: statementType.ExpressionStatement }, (n) =>
+        expressionStatementConvertor.toDamega(n)
       )
       .with({ _type: statementType.IfStatementStart }, (n) =>
         ifStatemestStartConvertor.toDamega(n)

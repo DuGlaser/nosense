@@ -1,5 +1,6 @@
 import {
   AssignStatementComponent,
+  ExpressionStatementComponent,
   IfStatementElseComponent,
   IfStatementEndComponent,
   IfStatementStartComponent,
@@ -28,6 +29,9 @@ const StatementComponent: React.FC<{
     .with(statementType.LetStatement, () => <LetStatementComponent id={id} />)
     .with(statementType.AssignStatement, () => (
       <AssignStatementComponent id={id} />
+    ))
+    .with(statementType.ExpressionStatement, () => (
+      <ExpressionStatementComponent id={id} />
     ))
     .with(statementType.IfStatementStart, () => (
       <IfStatementStartComponent id={id} />
