@@ -5,3 +5,4 @@ export * from './ExpressionStatementComponent';
 export * from './IfStatementComponent';
 export * from './LetStatementComponent';
 export * from './StatementWrapper';
+export * from './WhileStatementComponent';
