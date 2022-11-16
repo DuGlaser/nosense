@@ -10,7 +10,7 @@ export const AssignStatementComponent: React.FC<{
   const [varName, exp] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
+    <StatementWrapper indent={statement.indent}>
       <EditableNodeComponent id={varName} />
       =
       <EditableNodeComponent id={exp} />

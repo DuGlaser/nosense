@@ -71,7 +71,7 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
   };
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
+    <StatementWrapper indent={statement.indent}>
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}

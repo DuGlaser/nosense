@@ -1,4 +1,5 @@
 import {
+  BaseTextComopnent,
   CursorNodeComponent,
   EditableNodeComponent,
   StatementWrapper,
@@ -20,9 +21,9 @@ export const IfStatementStartComponent: React.FC<{
   return (
     <StatementWrapper indent={statement.indent}>
       <CursorNodeComponent id={cursor} />
-      <span>if (</span>
+      <BaseTextComopnent>if (</BaseTextComopnent>
       <EditableNodeComponent id={conditionExp} />
-      <span>)</span>
+      <BaseTextComopnent>)</BaseTextComopnent>
     </StatementWrapper>
   );
 };
@@ -34,8 +35,8 @@ export const IfStatementElseComponent: React.FC<{
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
-      <div>else</div>
+    <StatementWrapper indent={statement.indent}>
+      <BaseTextComopnent>else</BaseTextComopnent>
       <CursorNodeComponent id={cursor} />
     </StatementWrapper>
   );
@@ -48,8 +49,8 @@ export const IfStatementEndComponent: React.FC<{
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
-      <div>endif</div>
+    <StatementWrapper indent={statement.indent}>
+      <BaseTextComopnent>endif</BaseTextComopnent>
       <CursorNodeComponent id={cursor} />
     </StatementWrapper>
   );

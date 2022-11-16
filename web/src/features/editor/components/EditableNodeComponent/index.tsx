@@ -1,3 +1,4 @@
+import { BaseTextComopnent } from '@editor/components';
 import { useNode } from '@editor/store';
 import { styled } from '@mui/material';
 import {
@@ -13,14 +14,9 @@ import {
 import { EditableNode } from '@/lib/models/editorObject';
 import { hexToRgba } from '@/styles/utils';
 
-const EditableDiv = styled('div')(() => ({
-  border: 'none',
+const EditableDiv = styled(BaseTextComopnent)(() => ({
   minWidth: '5px',
-  padding: '1px 4px',
   position: 'relative',
-  '&:focus': {
-    outline: '0px solid transparent',
-  },
   '&[data-has-error="true"]': {
     textDecoration: 'underline',
     textDecorationStyle: 'wavy',
@@ -218,6 +214,7 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   return (
     <div>
       <EditableDiv
+        data-node-label="editable"
         spellCheck={false}
         {...rest}
         // TODO: popupなどでもっとわかりやすくエラーを表示するようにする
