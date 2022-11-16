@@ -43,7 +43,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   ];
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={false}>
+    <StatementWrapper indent={statement.indent}>
       <CursorNodeComponent
         id={cursor}
         completeOptions={options}

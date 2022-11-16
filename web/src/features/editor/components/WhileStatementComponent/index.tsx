@@ -1,4 +1,5 @@
 import {
+  BaseTextComopnent,
   CursorNodeComponent,
   EditableNodeComponent,
   StatementWrapper,
@@ -19,9 +20,9 @@ export const WhileStatementStartComponent: React.FC<{
   return (
     <StatementWrapper indent={statement.indent}>
       <CursorNodeComponent id={cursor} />
-      <span>while (</span>
+      <BaseTextComopnent>while (</BaseTextComopnent>
       <EditableNodeComponent id={conditionExp} />
-      <span>)</span>
+      <BaseTextComopnent>)</BaseTextComopnent>
     </StatementWrapper>
   );
 };
@@ -33,8 +34,8 @@ export const WhileStatementEndComponent: React.FC<{
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
-      <div>endwhile</div>
+    <StatementWrapper indent={statement.indent}>
+      <BaseTextComopnent>endwhile</BaseTextComopnent>
       <CursorNodeComponent id={cursor} />
     </StatementWrapper>
   );

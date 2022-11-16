@@ -10,7 +10,7 @@ export const ExpressionStatementComponent: React.FC<{
   const [exp] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} needFrontSpace={true}>
+    <StatementWrapper indent={statement.indent}>
       <EditableNodeComponent id={exp} />
     </StatementWrapper>
   );
