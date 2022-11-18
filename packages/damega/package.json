@@ -20,7 +20,7 @@
     "lint-fix:eslint": "TIMING=1 eslint . --fix"
   },
   "devDependencies": {
-    "@types/jest": "29.2.2",
+    "@types/jest": "29.2.3",
     "eslint-plugin-custom": "*",
     "jest": "29.3.1",
     "ts-jest": "29.0.3",
