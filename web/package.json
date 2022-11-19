@@ -23,8 +23,8 @@
   "dependencies": {
     "@emotion/react": "11.10.5",
     "@emotion/styled": "11.10.5",
-    "@mui/icons-material": "5.10.9",
-    "@mui/material": "5.10.13",
+    "@mui/icons-material": "5.10.14",
+    "@mui/material": "5.10.14",
     "@nosense/damega": "*",
     "next": "12.3.3",
     "recoil": "^0.7.6",
