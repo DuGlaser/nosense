@@ -34,7 +34,11 @@ import {
   StringObject,
 } from '@/object';
 
-import { builtins, InputEventCallback, OutputEventCallback } from './builtins';
+import {
+  generateBuiltinFunctions,
+  InputEventCallback,
+  OutputEventCallback,
+} from './builtins';
 
 export type {
   InputEventCallback,
@@ -57,13 +61,13 @@ export const NULL = new NullObject();
 const MAX_CALL_STACK = 3000_000_000 as const;
 
 export class Evaluator {
-  private builtins: ReturnType<typeof builtins>;
+  private getBuiltinFunction: ReturnType<typeof generateBuiltinFunctions>;
 
   constructor(args: {
     inputEventCallback: InputEventCallback;
     outputEventCallback: OutputEventCallback;
   }) {
-    this.builtins = builtins(args);
+    this.getBuiltinFunction = generateBuiltinFunctions(args);
   }
 
   public async Eval(program: Program, env: Environment): Promise<Obj> {
@@ -507,11 +511,14 @@ export class Evaluator {
     return b ? TRUE : FALSE;
   }
 
-  private evalIdentifier(node: Identifier, env: Environment): Obj {
+  private async evalIdentifier(
+    node: Identifier,
+    env: Environment
+  ): Promise<Obj> {
     const value = env.get(node.value);
     if (value) return value;
 
-    const builtin = this.builtins[node.value];
+    const builtin = await this.getBuiltinFunction(node.value);
     if (builtin) return builtin;
 
     return new ErrorObject({ message: 'identifier not found: ' + node.value });
