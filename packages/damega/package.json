@@ -16,6 +16,7 @@
     "lint-fix": "run-s lint-fix:**",
     "lint-fix:eslint": "TIMING=1 eslint . --fix",
     "lint:eslint": "TIMING=1 eslint .",
+    "repl": "npm run ts-node/esm ./scripts/repl.ts",
     "resolve-path": "npm run ts-node/esm ./scripts/resolve-path.ts",
     "test": "jest",
     "test:dev": "jest --watch",
