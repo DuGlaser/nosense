@@ -2,6 +2,7 @@
   "name": "@nosense/damega",
   "version": "0.0.0",
   "main": "dist/index.js",
+  "type": "module",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "license": "MIT",
@@ -11,13 +12,14 @@
     "build": "run-s clean build:ts resolve-path",
     "build:ts": "tsc -d -p tsconfig.build.json",
     "clean": "rm -rf dist",
-    "resolve-path": "ts-node ./scripts/resolve-path.ts",
-    "test": "jest",
-    "test:dev": "jest --watch",
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
+    "lint-fix:eslint": "TIMING=1 eslint . --fix",
     "lint:eslint": "TIMING=1 eslint .",
-    "lint-fix:eslint": "TIMING=1 eslint . --fix"
+    "resolve-path": "npm run ts-node/esm ./scripts/resolve-path.ts",
+    "test": "jest",
+    "test:dev": "jest --watch",
+    "ts-node/esm": "node --loader ts-node/esm --es-module-specifier-resolution=node"
   },
   "devDependencies": {
     "@types/jest": "29.2.2",
