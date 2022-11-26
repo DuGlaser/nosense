@@ -10,10 +10,8 @@ import {
 
 import { FALSE, NULL, TRUE } from '.';
 
-export type OutputText = string | number | boolean | null;
-
-export type InputEventCallback = () => Promise<OutputText>;
-export type OutputEventCallback = (text: OutputText) => void;
+export type InputEventCallback = () => Promise<string | undefined>;
+export type OutputEventCallback = (text: string) => void;
 
 type BuiltinObjectGenerator = (ctx: {
   commands: string[];
@@ -36,20 +34,39 @@ const generatePrintln: BuiltinObjectGenerator = (ctx) =>
         .with(P.instanceOf(BooleanObject), (o) => o.value)
         .otherwise(() => null);
 
-      ctx.outputEventCallback(value);
+      ctx.outputEventCallback(value?.toString() ?? '');
     },
   });
+
+const isDamegaNumber = (target: string): boolean => {
+  const matched = target.match(/[0-9]+(\.[0-9]+)?/);
+
+  if (!matched) return false;
+  return matched?.length > 0 && matched[0] === target;
+};
+
+const isDamegaBoolean = (target: string): boolean => {
+  return ['true', 'false'].includes(target);
+};
 
 const generateInput: BuiltinObjectGenerator = (ctx) =>
   new BuiltinObject({
     fn: async () => {
-      const value: OutputText = await ctx.inputEventCallback();
+      const value = await ctx.inputEventCallback();
 
-      return match(value)
-        .with(P.number, (v) => new NumberObject({ value: v }))
-        .with(P.string, (v) => new StringObject({ value: v }))
-        .with(P.boolean, (v) => (v ? TRUE : FALSE))
-        .otherwise(() => NULL);
+      if (value === undefined) {
+        return NULL;
+      }
+
+      if (isDamegaNumber(value)) {
+        return new NumberObject({ value: Number(value) });
+      }
+
+      if (isDamegaBoolean(value)) {
+        return value === 'true' ? TRUE : FALSE;
+      }
+
+      return new StringObject({ value: value });
     },
   });
 

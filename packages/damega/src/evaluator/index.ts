@@ -40,11 +40,7 @@ import {
   OutputEventCallback,
 } from './builtins';
 
-export type {
-  InputEventCallback,
-  OutputEventCallback,
-  OutputText,
-} from './builtins';
+export type { InputEventCallback, OutputEventCallback } from './builtins';
 
 export type EvaluatorGenerator = AsyncGenerator<
   {

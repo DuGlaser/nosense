@@ -1,13 +1,12 @@
-import { OutputText } from '@nosense/damega';
 import { useCallback, useState } from 'react';
 
 export const useDamegaOutput = () => {
-  const [outputs, setOutputs] = useState<OutputText[]>([]);
+  const [outputs, setOutputs] = useState<string[]>([]);
 
   const getOutputEventCallback = useCallback(() => {
     setOutputs([]);
 
-    return (output: OutputText) => {
+    return (output: string) => {
       setOutputs((cur) => [...cur, output]);
     };
   }, []);
