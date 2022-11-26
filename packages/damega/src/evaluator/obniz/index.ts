@@ -25,12 +25,17 @@ export class DamegaObniz extends ObnizModule {
 
   public getCommandList() {
     return {
-      ['INITIAL']: new BuiltinObject({
+      ['CONNECT']: new BuiltinObject({
         fn: async (code: Obj) => {
           if (!(code instanceof StringObject)) {
             return;
           }
           await this.init(code.value);
+        },
+      }),
+      ['CLOSE']: new BuiltinObject({
+        fn: async () => {
+          await getInstance()?.closeWait();
         },
       }),
       ['LED']: new DamegaObnizLED(getInstance()),
