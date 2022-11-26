@@ -1,13 +1,13 @@
 import Obniz from 'obniz/dist/src/obniz';
-import type LED from 'obniz/dist/src/parts/Light/LED/index.d';
 
-import { BuiltinObject, NumberObject, Obj, StringObject } from '@/object';
+import { BuiltinObject, Obj, StringObject } from '@/object';
 
 import { ObnizModule } from './interface';
+import { DamegaObnizLED } from './led';
 
 let obnizInstance: Obniz | undefined = undefined;
 
-function getInstance() {
+export function getInstance() {
   return obnizInstance;
 }
 
@@ -50,63 +50,5 @@ export class DamegaObniz extends ObnizModule {
     const instance = new Obniz(code, { obnizid_dialog: false });
     setInstance(instance);
     await instance.connectWait({ timeout: 10000 });
-  }
-}
-
-class DamegaObnizLED extends ObnizModule {
-  constructor(instance: Obniz | undefined) {
-    super(instance);
-    this.commandList = {
-      ...this.getCommandList(),
-    };
-  }
-
-  public getCommandList() {
-    return {
-      ['ON']: new BuiltinObject({
-        fn: (anode: Obj, cathode: Obj) => {
-          if (
-            anode instanceof NumberObject &&
-            cathode instanceof NumberObject
-          ) {
-            this.getLED(anode.value, cathode.value)?.on();
-          }
-        },
-      }),
-      ['OFF']: new BuiltinObject({
-        fn: (anode: Obj, cathode: Obj) => {
-          if (
-            anode instanceof NumberObject &&
-            cathode instanceof NumberObject
-          ) {
-            this.getLED(anode.value, cathode.value)?.off();
-          }
-        },
-      }),
-      ['BLINK']: new BuiltinObject({
-        fn: (anode: Obj, cathode: Obj) => {
-          if (
-            anode instanceof NumberObject &&
-            cathode instanceof NumberObject
-          ) {
-            this.getLED(anode.value, cathode.value)?.blink();
-          }
-        },
-      }),
-      ['END_BLINK']: new BuiltinObject({
-        fn: (anode: Obj, cathode: Obj) => {
-          if (
-            anode instanceof NumberObject &&
-            cathode instanceof NumberObject
-          ) {
-            this.getLED(anode.value, cathode.value)?.endBlink();
-          }
-        },
-      }),
-    };
-  }
-
-  private getLED(anode: number, cathode: number): LED | undefined {
-    return getInstance()?.wired('LED', { anode, cathode });
   }
 }
