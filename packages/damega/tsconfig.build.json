@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "src/**/*.test.ts"]
+  "compilerOptions": {
+    "emitDeclarationOnly": true
+  },
+  "exclude": ["node_modules", "src/**/*.test.ts", "src/polyfill.ts"]
 }

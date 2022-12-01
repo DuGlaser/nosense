@@ -1,4 +1,5 @@
-import Obniz from 'obniz/dist/src/obniz';
+import ObnizApp from '@nosense/web-obniz';
+import type { Obniz } from 'obniz/dist/src/obniz/Obniz';
 
 import { BuiltinObject, Obj, StringObject } from '@/object';
 
@@ -47,7 +48,7 @@ export class DamegaObniz extends ObnizModule {
   }
 
   async init(code: string) {
-    const instance = new Obniz(code, { obnizid_dialog: false });
+    const instance = new ObnizApp(code, { obnizid_dialog: false });
     setInstance(instance);
     await instance.connectWait({ timeout: 10000 });
   }

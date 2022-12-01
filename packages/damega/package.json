@@ -1,35 +1,37 @@
 {
   "name": "@nosense/damega",
   "version": "0.0.0",
-  "main": "dist/index.js",
   "type": "module",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "license": "MIT",
-  "author": "DuGlaser <duglaser0618@gmail.com>",
-  "homepage": "https://github.com/DuGlaser/nosense",
   "scripts": {
-    "build": "run-s clean build:ts resolve-path",
-    "build:ts": "tsc -d -p tsconfig.build.json",
+    "build": "run-s clean build:code build:type",
+    "build:type": "tsc -d -p tsconfig.build.json && npm run resolve-path",
+    "build:code": "rollup -c",
     "clean": "rm -rf dist",
     "lint": "run-p lint:**",
     "lint-fix": "run-s lint-fix:**",
     "lint-fix:eslint": "TIMING=1 eslint . --fix",
     "lint:eslint": "TIMING=1 eslint .",
-    "repl": "npm run ts-node/esm ./scripts/repl.ts",
     "resolve-path": "npm run ts-node/esm ./scripts/resolve-path.ts",
     "test": "jest",
     "test:dev": "jest --watch",
     "ts-node/esm": "node --loader ts-node/esm --es-module-specifier-resolution=node"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^23.0.3",
+    "@rollup/plugin-typescript": "^10.0.1",
     "@types/jest": "29.2.2",
     "eslint-plugin-custom": "*",
     "jest": "29.3.1",
+    "rollup": "^3.5.0",
     "ts-jest": "29.0.3",
     "ts-node": "10.9.1"
   },
   "dependencies": {
+    "@nosense/web-obniz": "*",
     "obniz": "^3.24.0",
     "ts-pattern": "^4.0.5"
   }

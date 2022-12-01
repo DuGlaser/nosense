@@ -71,14 +71,28 @@ const generateInput: BuiltinObjectGenerator = (ctx) =>
   });
 
 const generateObnizFn: AsyncBuiltinObjectGenerator = async (ctx) => {
-  const o = await import('./obniz');
-  const cmd = new o.DamegaObniz().getCommand(ctx.commands);
+  console.warn('Load obniz module.');
+  try {
+    const o = await import('./obniz')
+      .then((res) => {
+        console.warn('complete load: ', res);
+        return res;
+      })
+      .catch((resoun) => {
+        console.log(resoun);
+        console.error('!!');
+        throw new Error(JSON.stringify(resoun));
+      });
+    const cmd = new o.DamegaObniz().getCommand(ctx.commands);
 
-  if (cmd instanceof BuiltinObject) {
-    return cmd;
+    if (cmd instanceof BuiltinObject) {
+      return cmd;
+    }
+
+    return undefined;
+  } catch (e) {
+    throw new Error(JSON.stringify(e));
   }
-
-  return undefined;
 };
 
 export const generateBuiltinFunctions = ({
