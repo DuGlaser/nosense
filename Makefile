@@ -1,6 +1,7 @@
 NPM_RUN_WS:=npm run --workspace
 
 PKG_DAMEGA:=@nosense/damega
+PKG_WEB_OBNIZ:=@nosense/web-obniz
 PKG_WEB:=web
 PKG_APP:=app
 
@@ -10,13 +11,17 @@ build:
 	$(MAKE) build/app
 
 .PHONY: build/damega
-build/damega:
+build/damega: build/web-obniz
 	$(NPM_RUN_WS) $(PKG_DAMEGA) build
+
+.PHONY: build/web-obniz
+build/web-obniz:
+	$(NPM_RUN_WS) $(PKG_WEB_OBNIZ) build
 
 .PHONY: build/web
 build/web: build/damega
 	$(NPM_RUN_WS) $(PKG_WEB) build
-
+	
 .PHONY: build/app
 build/app: build/web
 	$(NPM_RUN_WS) $(PKG_APP) build
