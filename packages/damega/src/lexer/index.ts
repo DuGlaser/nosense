@@ -171,7 +171,12 @@ export class Lexer {
       return false;
     }
 
-    return ('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z');
+    return (
+      ('a' <= char && char <= 'z') ||
+      ('A' <= char && char <= 'Z') ||
+      char === '.' ||
+      char === '_'
+    );
   }
 
   private readIdent() {

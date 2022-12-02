@@ -530,7 +530,7 @@ describe('Evaluator', () => {
           let input: number = Input();
           input;
         `,
-          inputValue: 10,
+          inputValue: '10',
           expectedValue: new NumberObject({ value: 10 }),
         },
       ];
@@ -778,7 +778,7 @@ describe('Evaluator', () => {
       expect(result.value.env.get('x')).toStrictEqual(
         new NumberObject({ value: 0 })
       );
-      expect([[0]]).toEqual(mockOutputCallback.mock.calls);
+      expect([['0']]).toEqual(mockOutputCallback.mock.calls);
       expect(mockOutputCallback).toHaveBeenCalledTimes(1);
 
       result = await generator.next();
@@ -792,7 +792,7 @@ describe('Evaluator', () => {
       const generator = await testGenerator(input);
 
       // let x: number = Input();
-      mockInputCallback.mockResolvedValueOnce(10);
+      mockInputCallback.mockResolvedValueOnce('10');
       expect(mockInputCallback).toHaveBeenCalledTimes(0);
       let result = await generator.next();
       expect(mockInputCallback).toHaveBeenCalledTimes(1);

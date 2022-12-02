@@ -10,39 +10,145 @@ import {
 
 import { FALSE, NULL, TRUE } from '.';
 
-export type OutputText = string | number | boolean | null;
+export type InputEventCallback = () => Promise<string | undefined>;
+export type OutputEventCallback = (text: string) => void;
 
-export type InputEventCallback = () => Promise<OutputText>;
-export type OutputEventCallback = (text: OutputText) => void;
-
-export const builtins = ({
-  outputEventCallback,
-  inputEventCallback,
-}: {
-  outputEventCallback: OutputEventCallback;
+type BuiltinObjectGenerator = (ctx: {
+  commands: string[];
   inputEventCallback: InputEventCallback;
-}) =>
-  ({
-    Println: new BuiltinObject({
-      fn: (obj: Obj) => {
-        const value = match(obj)
-          .with(P.instanceOf(NumberObject), (o) => o.value)
-          .with(P.instanceOf(StringObject), (o) => o.value)
-          .with(P.instanceOf(BooleanObject), (o) => o.value)
-          .otherwise(() => null);
+  outputEventCallback: OutputEventCallback;
+}) => BuiltinObject<any> | undefined;
 
-        outputEventCallback(value);
-      },
-    }),
-    Input: new BuiltinObject({
-      fn: async () => {
-        const value: OutputText = await inputEventCallback();
+type AsyncBuiltinObjectGenerator = (ctx: {
+  commands: string[];
+  inputEventCallback: InputEventCallback;
+  outputEventCallback: OutputEventCallback;
+}) => Promise<BuiltinObject<any> | undefined>;
 
-        return match(value)
-          .with(P.number, (v) => new NumberObject({ value: v }))
-          .with(P.string, (v) => new StringObject({ value: v }))
-          .with(P.boolean, (v) => (v ? TRUE : FALSE))
-          .otherwise(() => NULL);
-      },
-    }),
-  } as const);
+const generatePrintln: BuiltinObjectGenerator = (ctx) =>
+  new BuiltinObject({
+    fn: (obj: Obj) => {
+      const value = match(obj)
+        .with(P.instanceOf(NumberObject), (o) => o.value)
+        .with(P.instanceOf(StringObject), (o) => o.value)
+        .with(P.instanceOf(BooleanObject), (o) => o.value)
+        .otherwise(() => null);
+
+      ctx.outputEventCallback(value?.toString() ?? '');
+    },
+  });
+
+const isDamegaNumber = (target: string): boolean => {
+  const matched = target.match(/[0-9]+(\.[0-9]+)?/);
+
+  if (!matched) return false;
+  return matched?.length > 0 && matched[0] === target;
+};
+
+const isDamegaBoolean = (target: string): boolean => {
+  return ['true', 'false'].includes(target);
+};
+
+const generateInput: BuiltinObjectGenerator = (ctx) =>
+  new BuiltinObject({
+    fn: async () => {
+      const value = await ctx.inputEventCallback();
+
+      if (value === undefined) {
+        return NULL;
+      }
+
+      if (isDamegaNumber(value)) {
+        return new NumberObject({ value: Number(value) });
+      }
+
+      if (isDamegaBoolean(value)) {
+        return value === 'true' ? TRUE : FALSE;
+      }
+
+      return new StringObject({ value: value });
+    },
+  });
+
+const generateObnizFn: AsyncBuiltinObjectGenerator = async (ctx) => {
+  try {
+    const o = await import('./obniz')
+      .then((res) => {
+        console.warn('complete load: ', res);
+        return res;
+      })
+      .catch((resoun) => {
+        throw new Error(JSON.stringify(resoun));
+      });
+    const cmd = new o.DamegaObniz().getCommand(ctx.commands);
+
+    if (cmd instanceof BuiltinObject) {
+      return cmd;
+    }
+
+    return undefined;
+  } catch (e) {
+    throw new Error(JSON.stringify(e));
+  }
+};
+
+const generateWaitFn: BuiltinObjectGenerator = () => {
+  return new BuiltinObject({
+    fn: async (obj: Obj) => {
+      if (obj instanceof NumberObject) {
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(undefined);
+          }, obj.value);
+        });
+      }
+    },
+  });
+};
+
+export const generateBuiltinFunctions = ({
+  inputEventCallback,
+  outputEventCallback,
+}: {
+  inputEventCallback: InputEventCallback;
+  outputEventCallback: OutputEventCallback;
+}) => {
+  const defaultCtx = {
+    commands: [],
+    inputEventCallback,
+    outputEventCallback,
+  };
+
+  const cmdMap: Record<
+    string,
+    | BuiltinObject<any>
+    | BuiltinObjectGenerator
+    | AsyncBuiltinObjectGenerator
+    | undefined
+  > = {
+    Println: generatePrintln(defaultCtx),
+    Input: generateInput(defaultCtx),
+    Wait: generateWaitFn(defaultCtx),
+    Obniz: generateObnizFn,
+  };
+
+  return async (command: string) => {
+    const commands = command.split('.');
+
+    const first = commands.shift();
+    if (!first) return undefined;
+
+    const matched = cmdMap[first];
+    if (!matched) return undefined;
+
+    if (matched instanceof BuiltinObject) {
+      return matched;
+    }
+
+    return await matched({
+      commands,
+      inputEventCallback,
+      outputEventCallback,
+    });
+  };
+};
