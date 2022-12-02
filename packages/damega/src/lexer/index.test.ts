@@ -72,13 +72,8 @@ describe('Lexer', () => {
         input: '_test0',
         expected: [
           {
-            expectedType: TOKEN.ILLEGAL,
-            expectedLiteral: '',
-            ctx: { line: 1 },
-          },
-          {
             expectedType: TOKEN.IDENT,
-            expectedLiteral: 'test0',
+            expectedLiteral: '_test0',
             ctx: { line: 1 },
           },
           { expectedType: TOKEN.EOF, expectedLiteral: 'EOF', ctx: { line: 1 } },
