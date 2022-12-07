@@ -1,4 +1,5 @@
 import { EditableNodeComponent, StatementWrapper } from '@editor/components';
+import { useNewStatementInputEvent } from '@editor/hooks/useNewStatementInputEvent';
 import { useStatement } from '@editor/store';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
@@ -9,12 +10,16 @@ export const AssignStatementComponent: React.FC<{
 }> = ({ id }) => {
   const statement = useStatement<AssignStatement>(id);
   const [varName, exp] = statement.nodes;
+  const newStatementInputEvent = useNewStatementInputEvent(
+    statement.id,
+    statement.indent
+  );
 
   return (
     <StatementWrapper indent={statement.indent}>
       <EditableNodeComponent id={varName} />
       <KeyboardBackspaceIcon />
-      <EditableNodeComponent id={exp} />
+      <EditableNodeComponent id={exp} inputEvent={newStatementInputEvent} />
     </StatementWrapper>
   );
 };

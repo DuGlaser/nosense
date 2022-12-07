@@ -14,6 +14,57 @@ import {
 import { EditableNode } from '@/lib/models/editorObject';
 import { hexToRgba } from '@/styles/utils';
 
+const cursorPosition = ['START', 'END'] as const;
+type CursorPosition = typeof cursorPosition[number];
+
+export type InputEvent = {
+  key: string;
+  contentLength?: number;
+  cursorPosition?: CursorPosition;
+  openCompleteMenu?: boolean;
+  callback: (e: KeyboardEvent<HTMLDivElement>) => void;
+};
+
+const equalInputEvent = (
+  event: Omit<InputEvent, 'callback'>,
+  target: InputEvent
+): boolean => {
+  if (event.key !== target.key) return false;
+  if (
+    target.contentLength !== undefined &&
+    event.contentLength !== target.contentLength
+  )
+    return false;
+
+  if (
+    target.cursorPosition !== undefined &&
+    event.cursorPosition !== target.cursorPosition
+  )
+    return false;
+
+  return true;
+};
+
+const matchInputEvent = (
+  event: Omit<InputEvent, 'callback'>,
+  events: InputEvent[]
+): InputEvent | undefined => {
+  for (const e of events) {
+    if (equalInputEvent(event, e)) return e;
+  }
+
+  return undefined;
+};
+
+const getCursorPosition = (
+  content: string,
+  offset: number | undefined
+): CursorPosition | undefined => {
+  if (offset === 0) return 'START';
+  if (offset === content.length) return 'END';
+  return undefined;
+};
+
 const EditableDiv = styled(BaseTextComopnent)(() => ({
   minWidth: '5px',
   position: 'relative',
@@ -36,7 +87,7 @@ const CmpMenu = styled('div')(({ theme }) => ({
   backgroundColor: theme.background[800],
   color: theme.background.contrast[800],
   overflow: 'auto',
-  maxHeight: 200,
+  maxHeight: '25vh',
 
   borderRadius: '2px',
   border: `1px solid ${theme.background[600]}`,
@@ -50,6 +101,7 @@ const CmpMenuItem = styled('div')(({ theme }) => ({
   padding: '2px 8px',
   cursor: 'pointer',
   whiteSpace: 'nowrap',
+  textAlign: 'start',
   '&:hover, &:active': {
     backgroundColor: theme.background[700],
     color: theme.background.contrast[700],
@@ -83,12 +135,14 @@ export type ValidateFn = (value: string) => ValidateError | undefined;
 export type EditableNodeProps = {
   id: EditableNode['id'];
   completeOptions?: CompleteOption[];
+  inputEvent?: InputEvent[];
   validate?: ValidateFn;
 } & ComponentProps<'div'>;
 
 export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   id,
   completeOptions = [],
+  inputEvent = [],
   validate,
   ...rest
 }) => {
@@ -163,32 +217,74 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
     rest.onKeyDown && rest.onKeyDown(e);
     const selection = window.getSelection();
 
-    if (e.key === 'ArrowLeft' && selection?.focusOffset === 0) {
-      movePrevNode();
+    const event: Omit<InputEvent, 'callback'> = {
+      key: e.key,
+      contentLength: value.length,
+      cursorPosition: getCursorPosition(value, selection?.focusOffset),
+    };
+
+    let matched = matchInputEvent(event, inputEvent);
+    if (matched) {
+      matched.callback(e);
       e.preventDefault();
       return;
     }
 
-    if (e.key === 'Tab') {
-      moveNextNode();
-      e.preventDefault();
-      return;
-    }
+    const editableNodeEvents: InputEvent[] = [
+      {
+        key: 'ArrowLeft',
+        cursorPosition: 'START',
+        callback: () => {
+          movePrevNode();
+        },
+      },
+      {
+        key: 'Backspace',
+        cursorPosition: 'START',
+        callback: () => {
+          movePrevNode();
+        },
+      },
+      {
+        key: 'ArrowRight',
+        cursorPosition: 'END',
+        callback: () => {
+          moveNextNode();
+        },
+      },
+      {
+        key: 'ArrowRight',
+        contentLength: 0,
+        callback: () => {
+          moveNextNode();
+        },
+      },
+      {
+        key: 'Tab',
+        callback: () => {
+          moveNextNode();
+        },
+      },
+      {
+        key: 'Escape',
+        callback: () => {
+          if (enableComplete.current) {
+            handleCloseCompleteMenu();
+          }
+        },
+      },
+      {
+        key: 'Enter',
+        callback: () => {
+          e.preventDefault();
+        },
+      },
+    ];
 
-    if (e.key === 'Backspace' && selection?.focusOffset === 0) {
-      movePrevNode();
+    matched = matchInputEvent(event, editableNodeEvents);
+    if (matched) {
+      matched.callback(e);
       e.preventDefault();
-      return;
-    }
-
-    if (e.key === 'ArrowRight' && selection?.focusOffset === value.length) {
-      moveNextNode();
-      e.preventDefault();
-      return;
-    }
-
-    if (e.key === 'Escape' && enableComplete.current) {
-      handleCloseCompleteMenu();
       return;
     }
   };

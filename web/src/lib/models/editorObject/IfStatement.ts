@@ -9,7 +9,7 @@ import { createEditableNode, EditableNode } from './EditableNode';
  */
 export interface IfStatementStart
   extends BaseStatement<PickStatementType<'IfStatementStart'>> {
-  nodes: [CursorNode, EditableNode];
+  nodes: [CursorNode, EditableNode, CursorNode];
 }
 
 /**
@@ -47,7 +47,11 @@ export const createIfStatementStart = ({
   return {
     id,
     _type: 'IfStatementStart',
-    nodes: [createCursorNode(id), createEditableNode(condition, id)],
+    nodes: [
+      createCursorNode(id),
+      createEditableNode(condition, id),
+      createCursorNode(id),
+    ],
     indent,
   };
 };

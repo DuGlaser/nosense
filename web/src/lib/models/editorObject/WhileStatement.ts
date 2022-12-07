@@ -9,7 +9,7 @@ import { createEditableNode, EditableNode } from './EditableNode';
  */
 export interface WhileStatementStart
   extends BaseStatement<PickStatementType<'WhileStatementStart'>> {
-  nodes: [CursorNode, EditableNode];
+  nodes: [CursorNode, EditableNode, CursorNode];
 }
 
 /**
@@ -31,7 +31,11 @@ export const createWhileStatementStart = ({
   return {
     id,
     _type: 'WhileStatementStart',
-    nodes: [createCursorNode(id), createEditableNode(condition, id)],
+    nodes: [
+      createCursorNode(id),
+      createEditableNode(condition, id),
+      createCursorNode(id),
+    ],
     indent,
   };
 };

@@ -10,7 +10,17 @@ import {
 } from '@editor/store';
 import { styled } from '@mui/material';
 
-import { createLetStatement, CursorNode } from '@/lib/models/editorObject';
+import {
+  createAssignStatement,
+  createExpressionStatement,
+  createIfStatementEnd,
+  createIfStatementStart,
+  createLetStatement,
+  createNewStatement,
+  createWhileStatementEnd,
+  createWhileStatementStart,
+  CursorNode,
+} from '@/lib/models/editorObject';
 
 const Placeholder = styled('div')({
   opacity: 0.5,
@@ -26,7 +36,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
 
   const options: CompleteOption[] = [
     {
-      displayName: '代入文',
+      displayName: '変数宣言',
       keyword: [],
       onComplete: () => {
         insertStmt(id, [createLetStatement({ type: '', varNames: [''] })]);
@@ -34,9 +44,53 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
       },
     },
     {
-      displayName: '条件文',
+      displayName: '代入文',
       keyword: [],
       onComplete: () => {
+        insertStmt(id, [
+          createAssignStatement({
+            name: '',
+            value: '',
+            indent: statement.indent,
+          }),
+        ]);
+        deleteStmt(id);
+      },
+    },
+    {
+      displayName: 'if文',
+      keyword: [],
+      onComplete: () => {
+        insertStmt(id, [
+          createIfStatementStart({ condition: '', indent: statement.indent }),
+          createNewStatement({ indent: statement.indent + 1 }),
+          createIfStatementEnd({ indent: statement.indent }),
+        ]);
+        deleteStmt(id);
+      },
+    },
+    {
+      displayName: 'while文',
+      keyword: [],
+      onComplete: () => {
+        insertStmt(id, [
+          createWhileStatementStart({
+            condition: '',
+            indent: statement.indent,
+          }),
+          createNewStatement({ indent: statement.indent + 1 }),
+          createWhileStatementEnd({ indent: statement.indent }),
+        ]);
+        deleteStmt(id);
+      },
+    },
+    {
+      displayName: '関数呼び出し',
+      keyword: [],
+      onComplete: () => {
+        insertStmt(id, [
+          createExpressionStatement({ exp: '', indent: statement.indent }),
+        ]);
         deleteStmt(id);
       },
     },
