@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 
 import { EditableNode } from '@/lib/models/editorObject';
 import { hexToRgba } from '@/styles/utils';
@@ -39,6 +40,12 @@ const equalInputEvent = (
   if (
     target.cursorPosition !== undefined &&
     event.cursorPosition !== target.cursorPosition
+  )
+    return false;
+
+  if (
+    target.openCompleteMenu !== undefined &&
+    event.openCompleteMenu !== target.openCompleteMenu
   )
     return false;
 
@@ -97,16 +104,21 @@ const CmpMenu = styled('div')(({ theme }) => ({
   0px 5px   10px ${hexToRgba(theme.background[900], 0.8)}`,
 }));
 
-const CmpMenuItem = styled('div')(({ theme }) => ({
-  padding: '2px 8px',
-  cursor: 'pointer',
-  whiteSpace: 'nowrap',
-  textAlign: 'start',
-  '&:hover, &:active': {
+const CmpMenuItem = styled('div')<{ focused: number }>(({ theme, focused }) => {
+  const activeStyle = {
     backgroundColor: theme.background[700],
     color: theme.background.contrast[700],
-  },
-}));
+  };
+
+  return {
+    padding: '2px 8px',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    textAlign: 'start',
+    '&:hover, &:active': activeStyle,
+    ...(focused ? activeStyle : {}),
+  };
+});
 
 export type CompleteOption = {
   displayName: string;
@@ -163,7 +175,9 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
 
     return validate(node.content);
   });
+  const [selectMenuItemIndex, setSelectMenuItemIndex] = useState<number>(0);
   const enableComplete = useRef(false);
+  const menuItemRefs = useRef<HTMLDivElement[]>([]);
   const menuTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const updateDisplayOption = (
@@ -190,12 +204,16 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   };
 
   const handleCloseCompleteMenu = () => {
+    setSelectMenuItemIndex(0);
     enableComplete.current = false;
     clearTimeout(menuTimer.current);
     setDisplayOptions([]);
   };
 
   const selectCompleteItem = (option: CompleteOption) => {
+    flushSync(() => {
+      setDisplayValue('');
+    });
     setDisplayValue(option.displayName);
     handleUpdateValue(option.displayName);
     handleCloseCompleteMenu();
@@ -214,12 +232,14 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    enableComplete.current = true;
     rest.onKeyDown && rest.onKeyDown(e);
     const selection = window.getSelection();
 
     const event: Omit<InputEvent, 'callback'> = {
       key: e.key,
       contentLength: value.length,
+      openCompleteMenu: !!displayOptions.length,
       cursorPosition: getCursorPosition(value, selection?.focusOffset),
     };
 
@@ -260,6 +280,31 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
         },
       },
       {
+        key: 'ArrowDown',
+        openCompleteMenu: true,
+        callback: () => {
+          setSelectMenuItemIndex((cur) =>
+            cur + 1 === menuItemRefs.current.length ? 0 : cur + 1
+          );
+        },
+      },
+      {
+        key: 'ArrowUp',
+        openCompleteMenu: true,
+        callback: () => {
+          setSelectMenuItemIndex((cur) =>
+            cur === 0 ? menuItemRefs.current.length - 1 : cur - 1
+          );
+        },
+      },
+      {
+        key: 'Enter',
+        openCompleteMenu: true,
+        callback: () => {
+          menuItemRefs.current[selectMenuItemIndex].click();
+        },
+      },
+      {
         key: 'Tab',
         callback: () => {
           moveNextNode();
@@ -297,6 +342,7 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
 
   const handleFocus = (e: FocusEvent<HTMLDivElement>) => {
     enableComplete.current = true;
+    setSelectMenuItemIndex(0);
     updateDisplayOption(value, completeOptions);
     rest.onFocus && rest.onFocus(e);
   };
@@ -306,6 +352,10 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
 
     return () => clearTimeout(menuTimer.current);
   }, [value]);
+
+  useEffect(() => {
+    setSelectMenuItemIndex(0);
+  }, [displayOptions.length]);
 
   return (
     <div>
@@ -328,10 +378,20 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
       </EditableDiv>
       {displayOptions.length > 0 && (
         <CmpMenu>
-          {displayOptions.map((option) => (
+          {displayOptions.map((option, i) => (
             <CmpMenuItem
+              focused={+(selectMenuItemIndex === i)}
+              ref={(el) => {
+                if (!el) return;
+                if (i === 0) menuItemRefs.current = [];
+
+                menuItemRefs.current.push(el);
+              }}
               key={option.displayName}
               onMouseDown={() => {
+                selectCompleteItem(option);
+              }}
+              onClick={() => {
                 selectCompleteItem(option);
               }}
             >
