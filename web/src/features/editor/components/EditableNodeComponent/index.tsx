@@ -1,4 +1,5 @@
 import { BaseTextComopnent } from '@editor/components';
+import { CompleteOption, useCompleteMenu } from '@editor/hooks/useCompleteMenu';
 import { useNode } from '@editor/store';
 import { styled } from '@mui/material';
 import {
@@ -6,14 +7,12 @@ import {
   FocusEvent,
   FormEvent,
   KeyboardEvent,
-  useEffect,
-  useRef,
+  useCallback,
   useState,
 } from 'react';
 import { flushSync } from 'react-dom';
 
 import { EditableNode } from '@/lib/models/editorObject';
-import { hexToRgba } from '@/styles/utils';
 
 const cursorPosition = ['START', 'END'] as const;
 type CursorPosition = typeof cursorPosition[number];
@@ -83,61 +82,6 @@ const EditableDiv = styled(BaseTextComopnent)(() => ({
   },
 }));
 
-const CmpMenu = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  margin: 0,
-  padding: '4px 2px',
-  zIndex: 1,
-  position: 'absolute',
-  listStyle: 'none',
-  backgroundColor: theme.background[800],
-  color: theme.background.contrast[800],
-  overflow: 'auto',
-  maxHeight: '25vh',
-
-  borderRadius: '2px',
-  border: `1px solid ${theme.background[600]}`,
-  boxShadow: `
-  0px 0.2px 2px  ${hexToRgba(theme.background[900], 0.04)},
-  0px 1px   5px  ${hexToRgba(theme.background[900], 0.06)},
-  0px 5px   10px ${hexToRgba(theme.background[900], 0.8)}`,
-}));
-
-const CmpMenuItem = styled('div')<{ focused: number }>(({ theme, focused }) => {
-  const activeStyle = {
-    backgroundColor: theme.background[700],
-    color: theme.background.contrast[700],
-  };
-
-  return {
-    padding: '2px 8px',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    textAlign: 'start',
-    '&:hover, &:active': activeStyle,
-    ...(focused ? activeStyle : {}),
-  };
-});
-
-export type CompleteOption = {
-  displayName: string;
-  keyword: string[];
-  onComplete?: () => void;
-};
-
-const filterCompleteOptions = (keyword: string, options: CompleteOption[]) => {
-  const trimmed = keyword.trim();
-
-  if (trimmed === '') {
-    return options;
-  }
-
-  return options.filter((option) =>
-    option.keyword.some((_) => _.includes(trimmed))
-  );
-};
-
 export type ValidateError = {
   message: string;
 };
@@ -168,34 +112,22 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
    * また、最新の値が入っているわけじゃないので参照しないようにする。
    */
   const [displayValue, setDisplayValue] = useState(node.content);
-  const [displayOptions, setDisplayOptions] = useState<CompleteOption[]>([]);
   const [error, setError] = useState<ValidateError | undefined>(() => {
     if (!validate) return undefined;
     if (node.content === '') return undefined;
 
     return validate(node.content);
   });
-  const [selectMenuItemIndex, setSelectMenuItemIndex] = useState<number>(0);
-  const enableComplete = useRef(false);
-  const menuItemRefs = useRef<HTMLDivElement[]>([]);
-  const menuTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const updateDisplayOption = (
-    value: string,
-    options: CompleteOption[] | undefined
-  ) => {
-    if (!options) {
-      return;
-    }
-
-    if (!enableComplete.current) {
-      return;
-    }
-
-    menuTimer.current = setTimeout(() => {
-      setDisplayOptions(filterCompleteOptions(value, options));
-    }, 200);
-  };
+  const {
+    openCompleteMenu,
+    closeCompleteMenu,
+    CompleteMenu,
+    selectNextCompletItem,
+    selectPrevCompletItem,
+    displayedCompleteMenu,
+    clickCurrentCompleteItem,
+  } = useCompleteMenu(completeOptions, value);
 
   const handleUpdateValue = (value: string) => {
     const replaced = value.replace(/\r\n|\n/g, '');
@@ -203,22 +135,17 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
     validate && setError(validate(replaced));
   };
 
-  const handleCloseCompleteMenu = () => {
-    setSelectMenuItemIndex(0);
-    enableComplete.current = false;
-    clearTimeout(menuTimer.current);
-    setDisplayOptions([]);
-  };
-
-  const selectCompleteItem = (option: CompleteOption) => {
-    flushSync(() => {
-      setDisplayValue('');
-    });
-    setDisplayValue(option.displayName);
-    handleUpdateValue(option.displayName);
-    handleCloseCompleteMenu();
-    option.onComplete && option.onComplete();
-  };
+  const selectCompleteItem = useCallback(
+    (option: CompleteOption) => {
+      flushSync(() => {
+        setDisplayValue('');
+      });
+      setDisplayValue(option.displayName);
+      handleUpdateValue(option.displayName);
+      option.onComplete && option.onComplete();
+    },
+    [setDisplayValue, handleUpdateValue]
+  );
 
   const handleUpdateNode = (newNode: EditableNode) => {
     setNode(newNode);
@@ -226,20 +153,19 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
 
   const handleBlur = (e: FocusEvent<HTMLDivElement>) => {
     handleUpdateNode({ ...node, content: value });
-    handleCloseCompleteMenu();
+    closeCompleteMenu();
     validate && validate(value);
     rest.onBlur && rest.onBlur(e);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    enableComplete.current = true;
     rest.onKeyDown && rest.onKeyDown(e);
     const selection = window.getSelection();
 
     const event: Omit<InputEvent, 'callback'> = {
       key: e.key,
       contentLength: value.length,
-      openCompleteMenu: !!displayOptions.length,
+      openCompleteMenu: displayedCompleteMenu,
       cursorPosition: getCursorPosition(value, selection?.focusOffset),
     };
 
@@ -254,75 +180,53 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
       {
         key: 'ArrowLeft',
         cursorPosition: 'START',
-        callback: () => {
-          movePrevNode();
-        },
+        callback: () => movePrevNode(),
       },
       {
         key: 'Backspace',
         cursorPosition: 'START',
-        callback: () => {
-          movePrevNode();
-        },
+        callback: () => movePrevNode(),
       },
       {
         key: 'ArrowRight',
         cursorPosition: 'END',
-        callback: () => {
-          moveNextNode();
-        },
+        callback: () => moveNextNode(),
       },
       {
         key: 'ArrowRight',
         contentLength: 0,
-        callback: () => {
-          moveNextNode();
-        },
+        callback: () => moveNextNode(),
       },
       {
         key: 'ArrowDown',
         openCompleteMenu: true,
-        callback: () => {
-          setSelectMenuItemIndex((cur) =>
-            cur + 1 === menuItemRefs.current.length ? 0 : cur + 1
-          );
-        },
+        callback: () => selectNextCompletItem(),
       },
       {
         key: 'ArrowUp',
         openCompleteMenu: true,
-        callback: () => {
-          setSelectMenuItemIndex((cur) =>
-            cur === 0 ? menuItemRefs.current.length - 1 : cur - 1
-          );
-        },
+        callback: () => selectPrevCompletItem(),
       },
       {
         key: 'Enter',
         openCompleteMenu: true,
-        callback: () => {
-          menuItemRefs.current[selectMenuItemIndex].click();
-        },
+        callback: () => clickCurrentCompleteItem(),
       },
       {
         key: 'Tab',
-        callback: () => {
-          moveNextNode();
-        },
+        callback: () => moveNextNode(),
       },
       {
         key: 'Escape',
         callback: () => {
-          if (enableComplete.current) {
-            handleCloseCompleteMenu();
+          if (displayedCompleteMenu) {
+            closeCompleteMenu();
           }
         },
       },
       {
         key: 'Enter',
-        callback: () => {
-          e.preventDefault();
-        },
+        callback: () => e.preventDefault(),
       },
     ];
 
@@ -341,21 +245,9 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   };
 
   const handleFocus = (e: FocusEvent<HTMLDivElement>) => {
-    enableComplete.current = true;
-    setSelectMenuItemIndex(0);
-    updateDisplayOption(value, completeOptions);
+    openCompleteMenu();
     rest.onFocus && rest.onFocus(e);
   };
-
-  useEffect(() => {
-    updateDisplayOption(value, completeOptions);
-
-    return () => clearTimeout(menuTimer.current);
-  }, [value]);
-
-  useEffect(() => {
-    setSelectMenuItemIndex(0);
-  }, [displayOptions.length]);
 
   return (
     <div>
@@ -376,30 +268,7 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
       >
         {displayValue}
       </EditableDiv>
-      {displayOptions.length > 0 && (
-        <CmpMenu>
-          {displayOptions.map((option, i) => (
-            <CmpMenuItem
-              focused={+(selectMenuItemIndex === i)}
-              ref={(el) => {
-                if (!el) return;
-                if (i === 0) menuItemRefs.current = [];
-
-                menuItemRefs.current.push(el);
-              }}
-              key={option.displayName}
-              onMouseDown={() => {
-                selectCompleteItem(option);
-              }}
-              onClick={() => {
-                selectCompleteItem(option);
-              }}
-            >
-              {option.displayName}
-            </CmpMenuItem>
-          ))}
-        </CmpMenu>
-      )}
+      <CompleteMenu onSelectCompleteItem={selectCompleteItem} />
     </div>
   );
 };
