@@ -122,7 +122,9 @@ export const useCompleteMenu = (
   }, [displayOptions.length]);
 
   useEffect(() => {
-    updateCompleteMenu(inputValue);
+    if (enableComplete.current) {
+      updateCompleteMenu(inputValue);
+    }
 
     return () => clearTimeout(menuTimer.current);
   }, [inputValue]);

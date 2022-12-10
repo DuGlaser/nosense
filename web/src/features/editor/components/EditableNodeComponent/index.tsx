@@ -102,8 +102,14 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   validate,
   ...rest
 }) => {
-  const { node, setNode, moveNextNode, movePrevNode, ref } =
-    useNode<EditableNode>(id);
+  const {
+    node,
+    setNode,
+    moveNextNode,
+    movePrevNode,
+    moveCurrentNodeLast,
+    ref,
+  } = useNode<EditableNode>(id);
   const [value, setValue] = useState(node.content);
 
   /**
@@ -143,6 +149,9 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
       setDisplayValue(option.displayName);
       handleUpdateValue(option.displayName);
       option.onComplete && option.onComplete();
+      setTimeout(() => {
+        moveCurrentNodeLast();
+      }, 0);
     },
     [setDisplayValue, handleUpdateValue]
   );
@@ -218,11 +227,8 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
       },
       {
         key: 'Escape',
-        callback: () => {
-          if (displayedCompleteMenu) {
-            closeCompleteMenu();
-          }
-        },
+        openCompleteMenu: true,
+        callback: () => closeCompleteMenu(),
       },
       {
         key: 'Enter',
@@ -239,6 +245,7 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
   };
 
   const handleInput = (e: FormEvent<HTMLDivElement>) => {
+    openCompleteMenu();
     const target = e.target as HTMLDivElement;
     handleUpdateValue(target.innerText);
     rest.onInput && rest.onInput(e);

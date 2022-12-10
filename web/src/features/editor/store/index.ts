@@ -228,6 +228,22 @@ export const useStatementList = () => {
   return useRecoilValue(statementListState);
 };
 
+const focusElementLast = (element: Element) => {
+  const textLength =
+    element.childNodes.length > 0
+      ? element.childNodes[0].textContent?.length ?? 0
+      : 0;
+  const range = document.createRange();
+
+  const targetElement =
+    element.childNodes.length > 0 ? element.childNodes[0] : element;
+  range.setStart(targetElement, textLength);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+};
+
 export const useNode = <T extends Node>(id: Node['id']) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -254,23 +270,18 @@ export const useNode = <T extends Node>(id: Node['id']) => {
     () => async () => {
       const element = prevNode?.ref;
       if (!element) return;
-
-      const textLength =
-        element.childNodes.length > 0
-          ? element.childNodes[0].textContent?.length ?? 0
-          : 0;
-      const range = document.createRange();
-
-      const targetElement =
-        element.childNodes.length > 0 ? element.childNodes[0] : element;
-      // NOTE: 直前の要素の末尾に対してフォーカスを合わせる
-      range.setStart(targetElement, textLength);
-
-      const selection = window.getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(range);
+      focusElementLast(element);
     },
     [id, prevNode?.ref]
+  );
+
+  const moveCurrentNodeLast = useRecoilCallback(
+    () => async () => {
+      const element = node?.ref;
+      if (!element) return;
+      focusElementLast(element);
+    },
+    [id, node?.ref]
   );
 
   return {
@@ -279,5 +290,6 @@ export const useNode = <T extends Node>(id: Node['id']) => {
     ref,
     moveNextNode,
     movePrevNode,
+    moveCurrentNodeLast,
   };
 };
