@@ -120,9 +120,6 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
         ref={ref}
         id={cursor}
         completeOptions={options}
-        onKeyDown={(e) => {
-          e.preventDefault();
-        }}
         onInput={(e) => {
           e.preventDefault();
         }}

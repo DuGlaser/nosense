@@ -83,15 +83,16 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
           <EditableNodeComponent
             key={varName}
             id={varName}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                insertStmt(statement.id, [
-                  createNewStatement({ indent: statement.indent }),
-                ]);
-                e.preventDefault();
-                return;
-              }
-            }}
+            inputEvent={[
+              {
+                key: 'Enter',
+                callback: () => {
+                  insertStmt(statement.id, [
+                    createNewStatement({ indent: statement.indent }),
+                  ]);
+                },
+              },
+            ]}
           />
         ))}
       </Stack>
