@@ -244,6 +244,32 @@ const focusElementLast = (element: Element) => {
   selection?.addRange(range);
 };
 
+const focusElementFirst = (element: Element) => {
+  const range = document.createRange();
+
+  const targetElement =
+    element.childNodes.length > 0 ? element.childNodes[0] : element;
+  range.setStart(targetElement, 0);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+  selection?.addRange(range);
+};
+
+export const useFocusStatemnt = () => {
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      async (id: Statement['id']) => {
+        const stmt = await snapshot.getPromise(statementsState(id));
+        const firstNode = await snapshot.getPromise(nodesState(stmt.nodes[0]));
+        if (!firstNode.ref) return;
+        focusElementFirst(firstNode.ref);
+      },
+    []
+  );
+};
+
 export const useNode = <T extends Node>(id: Node['id']) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -261,7 +287,9 @@ export const useNode = <T extends Node>(id: Node['id']) => {
 
   const moveNextNode = useRecoilCallback(
     () => async () => {
-      nextNode?.ref?.focus();
+      const element = nextNode?.ref;
+      if (!element) return;
+      focusElementFirst(element);
     },
     [id, nextNode?.ref]
   );

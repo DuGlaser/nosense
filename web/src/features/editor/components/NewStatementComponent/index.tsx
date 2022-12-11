@@ -2,6 +2,7 @@ import { CursorNodeComponent, StatementWrapper } from '@editor/components';
 import { CompleteOption } from '@editor/hooks/useCompleteMenu';
 import {
   useDeleteStatement,
+  useFocusStatemnt,
   useInsertStatement,
   useStatement,
 } from '@editor/store';
@@ -18,6 +19,7 @@ import {
   createWhileStatementEnd,
   createWhileStatementStart,
   CursorNode,
+  Statement,
 } from '@/lib/models/editorObject';
 
 const Placeholder = styled('div')({
@@ -30,50 +32,65 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   const insertStmt = useInsertStatement();
   const deleteStmt = useDeleteStatement();
   const statement = useStatement(id);
+  const focusStatement = useFocusStatemnt();
   const [cursor] = statement.nodes;
 
   const ref = useRef<HTMLDivElement>(null);
+
+  const insertNewStatement = (stmts: Statement[]) => {
+    insertStmt(id, stmts);
+    deleteStmt(id);
+    /**
+     * NOTE:
+     * 0msだとfocusは当たるが、入力可能状態にならない
+     * もう少しいい方法考えたほうがいいかもしれない
+     * nodeにonRenderみたいなものを生やして、refに値を入れるタイミングでonRenderを実行するのはどうだろうか？
+     **/
+    setTimeout(() => {
+      focusStatement(stmts[0].id);
+    }, 1);
+  };
 
   const options: CompleteOption[] = [
     {
       displayName: '変数宣言',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [createLetStatement({ type: '', varNames: [''] })]);
-        deleteStmt(id);
+        insertNewStatement([createLetStatement({ type: '', varNames: [''] })]);
       },
     },
     {
       displayName: '代入文',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [
+        insertNewStatement([
           createAssignStatement({
             name: '',
             value: '',
             indent: statement.indent,
           }),
         ]);
-        deleteStmt(id);
       },
     },
     {
       displayName: 'if文',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [
-          createIfStatementStart({ condition: '', indent: statement.indent }),
+        insertNewStatement([
+          createIfStatementStart({
+            condition: '',
+            indent: statement.indent,
+          }),
           createNewStatement({ indent: statement.indent + 1 }),
           createIfStatementEnd({ indent: statement.indent }),
         ]);
-        deleteStmt(id);
       },
     },
     {
       displayName: 'while文',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [
+        insertNewStatement([
           createWhileStatementStart({
             condition: '',
             indent: statement.indent,
@@ -81,17 +98,18 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
           createNewStatement({ indent: statement.indent + 1 }),
           createWhileStatementEnd({ indent: statement.indent }),
         ]);
-        deleteStmt(id);
       },
     },
     {
       displayName: '関数呼び出し',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [
-          createExpressionStatement({ exp: '', indent: statement.indent }),
+        insertNewStatement([
+          createExpressionStatement({
+            exp: '',
+            indent: statement.indent,
+          }),
         ]);
-        deleteStmt(id);
       },
     },
   ];
