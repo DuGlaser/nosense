@@ -24,7 +24,7 @@ export type InputEvent = {
   contentLength?: number;
   cursorPosition?: CursorPosition;
   openCompleteMenu?: boolean;
-  callback: (e: KeyboardEvent<HTMLDivElement>) => void;
+  callback: (e: KeyboardEvent<HTMLDivElement>, next: () => void) => void;
 };
 
 const equalInputEvent = (
@@ -53,15 +53,25 @@ const equalInputEvent = (
   return true;
 };
 
-const matchInputEvent = (
-  event: Omit<InputEvent, 'callback'>,
-  events: InputEvent[]
-): InputEvent | undefined => {
+const execMatchInputEvent = (
+  current: Omit<InputEvent, 'callback'>,
+  events: InputEvent[],
+  event: KeyboardEvent<HTMLDivElement>
+): boolean => {
   for (const e of events) {
-    if (equalInputEvent(event, e)) return e;
+    let next = false;
+    if (equalInputEvent(current, e)) {
+      e.callback(event, () => {
+        next = true;
+      });
+
+      if (!next) {
+        return true;
+      }
+    }
   }
 
-  return undefined;
+  return false;
 };
 
 const getCursorPosition = (
@@ -180,9 +190,7 @@ export const EditableNodeComponent = forwardRef<
       cursorPosition: getCursorPosition(value, selection?.focusOffset),
     };
 
-    let matched = matchInputEvent(event, inputEvent);
-    if (matched) {
-      matched.callback(e);
+    if (execMatchInputEvent(event, inputEvent, e)) {
       e.preventDefault();
       return;
     }
@@ -238,9 +246,7 @@ export const EditableNodeComponent = forwardRef<
       },
     ];
 
-    matched = matchInputEvent(event, editableNodeEvents);
-    if (matched) {
-      matched.callback(e);
+    if (execMatchInputEvent(event, editableNodeEvents, e)) {
       e.preventDefault();
       return;
     }
