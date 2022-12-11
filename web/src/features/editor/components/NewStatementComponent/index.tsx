@@ -6,6 +6,7 @@ import {
   useStatement,
 } from '@editor/store';
 import { styled } from '@mui/material';
+import { useRef } from 'react';
 
 import {
   createAssignStatement,
@@ -30,6 +31,8 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   const deleteStmt = useDeleteStatement();
   const statement = useStatement(id);
   const [cursor] = statement.nodes;
+
+  const ref = useRef<HTMLDivElement>(null);
 
   const options: CompleteOption[] = [
     {
@@ -96,6 +99,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   return (
     <StatementWrapper indent={statement.indent}>
       <CursorNodeComponent
+        ref={ref}
         id={cursor}
         completeOptions={options}
         onKeyDown={(e) => {
@@ -105,7 +109,9 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
           e.preventDefault();
         }}
       />
-      <Placeholder>追加したい文を選択してください</Placeholder>
+      <Placeholder onClick={() => ref.current?.focus()}>
+        追加したい文を選択してください
+      </Placeholder>
     </StatementWrapper>
   );
 };

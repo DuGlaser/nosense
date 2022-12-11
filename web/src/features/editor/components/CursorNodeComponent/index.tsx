@@ -1,5 +1,6 @@
 import { EditableNodeComponent, EditableNodeProps } from '@editor/components';
 import { styled } from '@mui/material';
+import { forwardRef } from 'react';
 
 const Wrapper = styled('div')({
   maxWidth: '0.5em',
@@ -8,12 +9,16 @@ const Wrapper = styled('div')({
   textAlign: 'center',
 });
 
-export const CursorNodeComponent: React.FC<EditableNodeProps> = (props) => {
+export const CursorNodeComponent = forwardRef<
+  HTMLDivElement,
+  EditableNodeProps
+>(function CursorNodeComponent(props, ref) {
   return (
     <Wrapper>
       <EditableNodeComponent
         data-node-label="cursor"
         {...props}
+        ref={ref}
         onKeyDown={(e) => {
           e.preventDefault();
         }}
@@ -23,4 +28,4 @@ export const CursorNodeComponent: React.FC<EditableNodeProps> = (props) => {
       />
     </Wrapper>
   );
-};
+});

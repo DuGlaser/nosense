@@ -6,11 +6,13 @@ import {
   ComponentProps,
   FocusEvent,
   FormEvent,
+  forwardRef,
   KeyboardEvent,
   useCallback,
   useState,
 } from 'react';
 import { flushSync } from 'react-dom';
+import { mergeRefs } from 'react-merge-refs';
 
 import { EditableNode } from '@/lib/models/editorObject';
 
@@ -95,13 +97,13 @@ export type EditableNodeProps = {
   validate?: ValidateFn;
 } & ComponentProps<'div'>;
 
-export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
-  id,
-  completeOptions = [],
-  inputEvent = [],
-  validate,
-  ...rest
-}) => {
+export const EditableNodeComponent = forwardRef<
+  HTMLDivElement,
+  EditableNodeProps
+>(function EditableNodeComponent(
+  { id, completeOptions = [], inputEvent = [], validate, ...rest },
+  _ref
+) {
   const {
     node,
     setNode,
@@ -265,7 +267,7 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
         // TODO: popupなどでもっとわかりやすくエラーを表示するようにする
         title={error?.message}
         data-has-error={!!error}
-        ref={ref}
+        ref={mergeRefs([ref, _ref])}
         contentEditable
         suppressContentEditableWarning={true}
         onBlur={handleBlur}
@@ -278,4 +280,4 @@ export const EditableNodeComponent: React.FC<EditableNodeProps> = ({
       <CompleteMenu onSelectCompleteItem={selectCompleteItem} />
     </div>
   );
-};
+});

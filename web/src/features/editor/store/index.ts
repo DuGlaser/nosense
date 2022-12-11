@@ -256,7 +256,7 @@ export const useNode = <T extends Node>(id: Node['id']) => {
       if (!element || node.ref) return;
       setNode((cur) => ({ ...cur, ref: element }));
     },
-    [id, setNode]
+    [id, setNode, node]
   );
 
   const moveNextNode = useRecoilCallback(
