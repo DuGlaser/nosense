@@ -1,6 +1,10 @@
 import { BaseTextComopnent } from '@editor/components';
 import { CompleteOption, useCompleteMenu } from '@editor/hooks/useCompleteMenu';
-import { useNode } from '@editor/store';
+import {
+  useMoveNextStatement,
+  useMovePrevStatement,
+  useNode,
+} from '@editor/store';
 import { styled } from '@mui/material';
 import {
   ComponentProps,
@@ -122,6 +126,8 @@ export const EditableNodeComponent = forwardRef<
     moveCurrentNodeLast,
     ref,
   } = useNode<EditableNode>(id);
+  const moveNextStatement = useMoveNextStatement();
+  const movePrevStatement = useMovePrevStatement();
   const [value, setValue] = useState(node.content);
 
   /**
@@ -225,6 +231,16 @@ export const EditableNodeComponent = forwardRef<
         key: 'ArrowUp',
         openCompleteMenu: true,
         callback: () => selectPrevCompletItem(),
+      },
+      {
+        key: 'ArrowDown',
+        openCompleteMenu: false,
+        callback: () => moveNextStatement(node.parentId),
+      },
+      {
+        key: 'ArrowUp',
+        openCompleteMenu: false,
+        callback: () => movePrevStatement(node.parentId),
       },
       {
         key: 'Enter',

@@ -176,6 +176,76 @@ export const useDeleteStatement = () => {
   );
 };
 
+export const useGetCurrentScope = () => {
+  const statementList = useStatementList();
+
+  return useRecoilCallback(({ snapshot }) => async (id: Statement['id']) => {
+    const currentIndex = statementList.findIndex((stmt) => stmt.id === id);
+    if (currentIndex === -1) return [];
+
+    const currentStmt = await snapshot.getPromise(statementsState(id));
+    const targetScopeIndent = currentStmt.indent;
+
+    const next = (async (index) => {
+      let i = index + 1;
+      const result = [];
+      let prevStmtIndent = currentStmt.indent;
+      while (i < statementList.length) {
+        const stmt = await snapshot.getPromise(
+          statementsState(statementList[i].id)
+        );
+
+        if (stmt.indent > targetScopeIndent) {
+          result.push(stmt.id);
+        } else if (
+          stmt.indent === targetScopeIndent &&
+          prevStmtIndent > stmt.indent
+        ) {
+          result.push(stmt.id);
+        } else {
+          break;
+        }
+
+        prevStmtIndent = stmt.indent;
+        i++;
+      }
+
+      return result;
+    })(currentIndex);
+
+    const prev = (async (index) => {
+      let i = index - 1;
+      const result = [];
+      let nextStmtIndent = currentStmt.indent;
+      while (i >= 0) {
+        const stmt = await snapshot.getPromise(
+          statementsState(statementList[i].id)
+        );
+
+        if (stmt.indent > targetScopeIndent) {
+          result.push(stmt.id);
+        } else if (
+          stmt.indent === targetScopeIndent &&
+          nextStmtIndent > stmt.indent
+        ) {
+          result.push(stmt.id);
+        } else {
+          break;
+        }
+
+        nextStmtIndent = stmt.indent;
+        i--;
+      }
+
+      return result.reverse();
+    })(currentIndex);
+
+    const [_next, _prev] = await Promise.all([next, prev]);
+
+    return _prev.concat([currentStmt.id], _next);
+  });
+};
+
 export const useInsertStatement = () => {
   return useRecoilCallback(
     ({ set, snapshot }) =>
@@ -267,6 +337,56 @@ export const useFocusStatemnt = () => {
         focusElementFirst(firstNode.ref);
       },
     []
+  );
+};
+
+export const useMoveNextStatement = () => {
+  const stmtList = useRecoilValue(statementListState);
+
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      async (id: Statement['id']) => {
+        const index = stmtList.findIndex((item) => item.id === id);
+        if (index === -1 || index === stmtList.length - 1) return;
+
+        const nextStmt = await snapshot.getPromise(
+          statementsState(stmtList[index + 1].id)
+        );
+        const firstNode = await snapshot.getPromise(
+          nodesState(nextStmt.nodes[0])
+        );
+
+        const element = firstNode?.ref;
+        if (!element) return;
+
+        focusElementFirst(element);
+      },
+    [stmtList]
+  );
+};
+
+export const useMovePrevStatement = () => {
+  const stmtList = useRecoilValue(statementListState);
+
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      async (id: Statement['id']) => {
+        const index = stmtList.findIndex((item) => item.id === id);
+        if (index <= 0) return;
+
+        const prevStmt = await snapshot.getPromise(
+          statementsState(stmtList[index - 1].id)
+        );
+        const firstNode = await snapshot.getPromise(
+          nodesState(prevStmt.nodes[0])
+        );
+
+        const element = firstNode?.ref;
+        if (!element) return;
+
+        focusElementFirst(element);
+      },
+    [stmtList]
   );
 };
 

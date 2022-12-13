@@ -61,7 +61,7 @@ const filterCompleteOptions = (keyword: string, options: CompleteOption[]) => {
 export const useCompleteMenu = (
   completeOptions: CompleteOption[],
   inputValue: string,
-  delay = 200
+  delay = 500
 ) => {
   const [displayOptions, setDisplayOptions] = useState<CompleteOption[]>([]);
   const [selectMenuItemIndex, setSelectMenuItemIndex] = useState<number>(0);

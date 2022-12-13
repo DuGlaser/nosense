@@ -1,4 +1,5 @@
 import { EditableNodeComponent, StatementWrapper } from '@editor/components';
+import { useDeleteStatementInputEvent } from '@editor/hooks/useDeleteStatementInputEvent';
 import { useNewStatementInputEvent } from '@editor/hooks/useNewStatementInputEvent';
 import { useStatement } from '@editor/store';
 
@@ -12,11 +13,17 @@ export const ExpressionStatementComponent: React.FC<{
     statement.id,
     statement.indent
   );
+  const deleteStatementInputEvent = useDeleteStatementInputEvent([
+    statement.id,
+  ]);
   const [exp] = statement.nodes;
 
   return (
     <StatementWrapper indent={statement.indent}>
-      <EditableNodeComponent id={exp} inputEvent={newStatementInputEvent} />
+      <EditableNodeComponent
+        id={exp}
+        inputEvent={[...newStatementInputEvent, ...deleteStatementInputEvent]}
+      />
     </StatementWrapper>
   );
 };
