@@ -176,6 +176,76 @@ export const useDeleteStatement = () => {
   );
 };
 
+export const useGetCurrentScope = () => {
+  const statementList = useStatementList();
+
+  return useRecoilCallback(({ snapshot }) => async (id: Statement['id']) => {
+    const currentIndex = statementList.findIndex((stmt) => stmt.id === id);
+    if (currentIndex === -1) return [];
+
+    const currentStmt = await snapshot.getPromise(statementsState(id));
+    const targetScopeIndent = currentStmt.indent;
+
+    const next = (async (index) => {
+      let i = index + 1;
+      const result = [];
+      let prevStmtIndent = currentStmt.indent;
+      while (i < statementList.length) {
+        const stmt = await snapshot.getPromise(
+          statementsState(statementList[i].id)
+        );
+
+        if (stmt.indent > targetScopeIndent) {
+          result.push(stmt.id);
+        } else if (
+          stmt.indent === targetScopeIndent &&
+          prevStmtIndent > stmt.indent
+        ) {
+          result.push(stmt.id);
+        } else {
+          break;
+        }
+
+        prevStmtIndent = stmt.indent;
+        i++;
+      }
+
+      return result;
+    })(currentIndex);
+
+    const prev = (async (index) => {
+      let i = index - 1;
+      const result = [];
+      let nextStmtIndent = currentStmt.indent;
+      while (i >= 0) {
+        const stmt = await snapshot.getPromise(
+          statementsState(statementList[i].id)
+        );
+
+        if (stmt.indent > targetScopeIndent) {
+          result.push(stmt.id);
+        } else if (
+          stmt.indent === targetScopeIndent &&
+          nextStmtIndent > stmt.indent
+        ) {
+          result.push(stmt.id);
+        } else {
+          break;
+        }
+
+        nextStmtIndent = stmt.indent;
+        i--;
+      }
+
+      return result.reverse();
+    })(currentIndex);
+
+    const [_next, _prev] = await Promise.all([next, prev]);
+
+    return _prev.concat([currentStmt.id], _next);
+  });
+};
+
 export const useInsertStatement = () => {
   return useRecoilCallback(
     ({ set, snapshot }) =>
@@ -228,6 +298,98 @@ export const useStatementList = () => {
   return useRecoilValue(statementListState);
 };
 
+const focusElementLast = (element: Element) => {
+  const textLength =
+    element.childNodes.length > 0
+      ? element.childNodes[0].textContent?.length ?? 0
+      : 0;
+  const range = document.createRange();
+
+  const targetElement =
+    element.childNodes.length > 0 ? element.childNodes[0] : element;
+  range.setStart(targetElement, textLength);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+};
+
+const focusElementFirst = (element: Element) => {
+  const range = document.createRange();
+
+  const targetElement =
+    element.childNodes.length > 0 ? element.childNodes[0] : element;
+  range.setStart(targetElement, 0);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+  selection?.addRange(range);
+};
+
+export const useFocusStatemnt = () => {
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      async (id: Statement['id']) => {
+        const stmt = await snapshot.getPromise(statementsState(id));
+        const firstNode = await snapshot.getPromise(nodesState(stmt.nodes[0]));
+        if (!firstNode.ref) return;
+        focusElementFirst(firstNode.ref);
+      },
+    []
+  );
+};
+
+export const useMoveNextStatement = () => {
+  const stmtList = useRecoilValue(statementListState);
+
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      async (id: Statement['id']) => {
+        const index = stmtList.findIndex((item) => item.id === id);
+        if (index === -1 || index === stmtList.length - 1) return;
+
+        const nextStmt = await snapshot.getPromise(
+          statementsState(stmtList[index + 1].id)
+        );
+        const firstNode = await snapshot.getPromise(
+          nodesState(nextStmt.nodes[0])
+        );
+
+        const element = firstNode?.ref;
+        if (!element) return;
+
+        focusElementFirst(element);
+      },
+    [stmtList]
+  );
+};
+
+export const useMovePrevStatement = () => {
+  const stmtList = useRecoilValue(statementListState);
+
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      async (id: Statement['id']) => {
+        const index = stmtList.findIndex((item) => item.id === id);
+        if (index <= 0) return;
+
+        const prevStmt = await snapshot.getPromise(
+          statementsState(stmtList[index - 1].id)
+        );
+        const firstNode = await snapshot.getPromise(
+          nodesState(prevStmt.nodes[0])
+        );
+
+        const element = firstNode?.ref;
+        if (!element) return;
+
+        focusElementFirst(element);
+      },
+    [stmtList]
+  );
+};
+
 export const useNode = <T extends Node>(id: Node['id']) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -240,12 +402,14 @@ export const useNode = <T extends Node>(id: Node['id']) => {
       if (!element || node.ref) return;
       setNode((cur) => ({ ...cur, ref: element }));
     },
-    [id, setNode]
+    [id, setNode, node]
   );
 
   const moveNextNode = useRecoilCallback(
     () => async () => {
-      nextNode?.ref?.focus();
+      const element = nextNode?.ref;
+      if (!element) return;
+      focusElementFirst(element);
     },
     [id, nextNode?.ref]
   );
@@ -254,23 +418,18 @@ export const useNode = <T extends Node>(id: Node['id']) => {
     () => async () => {
       const element = prevNode?.ref;
       if (!element) return;
-
-      const textLength =
-        element.childNodes.length > 0
-          ? element.childNodes[0].textContent?.length ?? 0
-          : 0;
-      const range = document.createRange();
-
-      const targetElement =
-        element.childNodes.length > 0 ? element.childNodes[0] : element;
-      // NOTE: 直前の要素の末尾に対してフォーカスを合わせる
-      range.setStart(targetElement, textLength);
-
-      const selection = window.getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(range);
+      focusElementLast(element);
     },
     [id, prevNode?.ref]
+  );
+
+  const moveCurrentNodeLast = useRecoilCallback(
+    () => async () => {
+      const element = node?.ref;
+      if (!element) return;
+      focusElementLast(element);
+    },
+    [id, node?.ref]
   );
 
   return {
@@ -279,5 +438,6 @@ export const useNode = <T extends Node>(id: Node['id']) => {
     ref,
     moveNextNode,
     movePrevNode,
+    moveCurrentNodeLast,
   };
 };

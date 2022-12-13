@@ -1,16 +1,26 @@
-import {
-  CompleteOption,
-  CursorNodeComponent,
-  StatementWrapper,
-} from '@editor/components';
+import { CursorNodeComponent, StatementWrapper } from '@editor/components';
+import { CompleteOption } from '@editor/hooks/useCompleteMenu';
 import {
   useDeleteStatement,
+  useFocusStatemnt,
   useInsertStatement,
   useStatement,
 } from '@editor/store';
 import { styled } from '@mui/material';
+import { useRef } from 'react';
 
-import { createLetStatement, CursorNode } from '@/lib/models/editorObject';
+import {
+  createAssignStatement,
+  createExpressionStatement,
+  createIfStatementEnd,
+  createIfStatementStart,
+  createLetStatement,
+  createNewStatement,
+  createWhileStatementEnd,
+  createWhileStatementStart,
+  CursorNode,
+  Statement,
+} from '@/lib/models/editorObject';
 
 const Placeholder = styled('div')({
   opacity: 0.5,
@@ -22,22 +32,84 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   const insertStmt = useInsertStatement();
   const deleteStmt = useDeleteStatement();
   const statement = useStatement(id);
+  const focusStatement = useFocusStatemnt();
   const [cursor] = statement.nodes;
 
+  const ref = useRef<HTMLDivElement>(null);
+
+  const insertNewStatement = (stmts: Statement[]) => {
+    insertStmt(id, stmts);
+    deleteStmt(id);
+    /**
+     * NOTE:
+     * 0msだとfocusは当たるが、入力可能状態にならない
+     * もう少しいい方法考えたほうがいいかもしれない
+     * nodeにonRenderみたいなものを生やして、refに値を入れるタイミングでonRenderを実行するのはどうだろうか？
+     **/
+    setTimeout(() => {
+      focusStatement(stmts[0].id);
+    }, 1);
+  };
+
   const options: CompleteOption[] = [
+    {
+      displayName: '変数宣言',
+      keyword: [],
+      onComplete: () => {
+        insertNewStatement([createLetStatement({ type: '', varNames: [''] })]);
+      },
+    },
     {
       displayName: '代入文',
       keyword: [],
       onComplete: () => {
-        insertStmt(id, [createLetStatement({ type: '', varNames: [''] })]);
-        deleteStmt(id);
+        insertNewStatement([
+          createAssignStatement({
+            name: '',
+            value: '',
+            indent: statement.indent,
+          }),
+        ]);
       },
     },
     {
-      displayName: '条件文',
+      displayName: 'if文',
       keyword: [],
       onComplete: () => {
-        deleteStmt(id);
+        insertNewStatement([
+          createIfStatementStart({
+            condition: '',
+            indent: statement.indent,
+          }),
+          createNewStatement({ indent: statement.indent + 1 }),
+          createIfStatementEnd({ indent: statement.indent }),
+        ]);
+      },
+    },
+    {
+      displayName: 'while文',
+      keyword: [],
+      onComplete: () => {
+        insertNewStatement([
+          createWhileStatementStart({
+            condition: '',
+            indent: statement.indent,
+          }),
+          createNewStatement({ indent: statement.indent + 1 }),
+          createWhileStatementEnd({ indent: statement.indent }),
+        ]);
+      },
+    },
+    {
+      displayName: '関数呼び出し',
+      keyword: [],
+      onComplete: () => {
+        insertNewStatement([
+          createExpressionStatement({
+            exp: '',
+            indent: statement.indent,
+          }),
+        ]);
       },
     },
   ];
@@ -45,16 +117,16 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   return (
     <StatementWrapper indent={statement.indent}>
       <CursorNodeComponent
+        ref={ref}
         id={cursor}
         completeOptions={options}
-        onKeyDown={(e) => {
-          e.preventDefault();
-        }}
         onInput={(e) => {
           e.preventDefault();
         }}
       />
-      <Placeholder>追加したい文を選択してください</Placeholder>
+      <Placeholder onClick={() => ref.current?.focus()}>
+        追加したい文を選択してください
+      </Placeholder>
     </StatementWrapper>
   );
 };

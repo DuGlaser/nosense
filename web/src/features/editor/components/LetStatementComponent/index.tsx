@@ -1,9 +1,9 @@
 import {
-  CompleteOption,
   EditableNodeComponent,
   StatementWrapper,
   ValidateFn,
 } from '@editor/components';
+import { CompleteOption } from '@editor/hooks/useCompleteMenu';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Button, Stack, styled } from '@mui/material';
@@ -83,15 +83,16 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
           <EditableNodeComponent
             key={varName}
             id={varName}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                insertStmt(statement.id, [
-                  createNewStatement({ indent: statement.indent }),
-                ]);
-                e.preventDefault();
-                return;
-              }
-            }}
+            inputEvent={[
+              {
+                key: 'Enter',
+                callback: () => {
+                  insertStmt(statement.id, [
+                    createNewStatement({ indent: statement.indent }),
+                  ]);
+                },
+              },
+            ]}
           />
         ))}
       </Stack>

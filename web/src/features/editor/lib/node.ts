@@ -31,8 +31,6 @@ export type StatementType = typeof statementType[keyof typeof statementType];
 export type PickStatementType<T extends keyof typeof statementType> =
   typeof statementType[T];
 
-// type NodeListItem<T extends Node> = Pick<T, 'id' | '_type'>;
-
 export type Statement =
   | LetStatement
   | AssignStatement
