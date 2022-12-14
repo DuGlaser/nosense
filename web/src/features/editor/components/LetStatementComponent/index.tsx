@@ -3,7 +3,7 @@ import {
   StatementWrapper,
   ValidateFn,
 } from '@editor/components';
-import { CompleteOption } from '@editor/hooks/useCompleteMenu';
+import { CompleteOption } from '@editor/hooks';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Button, Stack, styled } from '@mui/material';

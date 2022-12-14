@@ -1,6 +1,8 @@
 import { EditableNodeComponent, StatementWrapper } from '@editor/components';
-import { useDeleteStatementInputEvent } from '@editor/hooks/useDeleteStatementInputEvent';
-import { useNewStatementInputEvent } from '@editor/hooks/useNewStatementInputEvent';
+import {
+  useDeleteStatementInputEvent,
+  useNewStatementInputEvent,
+} from '@editor/hooks';
 import { useStatement } from '@editor/store';
 
 import { ExpressionStatement } from '@/lib/models/editorObject';

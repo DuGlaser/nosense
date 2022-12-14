@@ -1,5 +1,5 @@
 import { BaseTextComopnent } from '@editor/components';
-import { CompleteOption, useCompleteMenu } from '@editor/hooks/useCompleteMenu';
+import { CompleteOption, useCompleteMenu } from '@editor/hooks';
 import {
   useMoveNextStatement,
   useMovePrevStatement,

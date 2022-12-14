@@ -4,8 +4,10 @@ import {
   EditableNodeComponent,
   StatementWrapper,
 } from '@editor/components';
-import { useDeleteCurrentScopeInputEvent } from '@editor/hooks/useDeleteCurrentScopeInputEvent';
-import { useNewStatementInputEvent } from '@editor/hooks/useNewStatementInputEvent';
+import {
+  useDeleteCurrentScopeInputEvent,
+  useNewStatementInputEvent,
+} from '@editor/hooks';
 import { useStatement } from '@editor/store';
 
 import {

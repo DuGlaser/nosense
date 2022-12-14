@@ -8,7 +8,7 @@ import {
   WhileStatementEndComponent,
   WhileStatementStartComponent,
 } from '@editor/components';
-import { useParseCode } from '@editor/hooks/useParseCode';
+import { useParseCode } from '@editor/hooks';
 import { Box, Stack, styled } from '@mui/material';
 import { match } from 'ts-pattern';
 

@@ -1,5 +1,5 @@
 import { CursorNodeComponent, StatementWrapper } from '@editor/components';
-import { CompleteOption } from '@editor/hooks/useCompleteMenu';
+import { CompleteOption } from '@editor/hooks';
 import {
   useDeleteStatement,
   useFocusStatemnt,
