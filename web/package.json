@@ -30,7 +30,7 @@
     "@mui/icons-material": "5.10.16",
     "@mui/material": "5.10.17",
     "@nosense/damega": "*",
-    "next": "13.0.6",
+    "next": "13.0.7",
     "react-merge-refs": "^2.0.1",
     "recoil": "^0.7.6",
     "ts-pattern": "4.0.6",
