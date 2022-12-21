@@ -46,15 +46,43 @@ const background: CustomTheme = {
   },
 };
 
+const primary: CustomTheme = {
+  '50': '#E5F3FD',
+  '100': '#BFDFFB',
+  '200': '#99CDF9',
+  '300': '#73B8F5',
+  '400': '#5AA9F3',
+  '500': '#479BF0',
+  '600': '#428CE2',
+  '700': '#3B7ACF',
+  '800': '#3669BD',
+  '900': '#2C4B9D',
+  contrast: {
+    50: '#000000',
+    100: '#000000',
+    200: '#000000',
+    300: '#000000',
+    400: '#000000',
+    500: '#000000',
+    600: '#000000',
+    700: '#ffffff',
+    800: '#ffffff',
+    900: '#ffffff',
+  },
+};
+
 export const theme = createTheme({
   background,
+  primary,
 });
 
 declare module '@mui/material/styles' {
   interface Theme {
     background: CustomTheme;
+    primary: CustomTheme;
   }
   interface ThemeOptions {
     background: CustomTheme;
+    primary: CustomTheme;
   }
 }
