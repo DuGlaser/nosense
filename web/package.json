@@ -13,6 +13,7 @@
     "lint-fix:eslint": "TIMING=1 eslint . --fix"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "@types/uuid": "^9.0.0",
     "dialog-polyfill": "^0.5.6",
     "eslint-plugin-custom": "*",
@@ -31,7 +32,9 @@
     "@mui/material": "5.10.17",
     "@nosense/damega": "*",
     "@recoiljs/refine": "^0.1.1",
+    "file-saver": "^2.0.5",
     "next": "13.0.6",
+    "notistack": "^2.0.8",
     "react-merge-refs": "^2.0.1",
     "recoil": "^0.7.6",
     "recoil-sync": "^0.2.0",
