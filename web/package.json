@@ -28,7 +28,7 @@
     "@emotion/react": "11.10.5",
     "@emotion/styled": "11.10.5",
     "@mui/icons-material": "5.11.0",
-    "@mui/material": "5.11.0",
+    "@mui/material": "5.11.1",
     "@nosense/damega": "*",
     "next": "13.0.7",
     "react-merge-refs": "^2.0.1",
