@@ -1,66 +1,147 @@
-import { Box, Tab, Tabs, Typography } from '@mui/material';
-import { useState } from 'react';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { IconButton, styled } from '@mui/material';
+import { usePane } from '@split-pane';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ComponentProps, PropsWithChildren, useMemo, useState } from 'react';
 
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+const TabWrapper = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  flexDirection: 'row',
+  height: '40px',
+  width: '100%',
+  padding: '2px 10px',
+  color: theme.background.contrast[900],
+}));
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+const TabItemWrapper = styled('ul')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  height: '40px',
+  width: '100%',
+  padding: '0 2px',
+  margin: 0,
+  gap: '10px',
+  color: theme.background.contrast[900],
+}));
 
+const TabItemInner = styled('li')<{ active: number }>(() => ({
+  cursor: 'pointer',
+  fontSize: '20px',
+  lineHeight: '20px',
+  padding: '6px 16px',
+  transition: 'all 0.3s',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+}));
+
+const TabItemUnderline = styled(motion.div)(({ theme }) => ({
+  position: 'absolute',
+  bottom: '-1px',
+  left: 0,
+  right: 0,
+  height: '2px',
+  background: theme.primary[400],
+}));
+
+const TabContentWrapper = styled(motion.div)(() => ({
+  flex: 1,
+  padding: '16px',
+  color: 'white',
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
+}));
+
+const CloseButtonWrapper = styled(motion.div)(() => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: 'white',
+}));
+
+const Flex = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  width: '100%',
+  overflow: 'hidden',
+}));
+
+type Props = {
+  tabs: JSX.Element[];
+  children: JSX.Element[];
+};
+
+const TabItem: React.FC<
+  PropsWithChildren<
+    {
+      active: boolean;
+    } & ComponentProps<'li'>
+  >
+> = ({ active, children, ...props }) => {
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
+    <TabItemInner active={+active} {...props}>
+      {children}
+      {active && <TabItemUnderline layoutId={'tab-item-underline'} />}
+    </TabItemInner>
   );
-}
+};
 
-export const OutputPane = () => {
-  const [value, setValue] = useState(0);
+export const OutputPane: React.FC<Props> = ({ tabs, children }) => {
+  const [selectTabIndex, setSelectTabIndex] = useState<number>(0);
+  const { setSize, paneState } = usePane('output-pane');
+  const isClose = useMemo(() => {
+    return paneState.height === paneState.minHeight;
+  }, [paneState.height, paneState.minHeight]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          <Tab label="Item One" {...a11yProps(0)} />
-          <Tab label="Item Two" {...a11yProps(1)} />
-          <Tab label="Item Three" {...a11yProps(2)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
-        Item One
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        Item Three
-      </TabPanel>
-    </Box>
+    <Flex>
+      <TabWrapper>
+        <TabItemWrapper>
+          {tabs.map((tab, i) => (
+            <TabItem
+              key={i}
+              active={i === selectTabIndex}
+              onClick={() => setSelectTabIndex(i)}
+            >
+              {tab}
+            </TabItem>
+          ))}
+        </TabItemWrapper>
+        <IconButton aria-label="toggle-output-pane">
+          <AnimatePresence initial={false} mode={'wait'}>
+            <CloseButtonWrapper
+              key={`toggle-button-${isClose ? 'close' : 'open'}`}
+              initial={{ rotate: isClose ? 0 : 180 }}
+              exit={{ rotate: isClose ? 180 : 360 }}
+              transition={{ duration: 0.15 }}
+            >
+              <KeyboardArrowUpIcon
+                fontSize={'large'}
+                onClick={() => (isClose ? setSize('max') : setSize('min'))}
+              />
+            </CloseButtonWrapper>
+          </AnimatePresence>
+        </IconButton>
+      </TabWrapper>
+      {!isClose && (
+        <TabContentWrapper>
+          <AnimatePresence initial={false} mode={'wait'}>
+            <motion.div
+              key={selectTabIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              {children[selectTabIndex]}
+            </motion.div>
+          </AnimatePresence>
+        </TabContentWrapper>
+      )}
+    </Flex>
   );
 };

@@ -17,6 +17,8 @@
       "@/*": ["src/*"],
       "@editor": ["src/features/editor/index"],
       "@editor/*": ["src/features/editor/*"],
+      "@output-pane": ["src/features/output-pane/index"],
+      "@output-pane/*": ["src/features/output-pane/*"],
       "@split-pane": ["src/features/split-pane/index"],
       "@split-pane/*": ["src/features/split-pane/*"]
     }
