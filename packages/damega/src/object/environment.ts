@@ -1,4 +1,13 @@
-import { ErrorObject, Obj, OBJECT } from './object';
+import { match, P } from 'ts-pattern';
+
+import {
+  BooleanObject,
+  ErrorObject,
+  NumberObject,
+  Obj,
+  OBJECT,
+  StringObject,
+} from './object';
 
 export class Environment {
   public outer: Environment | undefined;
@@ -48,5 +57,26 @@ export class Environment {
 
   public extend() {
     return new Environment(this);
+  }
+
+  public toObject() {
+    const outer = this.outer?.toObject() ?? {};
+    const current: Record<string, Obj> | undefined = Object.entries(
+      this.store
+    ).reduce((pre, [key, value]) => {
+      return match(value)
+        .with(
+          P.instanceOf(NumberObject),
+          P.instanceOf(StringObject),
+          P.instanceOf(BooleanObject),
+          (v) => {
+            pre[key] = v.value;
+            return pre;
+          }
+        )
+        .otherwise(() => pre);
+    }, {});
+
+    return { ...outer, ...current };
   }
 }
