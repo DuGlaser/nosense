@@ -2,6 +2,7 @@ import { styled } from '@mui/material';
 import { useCalcPaneHeight } from '@split-pane/store';
 import { MouseEvent, useRef } from 'react';
 
+import { useTimeoutTransition } from '@/hooks';
 import { hexToRgba } from '@/styles/utils';
 
 const ResizeHandler = styled('div')(() => ({
@@ -27,11 +28,14 @@ export const Resizer: React.FC<ResizerProps> = ({ prevPaneId, nextPaneId }) => {
   const isDrag = useRef<boolean>(false);
   const calcPrevPaneHeight = useCalcPaneHeight(prevPaneId);
   const calcNextPaneHeight = useCalcPaneHeight(nextPaneId);
+  const { startTransition } = useTimeoutTransition();
 
   const updatePaneHeight = (e: globalThis.MouseEvent) => {
-    calcPrevPaneHeight(e.pageY - startPosition.current);
-    calcNextPaneHeight(startPosition.current - e.pageY);
-    startPosition.current = e.pageY;
+    startTransition(() => {
+      calcPrevPaneHeight(e.pageY - startPosition.current);
+      calcNextPaneHeight(startPosition.current - e.pageY);
+      startPosition.current = e.pageY;
+    }, 0);
   };
 
   const detatchEvent = () => {
@@ -50,6 +54,7 @@ export const Resizer: React.FC<ResizerProps> = ({ prevPaneId, nextPaneId }) => {
         startPosition.current = e.pageY;
         isDrag.current = true;
         attachEvent();
+        e.preventDefault();
       }}
     >
       <Splitbar />

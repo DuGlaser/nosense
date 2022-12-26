@@ -1,6 +1,6 @@
-import { styled } from '@mui/material';
 import { PANE_DEFAULT_VALUE_EFFECT_KEY, usePaneValue } from '@split-pane/store';
-import { ComponentProps, PropsWithChildren } from 'react';
+import { motion } from 'framer-motion';
+import { ComponentProps, PropsWithChildren, useMemo } from 'react';
 import { RecoilSync } from 'recoil-sync';
 
 export type PaneProps = ComponentProps<'div'> & {
@@ -14,28 +14,41 @@ type PaneInnerProps = {
   id: PaneProps['id'];
 };
 
-const FlexItem = styled('div')<{ height: number | 'auto' }>(({ height }) => {
-  const h =
-    typeof height === 'number'
-      ? {
-          height: height,
-        }
-      : {
-          flex: 1,
-        };
-
-  return {
-    ...h,
-    overflow: 'auto',
-  };
-});
-
 const PaneInner: React.FC<PropsWithChildren<PaneInnerProps>> = ({
   id,
   children,
 }) => {
   const paneState = usePaneValue(id);
-  return <FlexItem height={paneState.height}>{children}</FlexItem>;
+
+  const sizeProps = useMemo(() => {
+    return typeof paneState.height === 'number'
+      ? {
+          height: paneState.height,
+        }
+      : {
+          flex: 1,
+        };
+  }, [paneState.height]);
+
+  return (
+    <motion.div
+      transition={{
+        duration: paneState.resizing ? 0 : 0.25,
+        type: 'tween',
+      }}
+      style={{
+        overflow: 'auto',
+      }}
+      initial={{
+        ...sizeProps,
+      }}
+      animate={{
+        ...sizeProps,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
 };
 
 export const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
@@ -57,6 +70,7 @@ export const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
           maxHeight,
           minHeight,
           isLock: false,
+          resizing: false,
         };
       }}
     >

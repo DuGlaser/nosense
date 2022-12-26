@@ -7,8 +7,16 @@ import {
   string,
   union,
 } from '@recoiljs/refine';
-import { atomFamily, useRecoilCallback, useRecoilValue } from 'recoil';
+import { useCallback } from 'react';
+import {
+  atomFamily,
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil';
 import { syncEffect } from 'recoil-sync';
+
+import { useTimeoutTransition } from '@/hooks';
 
 type PaneState = {
   id: string;
@@ -16,6 +24,7 @@ type PaneState = {
   maxHeight: number | null | undefined;
   minHeight: number | null | undefined;
   isLock: boolean;
+  resizing: boolean;
 };
 
 export const PANE_DEFAULT_VALUE_EFFECT_KEY = 'paneDefaultValueEffect';
@@ -31,6 +40,7 @@ export const panesState = atomFamily<PaneState, PaneState['id']>({
         maxHeight: nullable(number()),
         minHeight: nullable(number()),
         isLock: bool(),
+        resizing: bool(),
       }),
       read: ({ read }) => read(id),
     }),
@@ -58,10 +68,46 @@ export const usePaneValue = (id: PaneState['id']) => {
   return useRecoilValue(panesState(id));
 };
 
+export const usePane = (id: PaneState['id']) => {
+  const [paneState, setPaneState] = useRecoilState(panesState(id));
+
+  const setSize = useCallback(
+    (height: 'min' | 'max' | number) => {
+      switch (height) {
+        case 'min':
+          setPaneState((cur) => ({
+            ...cur,
+            height: cur.minHeight ?? cur.height,
+          }));
+          break;
+
+        case 'max':
+          setPaneState((cur) => ({
+            ...cur,
+            height: cur.maxHeight ?? cur.height,
+          }));
+          break;
+
+        default:
+          setPaneState((cur) => ({
+            ...cur,
+            height: height,
+          }));
+      }
+    },
+    [id, paneState, setPaneState]
+  );
+
+  return { setSize, paneState };
+};
+
 export const useCalcPaneHeight = (id: PaneState['id']) => {
+  const { startTransition } = useTimeoutTransition();
+
   return useRecoilCallback(
     ({ set }) =>
       async (diff: number) => {
+        set(panesState(id), (cur) => ({ ...cur, resizing: true }));
         set(panesState(id), (cur) => {
           const { maxHeight, minHeight } = cur;
           return {
@@ -72,6 +118,10 @@ export const useCalcPaneHeight = (id: PaneState['id']) => {
                 : calcHeight(cur.height, diff, { maxHeight, minHeight }),
           };
         });
+
+        startTransition(() => {
+          set(panesState(id), (cur) => ({ ...cur, resizing: false }));
+        }, 500);
       },
     [id]
   );
