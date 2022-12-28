@@ -1,11 +1,12 @@
 import { Editor } from '@editor';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import { Box, styled } from '@mui/material';
-import { OutputPane } from '@output-pane';
 import { Pane, SplitPane } from '@split-pane';
 import { NextPage } from 'next';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Header } from '@/components';
+import { Header, OutputPane, OutputResultPane } from '@/components';
 import { decodeUrl } from '@/utils/decodeUrl';
 
 const Wrapper = styled('div')(({ theme }) => ({
@@ -16,6 +17,16 @@ const Wrapper = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   background: theme.background[900],
   position: 'relative',
+}));
+
+const TabItemWrapper = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: '16px',
+  ['> svg']: {
+    color: theme.primary['400'],
+  },
 }));
 
 const IndexPage: NextPage = () => {
@@ -42,11 +53,25 @@ const IndexPage: NextPage = () => {
           </Pane>
           <Pane
             id={'output-pane'}
-            defaultHeight={300}
+            defaultHeight={400}
             maxHeight={400}
-            minHeight={100}
+            minHeight={48}
           >
-            <OutputPane />
+            <OutputPane
+              tabs={[
+                <TabItemWrapper key="output-result">
+                  <InsertCommentIcon />
+                  <span>出力</span>
+                </TabItemWrapper>,
+                <TabItemWrapper key="output-debug">
+                  <BugReportIcon />
+                  <span>デバッグログ</span>
+                </TabItemWrapper>,
+              ]}
+            >
+              <OutputResultPane />
+              <div>デバッグログpane</div>
+            </OutputPane>
           </Pane>
         </SplitPane>
       </Box>

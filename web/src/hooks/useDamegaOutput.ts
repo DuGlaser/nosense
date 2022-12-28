@@ -1,18 +1,24 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { useExecResultState } from '@/store/exec';
+import { useExecModeState, useExecResultState } from '@/store/exec';
 
 export const useDamegaOutput = () => {
   const [, setExecResult] = useExecResultState();
+  const [execMode] = useExecModeState();
+
+  useEffect(() => {
+    if (execMode === 'exec') {
+      setExecResult([]);
+    }
+  }, [execMode, setExecResult]);
 
   const getOutputEventCallback = useCallback(() => {
     setExecResult([]);
 
     return (output: string) => {
-      console.log(output);
       setExecResult((cur) => [...cur, output]);
     };
-  }, []);
+  }, [setExecResult]);
 
   return { getOutputEventCallback };
 };

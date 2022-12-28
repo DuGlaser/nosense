@@ -1,4 +1,4 @@
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { IconButton, styled } from '@mui/material';
 import { usePane } from '@split-pane';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -8,7 +8,7 @@ const TabWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   flexDirection: 'row',
-  height: '40px',
+  height: '48px',
   width: '100%',
   padding: '2px 10px',
   color: theme.background.contrast[900],
@@ -53,6 +53,7 @@ const TabContentWrapper = styled(motion.div)(() => ({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'flex-start',
+  overflow: 'auto',
 }));
 
 const CloseButtonWrapper = styled(motion.div)(() => ({
@@ -97,6 +98,13 @@ export const OutputPane: React.FC<Props> = ({ tabs, children }) => {
     return paneState.height === paneState.minHeight;
   }, [paneState.height, paneState.minHeight]);
 
+  const handleTabClick = (tabIndex: number) => {
+    setSelectTabIndex(tabIndex);
+    if (isClose) {
+      setSize('max');
+    }
+  };
+
   return (
     <Flex>
       <TabWrapper>
@@ -105,7 +113,7 @@ export const OutputPane: React.FC<Props> = ({ tabs, children }) => {
             <TabItem
               key={i}
               active={i === selectTabIndex}
-              onClick={() => setSelectTabIndex(i)}
+              onClick={() => handleTabClick(i)}
             >
               {tab}
             </TabItem>
@@ -115,11 +123,11 @@ export const OutputPane: React.FC<Props> = ({ tabs, children }) => {
           <AnimatePresence initial={false} mode={'wait'}>
             <CloseButtonWrapper
               key={`toggle-button-${isClose ? 'close' : 'open'}`}
-              initial={{ rotate: isClose ? 0 : 180 }}
-              exit={{ rotate: isClose ? 180 : 360 }}
+              initial={{ rotate: isClose ? 180 : 0 }}
+              exit={{ rotate: !isClose ? 360 : 180 }}
               transition={{ duration: 0.15 }}
             >
-              <KeyboardArrowUpIcon
+              <KeyboardArrowDownIcon
                 fontSize={'large'}
                 onClick={() => (isClose ? setSize('max') : setSize('min'))}
               />

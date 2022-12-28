@@ -12,7 +12,8 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-import { useExecCode } from '@/hooks/useExecCode';
+import { useExecCode } from '@/hooks';
+import { useStartDebug } from '@/store/exec';
 
 const Wrapper = styled('div')(({ theme }) => ({
   background: theme.primary[700],
@@ -29,6 +30,7 @@ const OpenMenuButton = styled(Button)(() => ({
 
 export const PlayButton = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const startDebug = useStartDebug();
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const execCode = useExecCode();
@@ -78,7 +80,7 @@ export const PlayButton = () => {
           <ListItemIcon sx={{ color: theme.primary['400'] }}>
             <BugReportIcon />
           </ListItemIcon>
-          <ListItemText>ステップ実行</ListItemText>
+          <ListItemText onClick={startDebug}>ステップ実行</ListItemText>
         </MenuItem>
       </Menu>
     </Wrapper>
