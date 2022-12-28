@@ -71,9 +71,38 @@ const primary: CustomTheme = {
   },
 };
 
+const SCROLLBAR_SIZE = '16px';
+
 export const theme = createTheme({
   background,
   primary,
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => {
+        const thumb = theme.background[700];
+        const track = theme.background[900];
+        return {
+          body: {
+            scrollbarColor: `${thumb} ${track}`,
+            '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
+              backgroundColor: track,
+              width: SCROLLBAR_SIZE,
+              height: SCROLLBAR_SIZE,
+            },
+            '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
+              border: '4px solid transparent',
+              borderRadius: SCROLLBAR_SIZE,
+              backgroundClip: 'content-box',
+              backgroundColor: thumb,
+            },
+            '&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner': {
+              backgroundColor: track,
+            },
+          },
+        };
+      },
+    },
+  },
 });
 
 declare module '@mui/material/styles' {
