@@ -59,9 +59,9 @@ export class Environment {
     return new Environment(this);
   }
 
-  public toObject() {
+  public toObject(): Record<string, string | number | boolean> {
     const outer = this.outer?.toObject() ?? {};
-    const current: Record<string, Obj> | undefined = Object.entries(
+    const current: Record<string, string | number | boolean> = Object.entries(
       this.store
     ).reduce((pre, [key, value]) => {
       return match(value)
