@@ -64,7 +64,7 @@ const primary: CustomTheme = {
     300: '#000000',
     400: '#000000',
     500: '#000000',
-    600: '#000000',
+    600: '#ffffff',
     700: '#ffffff',
     800: '#ffffff',
     900: '#ffffff',
