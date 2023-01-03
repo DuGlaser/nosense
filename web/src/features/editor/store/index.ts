@@ -390,10 +390,8 @@ export const useMovePrevStatement = () => {
   );
 };
 
-export const useNode = <T extends Node>(id: Node['id']) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const [node, setNode] = useRecoilState<T>(nodesState(id));
+export const useNode = <T extends Node>(id: T['id']) => {
+  const [node, setNode] = useRecoilState(nodesState(id));
   const nextNode = useRecoilValue(nextNodeState(id));
   const prevNode = useRecoilValue(prevNodeState(id));
 

@@ -5,6 +5,7 @@ import {
   useMovePrevStatement,
   useNode,
 } from '@editor/store';
+import { CursorPosition, InputEvent } from '@editor/type';
 import { styled } from '@mui/material';
 import {
   ComponentProps,
@@ -19,17 +20,6 @@ import { flushSync } from 'react-dom';
 import { mergeRefs } from 'react-merge-refs';
 
 import { EditableNode } from '@/lib/models/editorObject';
-
-const cursorPosition = ['START', 'END'] as const;
-type CursorPosition = typeof cursorPosition[number];
-
-export type InputEvent = {
-  key: string;
-  contentLength?: number;
-  cursorPosition?: CursorPosition;
-  openCompleteMenu?: boolean;
-  callback: (e: KeyboardEvent<HTMLDivElement>, next: () => void) => void;
-};
 
 const equalInputEvent = (
   event: Omit<InputEvent, 'callback'>,
@@ -174,12 +164,8 @@ export const EditableNodeComponent = forwardRef<
     [setDisplayValue, handleUpdateValue]
   );
 
-  const handleUpdateNode = (newNode: EditableNode) => {
-    setNode(newNode);
-  };
-
   const handleBlur = (e: FocusEvent<HTMLDivElement>) => {
-    handleUpdateNode({ ...node, content: value });
+    setNode((cur) => ({ ...cur, content: value }));
     closeCompleteMenu();
     validate && validate(value);
     rest.onBlur && rest.onBlur(e);

@@ -13,7 +13,7 @@ import {
 import { useState } from 'react';
 
 import { useExecCode } from '@/hooks';
-import { useStartDebug } from '@/store/exec';
+import { useDebug } from '@/store/debug';
 
 const Wrapper = styled('div')(({ theme }) => ({
   background: theme.primary[700],
@@ -30,7 +30,7 @@ const OpenMenuButton = styled(Button)(() => ({
 
 export const PlayButton = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const startDebug = useStartDebug();
+  const { start: startDebug } = useDebug();
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const execCode = useExecCode();
@@ -76,11 +76,16 @@ export const PlayButton = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            startDebug();
+          }}
+        >
           <ListItemIcon sx={{ color: theme.primary['400'] }}>
             <BugReportIcon />
           </ListItemIcon>
-          <ListItemText onClick={startDebug}>ステップ実行</ListItemText>
+          <ListItemText>ステップ実行</ListItemText>
         </MenuItem>
       </Menu>
     </Wrapper>

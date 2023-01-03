@@ -4,13 +4,15 @@ import {
   useNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
+import { StatementComponentProps } from '@editor/type';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 import { AssignStatement } from '@/lib/models/editorObject';
 
-export const AssignStatementComponent: React.FC<{
-  id: AssignStatement['id'];
-}> = ({ id }) => {
+export const AssignStatementComponent: React.FC<StatementComponentProps> = ({
+  id,
+  active,
+}) => {
   const statement = useStatement<AssignStatement>(id);
   const [varName, exp] = statement.nodes;
   const newStatementInputEvent = useNewStatementInputEvent(
@@ -22,7 +24,7 @@ export const AssignStatementComponent: React.FC<{
   ]);
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <EditableNodeComponent
         id={varName}
         inputEvent={deleteStatementInputEvent}

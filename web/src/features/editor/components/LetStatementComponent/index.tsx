@@ -5,6 +5,7 @@ import {
 } from '@editor/components';
 import { CompleteOption } from '@editor/hooks';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
+import { StatementComponentProps } from '@editor/type';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Button, Stack, styled } from '@mui/material';
 import { useCallback } from 'react';
@@ -36,8 +37,9 @@ const AddVarButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
+export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   id,
+  active,
 }) => {
   const statement = useStatement<LetStatement>(id);
   const insertNode = useInsertNode(id);
@@ -71,7 +73,7 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
   };
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}

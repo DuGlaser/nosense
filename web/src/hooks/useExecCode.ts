@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
-import { flushSync } from 'react-dom';
 
-import { useExecModeState } from '@/store/exec';
+import { useExecResult } from '@/store/execResult';
 
 import { useDamega } from './useDamega';
 import { useDamegaInput } from './useDamegaInput';
@@ -10,7 +9,7 @@ import { useDamegaOutput } from './useDamegaOutput';
 export const useExecCode = () => {
   const { getInputEventCallback } = useDamegaInput();
   const { getOutputEventCallback } = useDamegaOutput();
-  const [, setMode] = useExecModeState();
+  const { clearResult } = useExecResult();
 
   const { execCode: _execCode } = useDamega({
     returnInputEventFn: getInputEventCallback,
@@ -18,14 +17,9 @@ export const useExecCode = () => {
   });
 
   const execCode = useCallback(() => {
-    flushSync(() => {
-      setMode('exec');
-    });
+    clearResult();
     _execCode();
-    flushSync(() => {
-      setMode('none');
-    });
-  }, [_execCode, setMode]);
+  }, [_execCode, clearResult]);
 
   return execCode;
 };

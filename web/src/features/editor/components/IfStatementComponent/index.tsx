@@ -9,6 +9,7 @@ import {
   useNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
+import { StatementComponentProps } from '@editor/type';
 
 import {
   IfStatementElse,
@@ -16,9 +17,10 @@ import {
   IfStatementStart,
 } from '@/lib/models/editorObject';
 
-export const IfStatementStartComponent: React.FC<{
-  id: IfStatementStart['id'];
-}> = ({ id }) => {
+export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
+  id,
+  active,
+}) => {
   const statement = useStatement<IfStatementStart>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -30,7 +32,7 @@ export const IfStatementStartComponent: React.FC<{
   const [cursor, conditionExp, endCursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <CursorNodeComponent
         id={cursor}
         inputEvent={deleteCurrentScopeInputEvent}
@@ -49,9 +51,10 @@ export const IfStatementStartComponent: React.FC<{
   );
 };
 
-export const IfStatementElseComponent: React.FC<{
-  id: IfStatementElse['id'];
-}> = ({ id }) => {
+export const IfStatementElseComponent: React.FC<StatementComponentProps> = ({
+  id,
+  active,
+}) => {
   const statement = useStatement<IfStatementElse>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -60,16 +63,17 @@ export const IfStatementElseComponent: React.FC<{
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <BaseTextComopnent>else</BaseTextComopnent>
       <CursorNodeComponent id={cursor} inputEvent={newStatementInputEvent} />
     </StatementWrapper>
   );
 };
 
-export const IfStatementEndComponent: React.FC<{
-  id: IfStatementEnd['id'];
-}> = ({ id }) => {
+export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
+  id,
+  active,
+}) => {
   const statement = useStatement<IfStatementEnd>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -81,7 +85,7 @@ export const IfStatementEndComponent: React.FC<{
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <BaseTextComopnent>endif</BaseTextComopnent>
       <CursorNodeComponent
         id={cursor}

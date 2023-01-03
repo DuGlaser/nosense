@@ -4,12 +4,13 @@ import {
   useNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
+import { StatementComponentProps } from '@editor/type';
 
 import { ExpressionStatement } from '@/lib/models/editorObject';
 
-export const ExpressionStatementComponent: React.FC<{
-  id: ExpressionStatement['id'];
-}> = ({ id }) => {
+export const ExpressionStatementComponent: React.FC<
+  StatementComponentProps
+> = ({ id, active }) => {
   const statement = useStatement<ExpressionStatement>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -21,7 +22,7 @@ export const ExpressionStatementComponent: React.FC<{
   const [exp] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <EditableNodeComponent
         id={exp}
         inputEvent={[...newStatementInputEvent, ...deleteStatementInputEvent]}

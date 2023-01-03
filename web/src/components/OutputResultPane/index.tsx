@@ -1,6 +1,6 @@
 import { styled } from '@mui/material';
 
-import { useExecResultState } from '@/store/exec';
+import { useExecResult } from '@/store/execResult';
 
 const OutputLines = styled('div')(({ theme }) => ({
   width: '100%',
@@ -14,12 +14,12 @@ const OutputLines = styled('div')(({ theme }) => ({
 }));
 
 export const OutputResultPane = () => {
-  const [outputLines] = useExecResultState();
+  const { execResult } = useExecResult();
 
   return (
     <OutputLines>
-      {outputLines.map((outputLine, i) => (
-        <div key={i}>{outputLine}</div>
+      {execResult.map((row, i) => (
+        <div key={i}>{row}</div>
       ))}
     </OutputLines>
   );

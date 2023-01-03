@@ -5,7 +5,8 @@ import { hexToRgba } from '@/styles/utils';
 
 const Wrapper = styled('div')<{
   indent: number;
-}>(({ theme, indent }) => {
+  active: number;
+}>(({ theme, indent, active }) => {
   const heightRate = 1.75;
 
   return {
@@ -18,6 +19,9 @@ const Wrapper = styled('div')<{
     height: `${heightRate}em`,
     minHeight: `${heightRate}em`,
     paddingLeft: `${1 * indent}em`,
+    backgroundColor: active
+      ? hexToRgba(theme.primary[300], 0.15)
+      : 'transparent',
     '& :focus': {
       backgroundColor: hexToRgba(theme.background[300], 0.25),
     },
@@ -33,7 +37,12 @@ const Wrapper = styled('div')<{
 export const StatementWrapper: React.FC<
   PropsWithChildren<{
     indent: number;
+    active: boolean;
   }>
-> = ({ indent, children }) => {
-  return <Wrapper indent={indent}>{children}</Wrapper>;
+> = ({ indent, active, children }) => {
+  return (
+    <Wrapper indent={indent} active={+active}>
+      {children}
+    </Wrapper>
+  );
 };

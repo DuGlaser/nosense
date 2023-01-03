@@ -6,7 +6,13 @@ import { Pane, SplitPane } from '@split-pane';
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 
-import { Header, OutputPane, OutputResultPane } from '@/components';
+import {
+  Header,
+  OutputDebugPane,
+  OutputPane,
+  OutputResultPane,
+} from '@/components';
+import { useDebugInfo } from '@/store/debug';
 import { decodeUrl } from '@/utils/decodeUrl';
 
 const Wrapper = styled('div')(({ theme }) => ({
@@ -31,6 +37,7 @@ const TabItemWrapper = styled('div')(({ theme }) => ({
 
 const IndexPage: NextPage = () => {
   const [code, setCode] = useState<string>('');
+  const debugState = useDebugInfo();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -49,12 +56,18 @@ const IndexPage: NextPage = () => {
       >
         <SplitPane>
           <Pane id={'editor'}>
-            <Editor code={code} />
+            <Editor
+              code={code}
+              mode={'EDITABLE'}
+              activeLineNumbers={
+                debugState?.position ? [debugState.position.line] : []
+              }
+            />
           </Pane>
           <Pane
             id={'output-pane'}
             defaultHeight={400}
-            maxHeight={400}
+            maxHeight={600}
             minHeight={48}
           >
             <OutputPane
@@ -70,7 +83,7 @@ const IndexPage: NextPage = () => {
               ]}
             >
               <OutputResultPane />
-              <div>デバッグログpane</div>
+              <OutputDebugPane />
             </OutputPane>
           </Pane>
         </SplitPane>

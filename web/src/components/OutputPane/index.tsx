@@ -46,7 +46,7 @@ const TabItemUnderline = styled(motion.div)(({ theme }) => ({
   background: theme.primary[400],
 }));
 
-const TabContentWrapper = styled(motion.div)(() => ({
+const TabContentWrapper = styled('div')(() => ({
   flex: 1,
   padding: '16px',
   color: 'white',
@@ -140,6 +140,10 @@ export const OutputPane: React.FC<Props> = ({ tabs, children }) => {
           <AnimatePresence initial={false} mode={'wait'}>
             <motion.div
               key={selectTabIndex}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

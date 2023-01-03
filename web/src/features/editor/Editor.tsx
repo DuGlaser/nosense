@@ -26,35 +26,44 @@ const CStack = styled(Stack)(({ theme }) => ({
 const StatementComponent: React.FC<{
   id: Statement['id'];
   type: Statement['_type'];
-}> = ({ id, type }) => {
+  active: boolean;
+}> = ({ id, type, active }) => {
   return match(type)
-    .with(statementType.LetStatement, () => <LetStatementComponent id={id} />)
+    .with(statementType.LetStatement, () => (
+      <LetStatementComponent id={id} active={active} />
+    ))
     .with(statementType.AssignStatement, () => (
-      <AssignStatementComponent id={id} />
+      <AssignStatementComponent id={id} active={active} />
     ))
     .with(statementType.ExpressionStatement, () => (
-      <ExpressionStatementComponent id={id} />
+      <ExpressionStatementComponent id={id} active={active} />
     ))
     .with(statementType.IfStatementStart, () => (
-      <IfStatementStartComponent id={id} />
+      <IfStatementStartComponent id={id} active={active} />
     ))
     .with(statementType.IfStatementElse, () => (
-      <IfStatementElseComponent id={id} />
+      <IfStatementElseComponent id={id} active={active} />
     ))
     .with(statementType.IfStatementEnd, () => (
-      <IfStatementEndComponent id={id} />
+      <IfStatementEndComponent id={id} active={active} />
     ))
     .with(statementType.NewStatement, () => <NewStatementComponent id={id} />)
     .with(statementType.WhileStatementEnd, () => (
-      <WhileStatementEndComponent id={id} />
+      <WhileStatementEndComponent id={id} active={active} />
     ))
     .with(statementType.WhileStatementStart, () => (
-      <WhileStatementStartComponent id={id} />
+      <WhileStatementStartComponent id={id} active={active} />
     ))
     .exhaustive();
 };
 
-export const Editor: React.FC<{ code: string }> = ({ code }) => {
+type Props = {
+  code: string;
+  activeLineNumbers: number[];
+  mode: 'READONLY' | 'EDITABLE';
+};
+
+export const Editor: React.FC<Props> = ({ code, activeLineNumbers }) => {
   const statementList = useStatementList();
   useParseCode(code);
 
@@ -67,8 +76,13 @@ export const Editor: React.FC<{ code: string }> = ({ code }) => {
           overflowY: 'auto',
         }}
       >
-        {statementList.map((item) => (
-          <StatementComponent key={item.id} id={item.id} type={item._type} />
+        {statementList.map((item, i) => (
+          <StatementComponent
+            active={activeLineNumbers.includes(i + 1)}
+            key={item.id}
+            id={item.id}
+            type={item._type}
+          />
         ))}
       </Box>
     </CStack>
