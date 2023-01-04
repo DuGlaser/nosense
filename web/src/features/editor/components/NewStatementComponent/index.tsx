@@ -115,7 +115,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   ];
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={false}>
       <CursorNodeComponent
         ref={ref}
         id={cursor}
