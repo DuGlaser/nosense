@@ -10,8 +10,28 @@ import {
 
 import { Node, Statement } from '@/lib/models/editorObject';
 
+/**
+ * StatementのNodesはNode型のtuple arrayなので、
+ * そこからidだけを抽出したstring tuple arrayに変換する。
+ * useStatementを使う際にNodeをtupleとして扱いたいのでこのようにしている。
+ * 型が複雑になり一部ts-ignoreしないと行けないが、useStatement側を使う機会のほうが
+ * 多いと判断し、今は使っている。
+ **/
+type NodesToIds<T extends Node[], K extends Node['id'][] = []> = T extends [
+  Node,
+  ...infer R
+]
+  ? R extends Node[]
+    ? // NOTE: 先頭要素以外を取り除いたRで再帰させる
+      NodesToIds<R, [...K, T[0]['id']]>
+    : []
+  : // NOTE: ...Node[]などはマッチしないのでここで処理させる
+  T extends []
+  ? [...K]
+  : [...K, ...Node['id'][]];
+
 type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
-  nodes: Node['id'][];
+  nodes: NodesToIds<T['nodes']>;
 };
 
 type ListStatementItem = Pick<Statement, 'id' | '_type'>;
@@ -121,6 +141,8 @@ export const useInsertNode = <T extends Statement>(statementId: T['id']) => {
               : -1;
             const left = nodes.slice(0, beforeNodeIndex + 1);
             const right = nodes.slice(beforeNodeIndex + 1);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             return {
               ...cur,
               nodes: left.concat(newNode.id, right),
@@ -264,6 +286,8 @@ export const useInsertStatement = () => {
         });
 
         newStmts.forEach((newStmt) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           set(statementsState(newStmt.id), {
             ...newStmt,
             nodes: newStmt.nodes.map((node) => node.id),

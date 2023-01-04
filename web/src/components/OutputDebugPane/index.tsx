@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@mui/material';
 
-import { ExecDebug, useDebug } from '@/store/debug';
+import { ExecDebug, useDebug } from '@/store';
 
 const Wrapper = styled('div')(() => ({
   display: 'flex',

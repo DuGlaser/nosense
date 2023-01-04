@@ -1,6 +1,6 @@
 import { styled } from '@mui/material';
 
-import { useExecResult } from '@/store/execResult';
+import { useExecResult } from '@/store';
 
 const OutputLines = styled('div')(({ theme }) => ({
   width: '100%',

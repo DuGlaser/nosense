@@ -42,6 +42,7 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   active,
 }) => {
   const statement = useStatement<LetStatement>(id);
+  const [typeNode, ...varNameNodes] = statement.nodes;
   const insertNode = useInsertNode(id);
 
   const insertStmt = useInsertStatement();
@@ -77,11 +78,11 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}
-        id={statement.nodes[0]}
+        id={typeNode}
       />
       :
       <Stack direction="row" divider={<span>,</span>}>
-        {statement.nodes.slice(1).map((varName) => (
+        {varNameNodes.map((varName) => (
           <EditableNodeComponent
             key={varName}
             id={varName}

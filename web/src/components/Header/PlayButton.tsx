@@ -13,7 +13,7 @@ import {
 import { useState } from 'react';
 
 import { useExecCode } from '@/hooks';
-import { useDebug } from '@/store/debug';
+import { useDebug } from '@/store';
 
 const Wrapper = styled('div')(({ theme }) => ({
   background: theme.primary[700],

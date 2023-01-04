@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { useExecResult } from '@/store/execResult';
+import { useExecResult } from '@/store';
 
 import { useDamega } from './useDamega';
 import { useDamegaInput } from './useDamegaInput';

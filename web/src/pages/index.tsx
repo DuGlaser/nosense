@@ -12,7 +12,7 @@ import {
   OutputPane,
   OutputResultPane,
 } from '@/components';
-import { useDebugInfo } from '@/store/debug';
+import { useDebugInfo } from '@/store';
 import { decodeUrl } from '@/utils/decodeUrl';
 
 const Wrapper = styled('div')(({ theme }) => ({
