@@ -45,6 +45,7 @@ export const useDebug = () => {
         ? {
             ...cur,
             generator: undefined,
+            position: undefined,
           }
         : cur
     );
@@ -94,7 +95,7 @@ export const useDebug = () => {
     let position: PositionContext | undefined = undefined;
     const histories: ExecDebug['histories'] = [];
 
-    while (done) {
+    while (!done) {
       const result = await debugState.generator.next();
       done = !!result.done;
       if (!result.done) {
