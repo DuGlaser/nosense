@@ -58,7 +58,7 @@ const IndexPage: NextPage = () => {
           <Pane id={'editor'}>
             <Editor
               code={code}
-              mode={'EDITABLE'}
+              mode={debugState.position ? 'READONLY' : 'WRITABLE'}
               activeLineNumbers={
                 debugState?.position ? [debugState.position.line] : []
               }
