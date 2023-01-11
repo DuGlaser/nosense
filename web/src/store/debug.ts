@@ -1,5 +1,8 @@
-import { Environment, EvaluatorGenerator } from '@nosense/damega';
-import { PositionContext } from '@nosense/damega/dist/contexts';
+import {
+  Environment,
+  EvaluatorGenerator,
+  PositionContext,
+} from '@nosense/damega';
 import { useCallback } from 'react';
 import { atom, useRecoilState, useRecoilValue } from 'recoil';
 
