@@ -96,11 +96,10 @@ const convertToRows = (env: ExecDebug['enviroment']) => {
 };
 
 export const OutputDebugPane = () => {
-  const { debugState, next } = useDebug();
+  const { debugState } = useDebug();
 
   return (
     <Wrapper>
-      <button onClick={next}>次へ</button>
       <ExecLineHistoryWrapper>
         <Histories>
           {debugState?.histories.map((history, i) => (

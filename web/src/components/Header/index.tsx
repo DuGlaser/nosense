@@ -1,5 +1,6 @@
 import { styled } from '@mui/material';
 
+import { DebugTools } from './DebugTools';
 import { PlayButton } from './PlayButton';
 import { SharePopover } from './SharePopover';
 
@@ -28,6 +29,7 @@ const Flex = styled('div')(() => ({
   flexDirection: 'row',
   alignItems: 'center',
   gap: '16px',
+  height: '100%',
 }));
 
 export const Header = () => {
@@ -35,6 +37,7 @@ export const Header = () => {
     <Wrapper>
       <Logo>Nosense</Logo>
       <Flex>
+        <DebugTools />
         <PlayButton />
         <SharePopover />
       </Flex>
