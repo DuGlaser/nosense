@@ -1,5 +1,5 @@
-import { InputEvent } from '@editor/components';
 import { useInsertStatement } from '@editor/store';
+import { InputEvent } from '@editor/type';
 
 import { createNewStatement } from '@/lib/models/editorObject';
 

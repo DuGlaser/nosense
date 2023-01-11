@@ -3,8 +3,9 @@ import {
   StatementWrapper,
   ValidateFn,
 } from '@editor/components';
-import { CompleteOption } from '@editor/hooks/useCompleteMenu';
+import { CompleteOption } from '@editor/hooks';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
+import { StatementComponentProps } from '@editor/type';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Button, Stack, styled } from '@mui/material';
 import { useCallback } from 'react';
@@ -36,10 +37,12 @@ const AddVarButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
+export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   id,
+  active,
 }) => {
   const statement = useStatement<LetStatement>(id);
+  const [typeNode, ...varNameNodes] = statement.nodes;
   const insertNode = useInsertNode(id);
 
   const insertStmt = useInsertStatement();
@@ -71,15 +74,15 @@ export const LetStatementComponent: React.FC<{ id: LetStatement['id'] }> = ({
   };
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}
-        id={statement.nodes[0]}
+        id={typeNode}
       />
       :
       <Stack direction="row" divider={<span>,</span>}>
-        {statement.nodes.slice(1).map((varName) => (
+        {varNameNodes.map((varName) => (
           <EditableNodeComponent
             key={varName}
             id={varName}

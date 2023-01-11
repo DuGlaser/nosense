@@ -46,15 +46,72 @@ const background: CustomTheme = {
   },
 };
 
+const primary: CustomTheme = {
+  '50': '#E5F3FD',
+  '100': '#BFDFFB',
+  '200': '#99CDF9',
+  '300': '#73B8F5',
+  '400': '#5AA9F3',
+  '500': '#479BF0',
+  '600': '#428CE2',
+  '700': '#3B7ACF',
+  '800': '#3669BD',
+  '900': '#2C4B9D',
+  contrast: {
+    50: '#000000',
+    100: '#000000',
+    200: '#000000',
+    300: '#000000',
+    400: '#000000',
+    500: '#000000',
+    600: '#ffffff',
+    700: '#ffffff',
+    800: '#ffffff',
+    900: '#ffffff',
+  },
+};
+
+const SCROLLBAR_SIZE = '16px';
+
 export const theme = createTheme({
   background,
+  primary,
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => {
+        const thumb = theme.background[700];
+        const track = theme.background[900];
+        return {
+          body: {
+            scrollbarColor: `${thumb} ${track}`,
+            '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
+              backgroundColor: track,
+              width: SCROLLBAR_SIZE,
+              height: SCROLLBAR_SIZE,
+            },
+            '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
+              border: '4px solid transparent',
+              borderRadius: SCROLLBAR_SIZE,
+              backgroundClip: 'content-box',
+              backgroundColor: thumb,
+            },
+            '&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner': {
+              backgroundColor: track,
+            },
+          },
+        };
+      },
+    },
+  },
 });
 
 declare module '@mui/material/styles' {
   interface Theme {
     background: CustomTheme;
+    primary: CustomTheme;
   }
   interface ThemeOptions {
     background: CustomTheme;
+    primary: CustomTheme;
   }
 }

@@ -16,7 +16,9 @@
     "paths": {
       "@/*": ["src/*"],
       "@editor": ["src/features/editor/index"],
-      "@editor/*": ["src/features/editor/*"]
+      "@editor/*": ["src/features/editor/*"],
+      "@split-pane": ["src/features/split-pane/index"],
+      "@split-pane/*": ["src/features/split-pane/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

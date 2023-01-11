@@ -1,5 +1,5 @@
 import { CursorNodeComponent, StatementWrapper } from '@editor/components';
-import { CompleteOption } from '@editor/hooks/useCompleteMenu';
+import { CompleteOption } from '@editor/hooks';
 import {
   useDeleteStatement,
   useFocusStatemnt,
@@ -115,7 +115,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   ];
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={false}>
       <CursorNodeComponent
         ref={ref}
         id={cursor}

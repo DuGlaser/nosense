@@ -1,23 +1,19 @@
 import { Editor } from '@editor';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { Box, Button, styled } from '@mui/material';
-import { ErrorObject, EvaluatorGenerator } from '@nosense/damega';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
+import { Box, styled } from '@mui/material';
+import { Pane, SplitPane } from '@split-pane';
 import { NextPage } from 'next';
-import { useRef } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useDamega } from '@/hooks/useDamega';
-import { useDamegaInput } from '@/hooks/useDamegaInput';
-import { useDamegaOutput } from '@/hooks/useDamegaOutput';
-
-const code = `
-let x: number = 0;
-let y: bool = true;
-x = 10;
-if (x) {
-  y = false;
-}
-Println(x);
-`;
+import {
+  Header,
+  OutputDebugPane,
+  OutputPane,
+  OutputResultPane,
+} from '@/components';
+import { useDebugInfo } from '@/store';
+import { decodeUrl } from '@/utils/decodeUrl';
 
 const Wrapper = styled('div')(({ theme }) => ({
   width: '100%',
@@ -29,104 +25,69 @@ const Wrapper = styled('div')(({ theme }) => ({
   position: 'relative',
 }));
 
-const Header = styled(Box)(({ theme }) => ({
-  width: '100%',
-  padding: '8px 24px',
-  maxHeight: '40px',
+const TabItemWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
-  flexDirection: 'row-reverse',
-  background: theme.background[800],
-  zIndex: 10,
-}));
-
-const FooterPanel = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  bottom: 0,
-
-  height: '20vh',
-  width: '100%',
-  background: theme.background[900],
-  borderTop: `1px solid ${theme.background[800]}`,
-  boxShadow: `0px 5.1px 8.6px rgba(0, 0, 0, 0.347),
-  0px 10.3px 19.2px rgba(0, 0, 0, 0.439),
-  0px 24px 65px rgba(0, 0, 0, 0.6)`,
-}));
-
-const OutputLines = styled(Box)(({ theme }) => ({
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-  padding: '16px',
-  background: theme.background[900],
-  color: theme.background.contrast[900],
-  overflow: 'auto',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: '16px',
+  ['> svg']: {
+    color: theme.primary['400'],
+  },
 }));
 
 const IndexPage: NextPage = () => {
-  const generator = useRef<EvaluatorGenerator>();
-  const { getInputEventCallback } = useDamegaInput();
-  const { getOutputEventCallback, outputs } = useDamegaOutput();
+  const [code, setCode] = useState<string>('');
+  const debugState = useDebugInfo();
 
-  const { execCode, getExecCodeGenerator } = useDamega({
-    returnInputEventFn: getInputEventCallback,
-    returnOutputEventFn: getOutputEventCallback,
-  });
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCode(decodeUrl(window.location.href).code);
+    }
+  }, []);
 
   return (
     <Wrapper>
-      <Header>
-        <Button
-          sx={{
-            borderRadius: 0,
-          }}
-          variant={'contained'}
-          startIcon={<PlayArrowIcon />}
-          onClick={async () => {
-            const { evaluated } = await execCode();
-            const result = await evaluated;
-
-            if (result instanceof ErrorObject) {
-              alert(result.message);
-            }
-          }}
-        >
-          実行
-        </Button>
-        <Button
-          sx={{
-            borderRadius: 0,
-          }}
-          variant={'contained'}
-          startIcon={<PlayArrowIcon />}
-          onClick={async () => {
-            if (generator.current) {
-              const result = await generator.current.next();
-              console.log({ result });
-            } else {
-              generator.current = await getExecCodeGenerator();
-            }
-          }}
-        >
-          ステップ実行
-        </Button>
-      </Header>
+      <Header />
       <Box
         sx={{
           flex: 1,
           overflow: 'auto',
         }}
       >
-        <Editor code={code} />
+        <SplitPane>
+          <Pane id={'editor'}>
+            <Editor
+              code={code}
+              mode={'EDITABLE'}
+              activeLineNumbers={
+                debugState?.position ? [debugState.position.line] : []
+              }
+            />
+          </Pane>
+          <Pane
+            id={'output-pane'}
+            defaultHeight={400}
+            maxHeight={600}
+            minHeight={48}
+          >
+            <OutputPane
+              tabs={[
+                <TabItemWrapper key="output-result">
+                  <InsertCommentIcon />
+                  <span>出力</span>
+                </TabItemWrapper>,
+                <TabItemWrapper key="output-debug">
+                  <BugReportIcon />
+                  <span>デバッグログ</span>
+                </TabItemWrapper>,
+              ]}
+            >
+              <OutputResultPane />
+              <OutputDebugPane />
+            </OutputPane>
+          </Pane>
+        </SplitPane>
       </Box>
-      <FooterPanel>
-        <OutputLines>
-          {outputs.map((output, i) => (
-            <Box key={i}>{output}</Box>
-          ))}
-        </OutputLines>
-      </FooterPanel>
     </Wrapper>
   );
 };

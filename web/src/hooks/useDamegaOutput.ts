@@ -1,15 +1,15 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+
+import { useExecResult } from '@/store';
 
 export const useDamegaOutput = () => {
-  const [outputs, setOutputs] = useState<string[]>([]);
+  const { addResult } = useExecResult();
 
   const getOutputEventCallback = useCallback(() => {
-    setOutputs([]);
-
     return (output: string) => {
-      setOutputs((cur) => [...cur, output]);
+      addResult(output);
     };
   }, []);
 
-  return { getOutputEventCallback, outputs };
+  return { getOutputEventCallback };
 };

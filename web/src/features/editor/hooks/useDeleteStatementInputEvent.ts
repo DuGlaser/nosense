@@ -1,6 +1,6 @@
-import { InputEvent } from '@editor/components';
 import { Statement } from '@editor/lib';
 import { useDeleteStatement, useMovePrevStatement } from '@editor/store';
+import { InputEvent } from '@editor/type';
 import { useCallback, useMemo } from 'react';
 
 export const useDeleteStatementInputEvent = (

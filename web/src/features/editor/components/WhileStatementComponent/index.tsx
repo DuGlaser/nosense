@@ -4,18 +4,21 @@ import {
   EditableNodeComponent,
   StatementWrapper,
 } from '@editor/components';
-import { useDeleteCurrentScopeInputEvent } from '@editor/hooks/useDeleteCurrentScopeInputEvent';
-import { useNewStatementInputEvent } from '@editor/hooks/useNewStatementInputEvent';
+import {
+  useDeleteCurrentScopeInputEvent,
+  useNewStatementInputEvent,
+} from '@editor/hooks';
 import { useStatement } from '@editor/store';
+import { StatementComponentProps } from '@editor/type';
 
 import {
   WhileStatementEnd,
   WhileStatementStart,
 } from '@/lib/models/editorObject';
 
-export const WhileStatementStartComponent: React.FC<{
-  id: WhileStatementStart['id'];
-}> = ({ id }) => {
+export const WhileStatementStartComponent: React.FC<
+  StatementComponentProps
+> = ({ id, active }) => {
   const statement = useStatement<WhileStatementStart>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -27,7 +30,7 @@ export const WhileStatementStartComponent: React.FC<{
   const [cursor, conditionExp, endCursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <CursorNodeComponent
         id={cursor}
         inputEvent={deleteCurrentScopeInputEvent}
@@ -46,9 +49,10 @@ export const WhileStatementStartComponent: React.FC<{
   );
 };
 
-export const WhileStatementEndComponent: React.FC<{
-  id: WhileStatementEnd['id'];
-}> = ({ id }) => {
+export const WhileStatementEndComponent: React.FC<StatementComponentProps> = ({
+  id,
+  active,
+}) => {
   const statement = useStatement<WhileStatementEnd>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -60,7 +64,7 @@ export const WhileStatementEndComponent: React.FC<{
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent}>
+    <StatementWrapper indent={statement.indent} active={active}>
       <BaseTextComopnent>endwhile</BaseTextComopnent>
       <CursorNodeComponent
         id={cursor}
