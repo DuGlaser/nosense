@@ -264,7 +264,7 @@ export const EditableNodeComponent = forwardRef<
   };
 
   const handleFocus = (e: FocusEvent<HTMLDivElement>) => {
-    openCompleteMenu();
+    if (value === '') openCompleteMenu();
     rest.onFocus && rest.onFocus(e);
   };
 
