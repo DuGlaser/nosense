@@ -34,7 +34,7 @@
     "@recoiljs/refine": "^0.1.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^8.0.2",
-    "next": "13.1.1",
+    "next": "13.1.2",
     "notistack": "^2.0.8",
     "react-merge-refs": "^2.0.1",
     "recoil": "^0.7.6",
