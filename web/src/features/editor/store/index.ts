@@ -1,3 +1,5 @@
+import { Mode, mode } from '@editor/type';
+import { literal, union } from '@recoiljs/refine';
 import { useCallback } from 'react';
 import {
   atom,
@@ -7,6 +9,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+import { syncEffect } from 'recoil-sync';
 
 import { Node, Statement } from '@/lib/models/editorObject';
 
@@ -462,4 +465,20 @@ export const useNode = <T extends Node>(id: T['id']) => {
     movePrevNode,
     moveCurrentNodeLast,
   };
+};
+
+export const EDITOR_MODE_STORE_KEY = 'editorMode';
+
+const editorModeState = atom<Mode>({
+  key: 'editorMode',
+  effects: [
+    syncEffect({
+      storeKey: EDITOR_MODE_STORE_KEY,
+      refine: union(...mode.map((_) => literal(_))),
+    }),
+  ],
+});
+
+export const useEditorMode = () => {
+  return useRecoilValue(editorModeState);
 };

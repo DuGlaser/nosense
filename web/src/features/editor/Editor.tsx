@@ -10,12 +10,14 @@ import {
 } from '@editor/components';
 import { useParseCode } from '@editor/hooks';
 import { Box, Stack, styled } from '@mui/material';
+import { RecoilSync } from 'recoil-sync';
 import { match } from 'ts-pattern';
 
 import { Statement, statementType } from '@/lib/models/editorObject';
 
 import { NewStatementComponent } from './components/NewStatementComponent';
-import { useStatementList } from './store';
+import { EDITOR_MODE_STORE_KEY, useStatementList } from './store';
+import { Mode } from './type';
 
 const CStack = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.background[900],
@@ -60,31 +62,41 @@ const StatementComponent: React.FC<{
 type Props = {
   code: string;
   activeLineNumbers: number[];
-  mode: 'READONLY' | 'EDITABLE';
+  mode: Mode;
 };
 
-export const Editor: React.FC<Props> = ({ code, activeLineNumbers }) => {
+export const Editor: React.FC<Props> = ({ code, activeLineNumbers, mode }) => {
   const statementList = useStatementList();
   useParseCode(code);
 
   return (
-    <CStack direction={'row'} spacing={'8px'}>
-      <Box
-        sx={{
-          padding: '16px',
-          width: '100%',
-          overflowY: 'auto',
-        }}
-      >
-        {statementList.map((item, i) => (
-          <StatementComponent
-            active={activeLineNumbers.includes(i + 1)}
-            key={item.id}
-            id={item.id}
-            type={item._type}
-          />
-        ))}
-      </Box>
-    </CStack>
+    <RecoilSync
+      storeKey={EDITOR_MODE_STORE_KEY}
+      read={() => {
+        return mode;
+      }}
+      listen={({ updateItem }) => {
+        updateItem(EDITOR_MODE_STORE_KEY, mode);
+      }}
+    >
+      <CStack direction={'row'} spacing={'8px'}>
+        <Box
+          sx={{
+            padding: '16px',
+            width: '100%',
+            overflowY: 'auto',
+          }}
+        >
+          {statementList.map((item, i) => (
+            <StatementComponent
+              active={activeLineNumbers.includes(i + 1)}
+              key={item.id}
+              id={item.id}
+              type={item._type}
+            />
+          ))}
+        </Box>
+      </CStack>
+    </RecoilSync>
   );
 };

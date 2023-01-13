@@ -1,6 +1,7 @@
 import { BaseTextComopnent } from '@editor/components';
 import { CompleteOption, useCompleteMenu } from '@editor/hooks';
 import {
+  useEditorMode,
   useMoveNextStatement,
   useMovePrevStatement,
   useNode,
@@ -119,6 +120,7 @@ export const EditableNodeComponent = forwardRef<
   const moveNextStatement = useMoveNextStatement();
   const movePrevStatement = useMovePrevStatement();
   const [value, setValue] = useState(node.content);
+  const mode = useEditorMode();
 
   /**
    * CompleteMenuで補完したときに入力を変更するためのState。
@@ -276,7 +278,7 @@ export const EditableNodeComponent = forwardRef<
         title={error?.message}
         data-has-error={!!error}
         ref={mergeRefs([ref, _ref])}
-        contentEditable
+        contentEditable={mode === 'WRITABLE'}
         suppressContentEditableWarning={true}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}

@@ -17,3 +17,6 @@ export type InputEvent = {
   openCompleteMenu?: boolean;
   callback: (e: KeyboardEvent<HTMLDivElement>, next: () => void) => void;
 };
+
+export const mode = ['WRITABLE', 'READONLY'] as const;
+export type Mode = typeof mode[number];

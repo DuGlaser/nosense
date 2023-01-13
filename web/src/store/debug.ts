@@ -1,5 +1,8 @@
-import { Environment, EvaluatorGenerator } from '@nosense/damega';
-import { PositionContext } from '@nosense/damega/dist/contexts';
+import {
+  Environment,
+  EvaluatorGenerator,
+  PositionContext,
+} from '@nosense/damega';
 import { useCallback } from 'react';
 import { atom, useRecoilState, useRecoilValue } from 'recoil';
 
@@ -51,16 +54,7 @@ export const useDebug = () => {
     );
   };
 
-  const start = useCallback(async () => {
-    const generator = await getExecCodeGenerator();
-
-    setDebugState(() => ({
-      generator: generator,
-      histories: [],
-    }));
-  }, [getExecCodeGenerator, setDebugState]);
-
-  const next = async () => {
+  const next = useCallback(async () => {
     if (!debugState || !debugState.generator) return;
 
     const result = await debugState.generator.next();
@@ -81,13 +75,22 @@ export const useDebug = () => {
       enviroment,
       position,
     }));
-  };
+  }, [debugState, setDebugState, cleanUp]);
 
-  const stop = () => {
+  const start = useCallback(async () => {
+    const generator = await getExecCodeGenerator();
+
+    setDebugState(() => ({
+      generator: generator,
+      histories: [],
+    }));
+  }, [getExecCodeGenerator, setDebugState]);
+
+  const stop = useCallback(() => {
     cleanUp();
-  };
+  }, [cleanUp]);
 
-  const finish = async () => {
+  const finish = useCallback(async () => {
     if (!debugState || !debugState.generator) return;
 
     let done = false;
@@ -115,7 +118,7 @@ export const useDebug = () => {
       position,
     });
     cleanUp();
-  };
+  }, [debugState, setDebugState, cleanUp]);
 
   return { next, start, finish, stop, debugState };
 };

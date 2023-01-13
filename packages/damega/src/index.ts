@@ -1,4 +1,5 @@
 export * from './ast';
+export * from './contexts';
 export * from './evaluator';
 export * from './lexer';
 export * from './object';
