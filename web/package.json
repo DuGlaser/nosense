@@ -13,6 +13,10 @@
     "lint-fix:eslint": "TIMING=1 eslint . --fix"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "^14.4.3",
     "@types/file-saver": "^2.0.5",
     "@types/uuid": "^9.0.0",
     "dialog-polyfill": "^0.5.6",
