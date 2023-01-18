@@ -1,3 +1,4 @@
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { styled } from '@mui/material';
 import {
   ComponentProps,
@@ -77,8 +78,16 @@ const StyledCmpMenuItem = styled('div')<{ focused: number }>(
       cursor: 'pointer',
       whiteSpace: 'nowrap',
       textAlign: 'start',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: '4px',
       '&:hover, &:active': activeStyle,
       ...(focused ? activeStyle : {}),
+      svg: {
+        marginRight: '-8px',
+        color: theme.primary[300],
+      },
     };
   }
 );
@@ -148,26 +157,28 @@ const CmpMenuItem: React.FC<
     { top: number; right: number } | undefined
   >(undefined);
 
+  const handleSetPosition = (el: HTMLDivElement) => {
+    const rect = el?.getBoundingClientRect();
+    if (!rect?.top || !rect?.right) return;
+    if (!position) {
+      setPosition({ top: rect.top, right: rect.right });
+      return;
+    }
+
+    if (position.top === rect.top && position.right === rect.right) return;
+
+    setPosition({ top: rect.top, right: rect.right });
+  };
+
   return (
     <>
       <StyledCmpMenuItem
         focused={+option.focused}
-        ref={(el) => {
-          const rect = el?.getBoundingClientRect();
-          if (!rect?.top || !rect?.right) return;
-          if (!position) {
-            setPosition({ top: rect.top, right: rect.right });
-            return;
-          }
-
-          if (position.top === rect.top && position.right === rect.right)
-            return;
-
-          setPosition({ top: rect.top, right: rect.right });
-        }}
+        ref={handleSetPosition}
         {...rest}
       >
         {option.displayName}
+        {isCompleteOptionRoot(option) && <KeyboardArrowRightIcon />}
       </StyledCmpMenuItem>
       {option.focused && isCompleteOptionRoot(option) && position && (
         <CompleteMenuRoot
