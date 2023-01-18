@@ -209,7 +209,7 @@ describe('ネストしている補完メニュー', () => {
     ) => {
       return options.map((option) => {
         if (isDisplayCompleteOptionRoot(option)) {
-          return [option.displayName, convert(option.compliteOptions)];
+          return [option.displayName, convert(option.completeOptions)];
         }
 
         return option.displayName;
@@ -228,7 +228,7 @@ describe('ネストしている補完メニュー', () => {
     ) => {
       return options.map((option) => {
         if (isDisplayCompleteOptionRoot(option)) {
-          return [option.focused, convert(option.compliteOptions)];
+          return [option.focused, convert(option.completeOptions)];
         }
 
         return option.focused;
@@ -243,7 +243,7 @@ describe('ネストしている補完メニュー', () => {
       {
         displayName: 'test1',
         keyword: ['test1'],
-        compliteOptions: [
+        completeOptions: [
           {
             displayName: 'test1-1',
             keyword: ['test1-1'],
@@ -257,11 +257,11 @@ describe('ネストしている補完メニュー', () => {
       {
         displayName: 'test2',
         keyword: ['test2'],
-        compliteOptions: [
+        completeOptions: [
           {
             displayName: 'test2-1',
             keyword: ['test2-1'],
-            compliteOptions: [
+            completeOptions: [
               {
                 displayName: 'test2-1-1',
                 keyword: ['test2-1-1'],
@@ -330,7 +330,7 @@ describe('ネストしている補完メニュー', () => {
       {
         displayName: 'test1',
         keyword: ['test1'],
-        compliteOptions: [
+        completeOptions: [
           {
             displayName: 'test1-1',
             keyword: ['test1-1'],
@@ -344,11 +344,11 @@ describe('ネストしている補完メニュー', () => {
       {
         displayName: 'test2',
         keyword: ['test2'],
-        compliteOptions: [
+        completeOptions: [
           {
             displayName: 'test2-1',
             keyword: ['test2-1'],
-            compliteOptions: [
+            completeOptions: [
               {
                 displayName: 'test2-1-1',
                 keyword: ['test2-1-1'],

@@ -20,7 +20,7 @@ type CompleteOptionItem = {
 
 type CompleteOptionRoot = {
   displayName: string;
-  compliteOptions: CompleteOption[];
+  completeOptions: CompleteOption[];
   onComplete?: () => void;
 };
 
@@ -32,9 +32,9 @@ type AddDisplayOption<T> = T & {
 type DisplayCompleteOptionItem = AddDisplayOption<CompleteOptionItem>;
 type DisplayCompleteOptionRoot = Omit<
   AddDisplayOption<CompleteOptionRoot>,
-  'compliteOptions'
+  'completeOptions'
 > & {
-  compliteOptions: DisplayCompleteOption[];
+  completeOptions: DisplayCompleteOption[];
 };
 
 export type DisplayCompleteOption =
@@ -106,13 +106,13 @@ export const isCompleteOptionItem = (
 export const isCompleteOptionRoot = (
   option: CompleteOption
 ): option is CompleteOptionRoot => {
-  return 'compliteOptions' in option;
+  return 'completeOptions' in option;
 };
 
 export const isDisplayCompleteOptionRoot = (
   option: DisplayCompleteOption
 ): option is DisplayCompleteOptionRoot => {
-  return 'compliteOptions' in option;
+  return 'completeOptions' in option;
 };
 
 export const filterCompleteOptions = (
@@ -131,12 +131,12 @@ export const filterCompleteOptions = (
     if (isCompleteOptionRoot(option)) {
       const filteredChildrenOptions = filterCompleteOptions(
         trimmed,
-        option.compliteOptions
+        option.completeOptions
       );
       if (filteredChildrenOptions.length > 0) {
         results.push({
           ...option,
-          compliteOptions: filteredChildrenOptions,
+          completeOptions: filteredChildrenOptions,
           focused: false,
         });
       }
@@ -184,7 +184,7 @@ const CmpMenuItem: React.FC<
         <CompleteMenuRoot
           top={position.top - 4}
           left={position.right + 8}
-          options={option.compliteOptions}
+          options={option.completeOptions}
           onSelectCompleteItem={onSelectCompleteItem}
           closeCompleteMenu={closeCompleteMenu}
         />
@@ -244,13 +244,13 @@ const generateNewDisplayCompleteOption = (
       const targetOption = displayOptions[index];
       if (isDisplayCompleteOptionRoot(targetOption)) {
         const newCompleteOptions = generateNewDisplayCompleteOption(
-          targetOption.compliteOptions,
+          targetOption.completeOptions,
           [{ ...cmd, parentIndexs: cmd.parentIndexs.slice(1) }]
         );
 
         displayOptions[index] = {
           ...displayOptions[index],
-          compliteOptions: newCompleteOptions,
+          completeOptions: newCompleteOptions,
         };
       }
     }
@@ -281,7 +281,7 @@ const getCurrentSelectOption = (displayOptions: DisplayCompleteOption[]) => {
         });
       }
       if (isDisplayCompleteOptionRoot(option)) {
-        _filterDisplayOptions(option.compliteOptions, parentIndexs.concat(i));
+        _filterDisplayOptions(option.completeOptions, parentIndexs.concat(i));
       }
     });
   };
