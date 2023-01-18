@@ -120,6 +120,9 @@ export const EditableNodeComponent = forwardRef<
   const moveNextStatement = useMoveNextStatement();
   const movePrevStatement = useMovePrevStatement();
   const [value, setValue] = useState(node.content);
+  const [position, setPosition] = useState<
+    { bottom: number; left: number } | undefined
+  >(undefined);
   const mode = useEditorMode();
 
   /**
@@ -139,9 +142,13 @@ export const EditableNodeComponent = forwardRef<
     openCompleteMenu,
     closeCompleteMenu,
     CompleteMenu,
-    selectNextCompletItem,
-    selectPrevCompletItem,
-    displayedCompleteMenu,
+    hasChildrenMenu,
+    hasParentMenu,
+    selectNextCompleteItem,
+    selectPrevCompleteItem,
+    selectChildrenMenu,
+    selectParentMenu,
+    isOpen,
     clickCurrentCompleteItem,
   } = useCompleteMenu(completeOptions, value);
 
@@ -159,6 +166,7 @@ export const EditableNodeComponent = forwardRef<
       setDisplayValue(option.displayName);
       handleUpdateValue(option.displayName);
       option.onComplete && option.onComplete();
+      closeCompleteMenu();
       setTimeout(() => {
         moveCurrentNodeLast();
       }, 0);
@@ -180,7 +188,7 @@ export const EditableNodeComponent = forwardRef<
     const event: Omit<InputEvent, 'callback'> = {
       key: e.key,
       contentLength: value.length,
-      openCompleteMenu: displayedCompleteMenu,
+      openCompleteMenu: isOpen,
       cursorPosition: getCursorPosition(value, selection?.focusOffset),
     };
 
@@ -192,6 +200,15 @@ export const EditableNodeComponent = forwardRef<
     const editableNodeEvents: InputEvent[] = [
       {
         key: 'ArrowLeft',
+        callback: (_, next) => {
+          if (hasParentMenu()) {
+            return selectParentMenu();
+          }
+          next();
+        },
+      },
+      {
+        key: 'ArrowLeft',
         cursorPosition: 'START',
         callback: () => movePrevNode(),
       },
@@ -199,6 +216,15 @@ export const EditableNodeComponent = forwardRef<
         key: 'Backspace',
         cursorPosition: 'START',
         callback: () => movePrevNode(),
+      },
+      {
+        key: 'ArrowRight',
+        callback: (_, next) => {
+          if (hasChildrenMenu()) {
+            return selectChildrenMenu();
+          }
+          next();
+        },
       },
       {
         key: 'ArrowRight',
@@ -213,12 +239,12 @@ export const EditableNodeComponent = forwardRef<
       {
         key: 'ArrowDown',
         openCompleteMenu: true,
-        callback: () => selectNextCompletItem(),
+        callback: () => selectNextCompleteItem(),
       },
       {
         key: 'ArrowUp',
         openCompleteMenu: true,
-        callback: () => selectPrevCompletItem(),
+        callback: () => selectPrevCompleteItem(),
       },
       {
         key: 'ArrowDown',
@@ -233,7 +259,7 @@ export const EditableNodeComponent = forwardRef<
       {
         key: 'Enter',
         openCompleteMenu: true,
-        callback: () => clickCurrentCompleteItem(),
+        callback: () => clickCurrentCompleteItem(selectCompleteItem),
       },
       {
         key: 'Tab',
@@ -269,7 +295,7 @@ export const EditableNodeComponent = forwardRef<
   };
 
   return (
-    <div>
+    <>
       <EditableDiv
         data-node-label="editable"
         spellCheck={false}
@@ -277,7 +303,23 @@ export const EditableNodeComponent = forwardRef<
         // TODO: popupなどでもっとわかりやすくエラーを表示するようにする
         title={error?.message}
         data-has-error={!!error}
-        ref={mergeRefs([ref, _ref])}
+        ref={mergeRefs([
+          ref,
+          _ref,
+          (el) => {
+            const rect = el?.getBoundingClientRect();
+            if (!rect?.top || !rect?.right) return;
+            if (!position) {
+              setPosition({ bottom: rect.bottom, left: rect.left });
+              return;
+            }
+
+            if (position.bottom === rect.bottom && position.left === rect.left)
+              return;
+
+            setPosition({ bottom: rect.bottom, left: rect.left });
+          },
+        ])}
         contentEditable={mode === 'WRITABLE'}
         suppressContentEditableWarning={true}
         onBlur={handleBlur}
@@ -287,7 +329,13 @@ export const EditableNodeComponent = forwardRef<
       >
         {displayValue}
       </EditableDiv>
-      <CompleteMenu onSelectCompleteItem={selectCompleteItem} />
-    </div>
+      {position && (
+        <CompleteMenu
+          top={position.bottom}
+          left={position.left}
+          onSelectCompleteItem={selectCompleteItem}
+        />
+      )}
+    </>
   );
 });

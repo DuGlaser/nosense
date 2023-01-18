@@ -69,9 +69,12 @@ lint-fix/app:
 
 # test
 .PHONY: test
-test:
-	$(MAKE) test/damega
+test: test/damega test/web
 
 .PHONY: test/damega
 test/damega:
 	$(NPM_RUN_WS) $(PKG_DAMEGA) test
+
+.PHONY: test/web
+test/web:
+	$(NPM_RUN_WS) $(PKG_WEB) test

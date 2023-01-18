@@ -13,14 +13,18 @@
     "lint-fix:eslint": "TIMING=1 eslint . --fix"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "13.2.0",
+    "@testing-library/user-event": "14.2.0",
     "@types/file-saver": "^2.0.5",
+    "@types/react": "18.0.9",
+    "@types/testing-library__jest-dom": "5.14.5",
     "@types/uuid": "^9.0.0",
     "dialog-polyfill": "^0.5.6",
     "eslint-plugin-custom": "*",
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-react": "7.32.0",
     "eslint-plugin-react-hooks": "4.6.0",
-    "jest-environment-jsdom": "29.3.1",
     "raw-loader": "^4.0.2",
     "webpack-node-externals": "^3.0.0",
     "yaml-loader": "^0.8.0"
@@ -37,6 +41,8 @@
     "next": "13.1.2",
     "notistack": "^2.0.8",
     "react-merge-refs": "^2.0.1",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "recoil": "^0.7.6",
     "recoil-sync": "^0.2.0",
     "ts-pattern": "4.1.3",
