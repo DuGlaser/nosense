@@ -21,7 +21,7 @@
     "ts-node/esm": "node --loader ts-node/esm --es-module-specifier-resolution=node"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^23.0.3",
+    "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-typescript": "^10.0.1",
     "@types/jest": "29.2.5",
     "eslint-plugin-custom": "*",
