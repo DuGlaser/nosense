@@ -92,7 +92,7 @@ const generateObnizFn: AsyncBuiltinObjectGenerator = async (ctx) => {
   }
 };
 
-const generateWaitFn: BuiltinObjectGenerator = () => {
+const generateSleepFn: BuiltinObjectGenerator = () => {
   return new BuiltinObject({
     fn: async (obj: Obj) => {
       if (obj instanceof NumberObject) {
@@ -128,7 +128,7 @@ export const generateBuiltinFunctions = ({
   > = {
     Println: generatePrintln(defaultCtx),
     Input: generateInput(defaultCtx),
-    Wait: generateWaitFn(defaultCtx),
+    Sleep: generateSleepFn(defaultCtx),
     Obniz: generateObnizFn,
   };
 
