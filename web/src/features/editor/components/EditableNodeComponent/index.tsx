@@ -1,5 +1,9 @@
 import { BaseTextComopnent } from '@editor/components';
-import { CompleteOption, useCompleteMenu } from '@editor/hooks';
+import {
+  CompleteOption,
+  isCompleteOptionRoot,
+  useCompleteMenu,
+} from '@editor/hooks';
 import {
   useEditorMode,
   useMoveNextStatement,
@@ -160,12 +164,13 @@ export const EditableNodeComponent = forwardRef<
 
   const selectCompleteItem = useCallback(
     (option: CompleteOption) => {
+      if (isCompleteOptionRoot(option)) return;
+
       flushSync(() => {
         setDisplayValue('');
       });
       setDisplayValue(option.displayName);
       handleUpdateValue(option.displayName);
-      option.onComplete && option.onComplete();
       closeCompleteMenu();
       setTimeout(() => {
         moveCurrentNodeLast();

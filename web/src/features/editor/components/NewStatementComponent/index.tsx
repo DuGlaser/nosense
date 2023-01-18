@@ -1,5 +1,5 @@
 import { CursorNodeComponent, StatementWrapper } from '@editor/components';
-import { CompleteOption } from '@editor/hooks';
+import { CompleteOption, useDeleteStatementInputEvent } from '@editor/hooks';
 import {
   useDeleteStatement,
   useFocusStatemnt,
@@ -51,6 +51,8 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
     }, 1);
   };
 
+  const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
+
   const options: CompleteOption[] = [
     {
       displayName: '変数宣言',
@@ -101,16 +103,130 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
       },
     },
     {
-      displayName: '関数呼び出し',
+      displayName: 'Obniz命令',
       keyword: [],
-      onComplete: () => {
-        insertNewStatement([
-          createExpressionStatement({
-            exp: '',
-            indent: statement.indent,
-          }),
-        ]);
-      },
+      completeOptions: [
+        {
+          displayName: '接続',
+          keyword: [],
+          onComplete: () => {
+            insertNewStatement([
+              createExpressionStatement({
+                exp: 'Obniz.CONNECT()',
+                indent: statement.indent,
+              }),
+            ]);
+          },
+        },
+        {
+          displayName: '切断',
+          keyword: [],
+          onComplete: () => {
+            insertNewStatement([
+              createExpressionStatement({
+                exp: 'Obniz.CLOSE()',
+                indent: statement.indent,
+              }),
+            ]);
+          },
+        },
+        {
+          displayName: 'LED',
+          completeOptions: [
+            {
+              displayName: '点灯',
+              keyword: [],
+              onComplete: () => {
+                insertNewStatement([
+                  createExpressionStatement({
+                    exp: 'Obniz.LED.ON()',
+                    indent: statement.indent,
+                  }),
+                ]);
+              },
+            },
+            {
+              displayName: '消灯',
+              keyword: [],
+              onComplete: () => {
+                insertNewStatement([
+                  createExpressionStatement({
+                    exp: 'Obniz.LED.OFF()',
+                    indent: statement.indent,
+                  }),
+                ]);
+              },
+            },
+            {
+              displayName: '点滅開始',
+              keyword: [],
+              onComplete: () => {
+                insertNewStatement([
+                  createExpressionStatement({
+                    exp: 'Obniz.LED.BLINK()',
+                    indent: statement.indent,
+                  }),
+                ]);
+              },
+            },
+            {
+              displayName: '点滅終了',
+              keyword: [],
+              onComplete: () => {
+                insertNewStatement([
+                  createExpressionStatement({
+                    exp: 'Obniz.LED.END_BLINK()',
+                    indent: statement.indent,
+                  }),
+                ]);
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      displayName: '組み込み関数',
+      keyword: [],
+      completeOptions: [
+        {
+          displayName: '入力',
+          keyword: [],
+          onComplete: () => {
+            insertNewStatement([
+              createAssignStatement({
+                name: '',
+                value: 'Input()',
+                indent: statement.indent,
+              }),
+            ]);
+          },
+        },
+        {
+          displayName: '出力',
+          keyword: [],
+          onComplete: () => {
+            insertNewStatement([
+              createExpressionStatement({
+                exp: 'Println()',
+                indent: statement.indent,
+              }),
+            ]);
+          },
+        },
+        {
+          displayName: 'スリープ',
+          keyword: [],
+          onComplete: () => {
+            insertNewStatement([
+              createExpressionStatement({
+                exp: 'Sleep()',
+                indent: statement.indent,
+              }),
+            ]);
+          },
+        },
+      ],
     },
   ];
 
@@ -120,6 +236,7 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
         ref={ref}
         id={cursor}
         completeOptions={options}
+        inputEvent={deleteStatementInputEvent}
         onInput={(e) => {
           e.preventDefault();
         }}
