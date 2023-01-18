@@ -165,7 +165,6 @@ export const EditableNodeComponent = forwardRef<
       });
       setDisplayValue(option.displayName);
       handleUpdateValue(option.displayName);
-      option.onComplete && option.onComplete();
       closeCompleteMenu();
       setTimeout(() => {
         moveCurrentNodeLast();
