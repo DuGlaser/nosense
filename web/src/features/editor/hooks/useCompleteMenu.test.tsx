@@ -1,4 +1,4 @@
-import { act, renderHook, RenderResult } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 
 import {
   CompleteOption,
@@ -11,21 +11,21 @@ beforeAll(() => {
 });
 
 const checkDisplayOptions = (
-  result: RenderResult<ReturnType<typeof useCompleteMenu>>,
+  result: ReturnType<typeof useCompleteMenu>,
   expected: string[]
 ) => {
   expect(
-    result.current.displayOptions.map((option) => option.displayName)
+    result.displayOptions.map((option) => option.displayName)
   ).toStrictEqual(expected);
 };
 
 const checkFocusDisplayOptions = (
-  result: RenderResult<ReturnType<typeof useCompleteMenu>>,
+  result: ReturnType<typeof useCompleteMenu>,
   expected: boolean[]
 ) => {
-  expect(
-    result.current.displayOptions.map((option) => option.focused)
-  ).toStrictEqual(expected);
+  expect(result.displayOptions.map((option) => option.focused)).toStrictEqual(
+    expected
+  );
 };
 
 it('入力値によってメニューの項目が変化する', () => {
@@ -52,7 +52,7 @@ it('入力値によってメニューの項目が変化する', () => {
     jest.advanceTimersByTime(delay);
   });
 
-  checkDisplayOptions(result, ['test1', 'test2']);
+  checkDisplayOptions(result.current, ['test1', 'test2']);
 
   const update = (newValue: string) => {
     inputValue = newValue;
@@ -63,16 +63,16 @@ it('入力値によってメニューの項目が変化する', () => {
   };
 
   update('test1');
-  checkDisplayOptions(result, ['test1']);
+  checkDisplayOptions(result.current, ['test1']);
 
   update('test2');
-  checkDisplayOptions(result, ['test2']);
+  checkDisplayOptions(result.current, ['test2']);
 
   update('test');
-  checkDisplayOptions(result, ['test1', 'test2']);
+  checkDisplayOptions(result.current, ['test1', 'test2']);
 
   update('test3');
-  checkDisplayOptions(result, []);
+  checkDisplayOptions(result.current, []);
 });
 
 it('selectNextCompleteItemでメニューのアイテムを選択する', () => {
@@ -113,28 +113,28 @@ it('selectNextCompleteItemでメニューのアイテムを選択する', () => 
     });
   };
 
-  checkDisplayOptions(result, ['test1', 'test2']);
-  checkFocusDisplayOptions(result, [false, false]);
+  checkDisplayOptions(result.current, ['test1', 'test2']);
+  checkFocusDisplayOptions(result.current, [false, false]);
   next();
 
-  checkFocusDisplayOptions(result, [true, false]);
+  checkFocusDisplayOptions(result.current, [true, false]);
   next();
 
-  checkFocusDisplayOptions(result, [false, true]);
+  checkFocusDisplayOptions(result.current, [false, true]);
   next();
 
-  checkFocusDisplayOptions(result, [true, false]);
+  checkFocusDisplayOptions(result.current, [true, false]);
   next();
 
   update('test1');
-  checkDisplayOptions(result, ['test1']);
-  checkFocusDisplayOptions(result, [false]);
+  checkDisplayOptions(result.current, ['test1']);
+  checkFocusDisplayOptions(result.current, [false]);
   next();
 
-  checkFocusDisplayOptions(result, [true]);
+  checkFocusDisplayOptions(result.current, [true]);
   next();
 
-  checkFocusDisplayOptions(result, [true]);
+  checkFocusDisplayOptions(result.current, [true]);
 });
 
 it('selectPrevCompleteItemでメニューのアイテムを選択する', () => {
@@ -175,39 +175,37 @@ it('selectPrevCompleteItemでメニューのアイテムを選択する', () => 
     });
   };
 
-  checkDisplayOptions(result, ['test1', 'test2']);
-  checkFocusDisplayOptions(result, [false, false]);
+  checkDisplayOptions(result.current, ['test1', 'test2']);
+  checkFocusDisplayOptions(result.current, [false, false]);
   back();
 
-  checkFocusDisplayOptions(result, [false, true]);
+  checkFocusDisplayOptions(result.current, [false, true]);
   back();
 
-  checkFocusDisplayOptions(result, [true, false]);
+  checkFocusDisplayOptions(result.current, [true, false]);
   back();
 
-  checkFocusDisplayOptions(result, [false, true]);
+  checkFocusDisplayOptions(result.current, [false, true]);
   back();
 
   update('test1');
-  checkDisplayOptions(result, ['test1']);
-  checkFocusDisplayOptions(result, [false]);
+  checkDisplayOptions(result.current, ['test1']);
+  checkFocusDisplayOptions(result.current, [false]);
   back();
 
-  checkFocusDisplayOptions(result, [true]);
+  checkFocusDisplayOptions(result.current, [true]);
   back();
 
-  checkFocusDisplayOptions(result, [true]);
+  checkFocusDisplayOptions(result.current, [true]);
 });
 
 describe('ネストしている補完メニュー', () => {
   const checkNestedDisplayOptions = (
-    result: RenderResult<ReturnType<typeof useCompleteMenu>>,
+    result: ReturnType<typeof useCompleteMenu>,
     expected: any[]
   ) => {
     const convert = (
-      options: RenderResult<
-        ReturnType<typeof useCompleteMenu>
-      >['current']['displayOptions']
+      options: ReturnType<typeof useCompleteMenu>['displayOptions']
     ) => {
       return options.map((option) => {
         if (isDisplayCompleteOptionRoot(option)) {
@@ -218,17 +216,15 @@ describe('ネストしている補完メニュー', () => {
       });
     };
 
-    expect(convert(result.current.displayOptions)).toStrictEqual(expected);
+    expect(convert(result.displayOptions)).toStrictEqual(expected);
   };
 
   const checkNestedFocusDisplayOptions = (
-    result: RenderResult<ReturnType<typeof useCompleteMenu>>,
+    result: ReturnType<typeof useCompleteMenu>,
     expected: any[]
   ) => {
     const convert = (
-      options: RenderResult<
-        ReturnType<typeof useCompleteMenu>
-      >['current']['displayOptions']
+      options: ReturnType<typeof useCompleteMenu>['displayOptions']
     ) => {
       return options.map((option) => {
         if (isDisplayCompleteOptionRoot(option)) {
@@ -239,7 +235,7 @@ describe('ネストしている補完メニュー', () => {
       });
     };
 
-    expect(convert(result.current.displayOptions)).toStrictEqual(expected);
+    expect(convert(result.displayOptions)).toStrictEqual(expected);
   };
 
   it('入力値によってメニューの項目が変化する', () => {
@@ -292,7 +288,7 @@ describe('ネストしている補完メニュー', () => {
       jest.advanceTimersByTime(delay);
     });
 
-    checkNestedDisplayOptions(result, [
+    checkNestedDisplayOptions(result.current, [
       ['test1', ['test1-1', 'test1-2']],
       ['test2', [['test2-1', ['test2-1-1']], 'test2-2']],
     ]);
@@ -306,23 +302,25 @@ describe('ネストしている補完メニュー', () => {
     };
 
     update('test1');
-    checkNestedDisplayOptions(result, [['test1', ['test1-1', 'test1-2']]]);
+    checkNestedDisplayOptions(result.current, [
+      ['test1', ['test1-1', 'test1-2']],
+    ]);
 
     update('test2');
-    checkNestedDisplayOptions(result, [
+    checkNestedDisplayOptions(result.current, [
       ['test2', [['test2-1', ['test2-1-1']], 'test2-2']],
     ]);
 
     update('test2-1');
-    checkNestedDisplayOptions(result, [
+    checkNestedDisplayOptions(result.current, [
       ['test2', [['test2-1', ['test2-1-1']]]],
     ]);
 
     update('test2-2');
-    checkNestedDisplayOptions(result, [['test2', ['test2-2']]]);
+    checkNestedDisplayOptions(result.current, [['test2', ['test2-2']]]);
 
     update('test2-1-1');
-    checkNestedDisplayOptions(result, [
+    checkNestedDisplayOptions(result.current, [
       ['test2', [['test2-1', ['test2-1-1']]]],
     ]);
   });
@@ -401,79 +399,79 @@ describe('ネストしている補完メニュー', () => {
       });
     };
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [false, [[false, [false]], false]],
     ]);
     next();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [true, [false, false]],
       [false, [[false, [false]], false]],
     ]);
     selectChildren();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [true, [true, false]],
       [false, [[false, [false]], false]],
     ]);
     next();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [true, [false, true]],
       [false, [[false, [false]], false]],
     ]);
     next();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [true, [true, false]],
       [false, [[false, [false]], false]],
     ]);
     selectParent();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [true, [false, false]],
       [false, [[false, [false]], false]],
     ]);
     next();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[false, [false]], false]],
     ]);
     selectChildren();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[true, [false]], false]],
     ]);
     next();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[false, [false]], true]],
     ]);
     back();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[true, [false]], false]],
     ]);
     selectChildren();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[true, [true]], false]],
     ]);
     selectParent();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[true, [false]], false]],
     ]);
     selectParent();
 
-    checkNestedFocusDisplayOptions(result, [
+    checkNestedFocusDisplayOptions(result.current, [
       [false, [false, false]],
       [true, [[false, [false]], false]],
     ]);
