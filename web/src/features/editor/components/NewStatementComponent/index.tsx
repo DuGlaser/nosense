@@ -214,6 +214,18 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
             ]);
           },
         },
+        {
+          displayName: 'スリープ',
+          keyword: [],
+          onComplete: () => {
+            insertNewStatement([
+              createExpressionStatement({
+                exp: 'Sleep()',
+                indent: statement.indent,
+              }),
+            ]);
+          },
+        },
       ],
     },
   ];
