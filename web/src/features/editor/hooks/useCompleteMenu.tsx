@@ -36,7 +36,7 @@ type DisplayCompleteOptionRoot = Omit<
   compliteOptions: DisplayCompleteOption[];
 };
 
-type DisplayCompleteOption =
+export type DisplayCompleteOption =
   | DisplayCompleteOptionItem
   | DisplayCompleteOptionRoot;
 
@@ -88,19 +88,19 @@ const isMatchKeywords = (keyword: string, option: CompleteOptionItem) => {
   return option.keyword.some((_) => _.includes(keyword));
 };
 
-const isCompleteOptionItem = (
+export const isCompleteOptionItem = (
   option: CompleteOption
 ): option is CompleteOptionItem => {
-  return 'keyword' in option;
+  return !isCompleteOptionRoot(option);
 };
 
-const isCompleteOptionRoot = (
+export const isCompleteOptionRoot = (
   option: CompleteOption
 ): option is CompleteOptionRoot => {
   return 'compliteOptions' in option;
 };
 
-const isDisplayCompleteOptionRoot = (
+export const isDisplayCompleteOptionRoot = (
   option: DisplayCompleteOption
 ): option is DisplayCompleteOptionRoot => {
   return 'compliteOptions' in option;
@@ -116,7 +116,7 @@ export const filterCompleteOptions = (
 
   options.forEach((option) => {
     if (isCompleteOptionItem(option) && isMatchKeywords(trimmed, option)) {
-      results.push({ ...option, focused: false });
+      return results.push({ ...option, focused: false });
     }
 
     if (isCompleteOptionRoot(option)) {
@@ -323,7 +323,7 @@ export const useCompleteMenu = (
     setDisplayOptions([]);
   }, [setDisplayOptions]);
 
-  const selectNextCompletItem = useCallback(() => {
+  const selectNextCompleteItem = useCallback(() => {
     const currentSelectOption = getCurrentSelectOption(displayOptions);
     if (!currentSelectOption) {
       setDisplayOptions((cur) => {
@@ -360,7 +360,7 @@ export const useCompleteMenu = (
     ]);
   }, [displayOptions]);
 
-  const selectPrevCompletItem = useCallback(() => {
+  const selectPrevCompleteItem = useCallback(() => {
     const currentSelectOption = getCurrentSelectOption(displayOptions);
     if (!currentSelectOption) {
       setDisplayOptions((cur) => {
@@ -498,8 +498,8 @@ export const useCompleteMenu = (
     closeCompleteMenu,
     hasChildrenMenu,
     hasParentMenu,
-    selectNextCompletItem,
-    selectPrevCompletItem,
+    selectNextCompleteItem,
+    selectPrevCompleteItem,
     selectChildrenMenu,
     selectParentMenu,
     isOpen,

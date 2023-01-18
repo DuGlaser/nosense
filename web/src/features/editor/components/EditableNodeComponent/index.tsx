@@ -144,8 +144,8 @@ export const EditableNodeComponent = forwardRef<
     CompleteMenu,
     hasChildrenMenu,
     hasParentMenu,
-    selectNextCompletItem,
-    selectPrevCompletItem,
+    selectNextCompleteItem,
+    selectPrevCompleteItem,
     selectChildrenMenu,
     selectParentMenu,
     isOpen,
@@ -239,12 +239,12 @@ export const EditableNodeComponent = forwardRef<
       {
         key: 'ArrowDown',
         openCompleteMenu: true,
-        callback: () => selectNextCompletItem(),
+        callback: () => selectNextCompleteItem(),
       },
       {
         key: 'ArrowUp',
         openCompleteMenu: true,
-        callback: () => selectPrevCompletItem(),
+        callback: () => selectPrevCompleteItem(),
       },
       {
         key: 'ArrowDown',
