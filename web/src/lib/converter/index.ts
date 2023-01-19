@@ -14,6 +14,7 @@ import { Statement, statementType } from '@/lib/models/editorObject';
 
 import { assignStatementConvertor } from './AssignStatement';
 import { blockStatementConvertor } from './BlockStatement';
+import { callFunctionStatementConvertor } from './CallFunctionStatement';
 import { expressionStatementConvertor } from './ExpressionStatement';
 import {
   ifStatemestConvertor,
@@ -56,6 +57,9 @@ export const statementConvertor = {
       .with({ _type: statementType.AssignStatement }, (n) =>
         assignStatementConvertor.toDamega(n)
       )
+      .with({ _type: statementType.CallFunctionStatement }, (n) =>
+        callFunctionStatementConvertor.toDamega(n)
+      )
       .with({ _type: statementType.ExpressionStatement }, (n) =>
         expressionStatementConvertor.toDamega(n)
       )
@@ -77,7 +81,8 @@ export const statementConvertor = {
       .with({ _type: statementType.WhileStatementEnd }, () =>
         whileStatemestEndConvertor.toDamega()
       )
-      .otherwise(() => '');
+      .with({ _type: statementType.NewStatement }, () => '')
+      .exhaustive();
   },
 };
 

@@ -1,5 +1,6 @@
 import {
   AssignStatementComponent,
+  CallFunctionStatementComponent,
   ExpressionStatementComponent,
   IfStatementElseComponent,
   IfStatementEndComponent,
@@ -55,6 +56,9 @@ const StatementComponent: React.FC<{
     ))
     .with(statementType.WhileStatementStart, () => (
       <WhileStatementStartComponent id={id} active={active} />
+    ))
+    .with(statementType.CallFunctionStatement, () => (
+      <CallFunctionStatementComponent id={id} active={active} />
     ))
     .exhaustive();
 };
