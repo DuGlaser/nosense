@@ -3,8 +3,9 @@ export const nodeType = {
   CursorNode: 'CursorNode',
 } as const;
 
-export type NodeType = typeof nodeType[keyof typeof nodeType];
-export type PickNodeType<T extends keyof typeof nodeType> = typeof nodeType[T];
+export type NodeType = (typeof nodeType)[keyof typeof nodeType];
+export type PickNodeType<T extends keyof typeof nodeType> =
+  (typeof nodeType)[T];
 
 export type Node = CursorNode | EditableNode;
 
@@ -27,9 +28,9 @@ export const statementType = {
   NewStatement: 'NewStatement',
 } as const;
 
-export type StatementType = typeof statementType[keyof typeof statementType];
+export type StatementType = (typeof statementType)[keyof typeof statementType];
 export type PickStatementType<T extends keyof typeof statementType> =
-  typeof statementType[T];
+  (typeof statementType)[T];
 
 export type Statement =
   | LetStatement

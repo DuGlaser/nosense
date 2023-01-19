@@ -8,7 +8,7 @@ export type StatementComponentProps = {
 };
 
 const cursorPosition = ['START', 'END'] as const;
-export type CursorPosition = typeof cursorPosition[number];
+export type CursorPosition = (typeof cursorPosition)[number];
 
 export type InputEvent = {
   key: string;
@@ -19,4 +19,4 @@ export type InputEvent = {
 };
 
 export const mode = ['WRITABLE', 'READONLY'] as const;
-export type Mode = typeof mode[number];
+export type Mode = (typeof mode)[number];
