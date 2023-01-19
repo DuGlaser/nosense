@@ -4,7 +4,10 @@ import {
   EditableNodeComponent,
   StatementWrapper,
 } from '@editor/components';
-import { useNewStatementInputEvent } from '@editor/hooks';
+import {
+  useDeleteStatementInputEvent,
+  useNewStatementInputEvent,
+} from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
 import { Stack } from '@mui/material';
@@ -17,6 +20,7 @@ export const CallFunctionStatementComponent: React.FC<
   const statement = useStatement<CallFunctionStatement>(id);
   const args = statement.nodes.slice(0, statement.nodes.length - 1);
   const cursorNode = statement.nodes.at(-1)!;
+  const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
   const newStatementInputEvent = useNewStatementInputEvent(
     id,
     statement.indent
@@ -27,13 +31,17 @@ export const CallFunctionStatementComponent: React.FC<
       <BaseTextComopnent>{statement.functionName}(</BaseTextComopnent>
       <Stack direction="row" divider={<span>,</span>}>
         {args.map((arg) => (
-          <EditableNodeComponent key={arg} id={arg} />
+          <EditableNodeComponent
+            key={arg}
+            id={arg}
+            inputEvent={deleteStatementInputEvent}
+          />
         ))}
       </Stack>
       <BaseTextComopnent>)</BaseTextComopnent>
       <CursorNodeComponent
         id={cursorNode}
-        inputEvent={newStatementInputEvent}
+        inputEvent={[...newStatementInputEvent, ...deleteStatementInputEvent]}
       />
     </StatementWrapper>
   );
