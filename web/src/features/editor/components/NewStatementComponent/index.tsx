@@ -11,7 +11,7 @@ import { useRef } from 'react';
 
 import {
   createAssignStatement,
-  createExpressionStatement,
+  createCallFunctionStatement,
   createIfStatementEnd,
   createIfStatementStart,
   createLetStatement,
@@ -111,8 +111,9 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
           keyword: [],
           onComplete: () => {
             insertNewStatement([
-              createExpressionStatement({
-                exp: 'Obniz.CONNECT()',
+              createCallFunctionStatement({
+                functionName: 'Obniz.CONNECT',
+                args: [{ defaultValue: '', placeholder: 'obnizID' }],
                 indent: statement.indent,
               }),
             ]);
@@ -123,8 +124,9 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
           keyword: [],
           onComplete: () => {
             insertNewStatement([
-              createExpressionStatement({
-                exp: 'Obniz.CLOSE()',
+              createCallFunctionStatement({
+                functionName: 'Obniz.CLOSE',
+                args: [],
                 indent: statement.indent,
               }),
             ]);
@@ -138,8 +140,12 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
               keyword: [],
               onComplete: () => {
                 insertNewStatement([
-                  createExpressionStatement({
-                    exp: 'Obniz.LED.ON()',
+                  createCallFunctionStatement({
+                    functionName: 'Obniz.LED.ON',
+                    args: [
+                      { defaultValue: '', placeholder: 'anodeの番号' },
+                      { defaultValue: '', placeholder: 'cathodeの番号' },
+                    ],
                     indent: statement.indent,
                   }),
                 ]);
@@ -150,8 +156,12 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
               keyword: [],
               onComplete: () => {
                 insertNewStatement([
-                  createExpressionStatement({
-                    exp: 'Obniz.LED.OFF()',
+                  createCallFunctionStatement({
+                    functionName: 'Obniz.LED.OFF',
+                    args: [
+                      { defaultValue: '', placeholder: 'anodeの番号' },
+                      { defaultValue: '', placeholder: 'cathodeの番号' },
+                    ],
                     indent: statement.indent,
                   }),
                 ]);
@@ -162,8 +172,12 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
               keyword: [],
               onComplete: () => {
                 insertNewStatement([
-                  createExpressionStatement({
-                    exp: 'Obniz.LED.BLINK()',
+                  createCallFunctionStatement({
+                    functionName: 'Obniz.LED.BLINK',
+                    args: [
+                      { defaultValue: '', placeholder: 'anodeの番号' },
+                      { defaultValue: '', placeholder: 'cathodeの番号' },
+                    ],
                     indent: statement.indent,
                   }),
                 ]);
@@ -174,8 +188,12 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
               keyword: [],
               onComplete: () => {
                 insertNewStatement([
-                  createExpressionStatement({
-                    exp: 'Obniz.LED.END_BLINK()',
+                  createCallFunctionStatement({
+                    functionName: 'Obniz.LED.END_BLINK',
+                    args: [
+                      { defaultValue: '', placeholder: 'anodeの番号' },
+                      { defaultValue: '', placeholder: 'cathodeの番号' },
+                    ],
                     indent: statement.indent,
                   }),
                 ]);
@@ -207,8 +225,9 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
           keyword: [],
           onComplete: () => {
             insertNewStatement([
-              createExpressionStatement({
-                exp: 'Println()',
+              createCallFunctionStatement({
+                functionName: 'Println',
+                args: [{ defaultValue: '', placeholder: '出力したいもの' }],
                 indent: statement.indent,
               }),
             ]);
@@ -219,8 +238,11 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
           keyword: [],
           onComplete: () => {
             insertNewStatement([
-              createExpressionStatement({
-                exp: 'Sleep()',
+              createCallFunctionStatement({
+                functionName: 'Sleep',
+                args: [
+                  { defaultValue: '', placeholder: 'スリープする時間(ミリ秒)' },
+                ],
                 indent: statement.indent,
               }),
             ]);
