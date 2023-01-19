@@ -22,7 +22,7 @@ export const createExpressionStatement = ({
   return {
     id,
     _type: 'ExpressionStatement',
-    nodes: [createEditableNode(exp, id)],
+    nodes: [createEditableNode({ content: exp, parentId: id })],
     indent,
   };
 };

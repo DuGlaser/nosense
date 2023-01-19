@@ -1,5 +1,7 @@
 import { AssignStatement } from './AssignStatement';
+import { CallFunctionStatement } from './CallFunctionStatement';
 import { CursorNode } from './CursorNode';
+import { DisplayTextNode } from './DisplayTextNode';
 import { EditableNode } from './EditableNode';
 import { ExpressionStatement } from './ExpressionStatement';
 import {
@@ -12,15 +14,16 @@ import { NewStatement } from './NewStatement';
 import { WhileStatementEnd, WhileStatementStart } from './WhileStatement';
 
 export const nodeType = {
-  EditableNode: 'EditableNode',
   CursorNode: 'CursorNode',
+  EditableNode: 'EditableNode',
+  DisplayTextNode: 'DisplayTextNode',
 } as const;
 
 export type NodeType = (typeof nodeType)[keyof typeof nodeType];
 export type PickNodeType<T extends keyof typeof nodeType> =
   (typeof nodeType)[T];
 
-export type Node = CursorNode | EditableNode;
+export type Node = CursorNode | EditableNode | DisplayTextNode;
 
 export interface BaseNode<T = NodeType> {
   _type: T;
@@ -34,6 +37,7 @@ export interface BaseNode<T = NodeType> {
 
 export const statementType = {
   AssignStatement: 'AssignStatement',
+  CallFunctionStatement: 'CallFunctionStatement',
   ExpressionStatement: 'ExpressionStatement',
   IfStatementElse: 'IfStatementElse',
   IfStatementEnd: 'IfStatementEnd',
@@ -50,6 +54,7 @@ export type PickStatementType<T extends keyof typeof statementType> =
 
 export type Statement =
   | AssignStatement
+  | CallFunctionStatement
   | ExpressionStatement
   | IfStatementElse
   | IfStatementEnd
@@ -67,7 +72,9 @@ export interface BaseStatement<T = StatementType> {
 }
 
 export * from './AssignStatement';
+export * from './CallFunctionStatement';
 export * from './CursorNode';
+export * from './DisplayTextNode';
 export * from './EditableNode';
 export * from './ExpressionStatement';
 export * from './IfStatement';

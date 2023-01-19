@@ -91,6 +91,12 @@ const EditableDiv = styled(BaseTextComopnent)(() => ({
     textDecorationSkipInk: 'none',
     textDecorationColor: 'red',
   },
+  '&[data-enable-placeholder="true"]::before': {
+    content: 'attr(data-placeholder)',
+    fontSize: '0.65em',
+    opacity: 0.5,
+    cursor: 'text',
+  },
 }));
 
 export type ValidateError = {
@@ -303,6 +309,8 @@ export const EditableNodeComponent = forwardRef<
     <>
       <EditableDiv
         data-node-label="editable"
+        data-enable-placeholder={node.placeholder && value === ''}
+        data-placeholder={node.placeholder}
         spellCheck={false}
         {...rest}
         // TODO: popupなどでもっとわかりやすくエラーを表示するようにする

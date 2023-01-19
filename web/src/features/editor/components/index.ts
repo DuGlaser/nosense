@@ -1,5 +1,6 @@
 export * from './AssignStatementComponent';
 export * from './BaseTextComponent';
+export * from './CallFunctionStatementComponent';
 export * from './CursorNodeComponent';
 export * from './EditableNodeComponent';
 export * from './ExpressionStatementComponent';

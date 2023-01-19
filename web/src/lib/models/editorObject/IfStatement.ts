@@ -49,7 +49,7 @@ export const createIfStatementStart = ({
     _type: 'IfStatementStart',
     nodes: [
       createCursorNode(id),
-      createEditableNode(condition, id),
+      createEditableNode({ content: condition, parentId: id }),
       createCursorNode(id),
     ],
     indent,
