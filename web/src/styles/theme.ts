@@ -14,10 +14,10 @@ const level = [
 ] as const;
 
 type CustomTheme = {
-  [key in typeof level[number]]: string;
+  [key in (typeof level)[number]]: string;
 } & {
   contrast: {
-    [key in typeof level[number]]: string;
+    [key in (typeof level)[number]]: string;
   };
 };
 
