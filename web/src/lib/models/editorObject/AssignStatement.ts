@@ -24,7 +24,10 @@ export const createAssignStatement = ({
   return {
     id,
     _type: 'AssignStatement',
-    nodes: [createEditableNode(name, id), createEditableNode(value, id)],
+    nodes: [
+      createEditableNode({ content: name, parentId: id }),
+      createEditableNode({ content: value, parentId: id }),
+    ],
     indent,
   };
 };

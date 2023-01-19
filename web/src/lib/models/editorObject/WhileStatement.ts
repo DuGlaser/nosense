@@ -33,7 +33,7 @@ export const createWhileStatementStart = ({
     _type: 'WhileStatementStart',
     nodes: [
       createCursorNode(id),
-      createEditableNode(condition, id),
+      createEditableNode({ content: condition, parentId: id }),
       createCursorNode(id),
     ],
     indent,

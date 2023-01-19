@@ -19,14 +19,19 @@ export const createLetStatement = ({
   varNames: string[];
 }): LetStatement => {
   const id = uuidv4();
-  const newNode = varNames.length === 0 ? [createEditableNode('', id)] : [];
+  const newNode =
+    varNames.length === 0
+      ? [createEditableNode({ content: '', parentId: id })]
+      : [];
   return {
     id,
     _type: 'LetStatement',
     nodes: [
-      createEditableNode(type, id),
+      createEditableNode({ content: type, parentId: id }),
       ...newNode,
-      ...varNames.map((name) => createEditableNode(name, id)),
+      ...varNames.map((name) =>
+        createEditableNode({ content: name, parentId: id })
+      ),
     ],
     indent: 0,
   };
