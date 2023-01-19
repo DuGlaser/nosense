@@ -458,7 +458,7 @@ export const useNode = <T extends Node>(id: T['id']) => {
   );
 
   return {
-    node,
+    node: node as T,
     setNode,
     ref,
     moveNextNode,
