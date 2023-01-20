@@ -39,7 +39,7 @@ const AddVarButton = styled(Button)(({ theme }) => ({
 
 export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   id,
-  active,
+  ...rest
 }) => {
   const statement = useStatement<LetStatement>(id);
   const [typeNode, ...varNameNodes] = statement.nodes;
@@ -74,7 +74,7 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   };
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}

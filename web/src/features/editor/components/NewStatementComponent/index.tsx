@@ -26,9 +26,10 @@ const Placeholder = styled('div')({
   opacity: 0.5,
 });
 
-export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
-  id,
-}) => {
+export const NewStatementComponent: React.FC<{
+  id: CursorNode['id'];
+  lineNumber: number;
+}> = ({ id, ...rest }) => {
   const insertStmt = useInsertStatement();
   const deleteStmt = useDeleteStatement();
   const statement = useStatement(id);
@@ -253,7 +254,12 @@ export const NewStatementComponent: React.FC<{ id: CursorNode['id'] }> = ({
   ];
 
   return (
-    <StatementWrapper indent={statement.indent} active={false}>
+    <StatementWrapper
+      statementId={id}
+      indent={statement.indent}
+      active={false}
+      {...rest}
+    >
       <CursorNodeComponent
         ref={ref}
         id={cursor}

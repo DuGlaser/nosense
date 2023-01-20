@@ -5,6 +5,7 @@ import { BaseStatement } from '@/lib/models/editorObject';
 export type StatementComponentProps = {
   id: BaseStatement['id'];
   active: boolean;
+  lineNumber: number;
 };
 
 const cursorPosition = ['START', 'END'] as const;

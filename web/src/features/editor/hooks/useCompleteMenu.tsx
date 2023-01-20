@@ -451,8 +451,6 @@ export const useCompleteMenu = (
     (callback: (option: CompleteOption) => void) => {
       const currentOption = getCurrentSelectOption(displayOptions)?.option;
       if (!currentOption) return;
-
-      currentOption.onComplete && currentOption.onComplete();
       callback(currentOption);
     },
     [displayOptions]
