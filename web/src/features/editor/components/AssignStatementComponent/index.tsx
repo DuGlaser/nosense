@@ -11,7 +11,7 @@ import { AssignStatement } from '@/lib/models/editorObject';
 
 export const AssignStatementComponent: React.FC<StatementComponentProps> = ({
   id,
-  active,
+  ...rest
 }) => {
   const statement = useStatement<AssignStatement>(id);
   const [varName, exp] = statement.nodes;
@@ -24,7 +24,7 @@ export const AssignStatementComponent: React.FC<StatementComponentProps> = ({
   ]);
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <EditableNodeComponent
         id={varName}
         inputEvent={deleteStatementInputEvent}

@@ -10,7 +10,7 @@ import { ExpressionStatement } from '@/lib/models/editorObject';
 
 export const ExpressionStatementComponent: React.FC<
   StatementComponentProps
-> = ({ id, active }) => {
+> = ({ id, ...rest }) => {
   const statement = useStatement<ExpressionStatement>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -22,7 +22,7 @@ export const ExpressionStatementComponent: React.FC<
   const [exp] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <EditableNodeComponent
         id={exp}
         inputEvent={[...newStatementInputEvent, ...deleteStatementInputEvent]}

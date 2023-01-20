@@ -30,35 +30,34 @@ const StatementComponent: React.FC<{
   id: Statement['id'];
   type: Statement['_type'];
   active: boolean;
-}> = ({ id, type, active }) => {
+  lineNumber: number;
+}> = ({ type, ...rest }) => {
   return match(type)
-    .with(statementType.LetStatement, () => (
-      <LetStatementComponent id={id} active={active} />
-    ))
+    .with(statementType.LetStatement, () => <LetStatementComponent {...rest} />)
     .with(statementType.AssignStatement, () => (
-      <AssignStatementComponent id={id} active={active} />
+      <AssignStatementComponent {...rest} />
     ))
     .with(statementType.ExpressionStatement, () => (
-      <ExpressionStatementComponent id={id} active={active} />
+      <ExpressionStatementComponent {...rest} />
     ))
     .with(statementType.IfStatementStart, () => (
-      <IfStatementStartComponent id={id} active={active} />
+      <IfStatementStartComponent {...rest} />
     ))
     .with(statementType.IfStatementElse, () => (
-      <IfStatementElseComponent id={id} active={active} />
+      <IfStatementElseComponent {...rest} />
     ))
     .with(statementType.IfStatementEnd, () => (
-      <IfStatementEndComponent id={id} active={active} />
+      <IfStatementEndComponent {...rest} />
     ))
-    .with(statementType.NewStatement, () => <NewStatementComponent id={id} />)
+    .with(statementType.NewStatement, () => <NewStatementComponent {...rest} />)
     .with(statementType.WhileStatementEnd, () => (
-      <WhileStatementEndComponent id={id} active={active} />
+      <WhileStatementEndComponent {...rest} />
     ))
     .with(statementType.WhileStatementStart, () => (
-      <WhileStatementStartComponent id={id} active={active} />
+      <WhileStatementStartComponent {...rest} />
     ))
     .with(statementType.CallFunctionStatement, () => (
-      <CallFunctionStatementComponent id={id} active={active} />
+      <CallFunctionStatementComponent {...rest} />
     ))
     .exhaustive();
 };
@@ -86,7 +85,7 @@ export const Editor: React.FC<Props> = ({ code, activeLineNumbers, mode }) => {
       <CStack direction={'row'} spacing={'8px'}>
         <Box
           sx={{
-            padding: '16px',
+            padding: '16px 8px',
             width: '100%',
             overflowY: 'auto',
           }}
@@ -97,6 +96,7 @@ export const Editor: React.FC<Props> = ({ code, activeLineNumbers, mode }) => {
               key={item.id}
               id={item.id}
               type={item._type}
+              lineNumber={i + 1}
             />
           ))}
         </Box>

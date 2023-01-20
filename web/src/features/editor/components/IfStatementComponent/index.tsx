@@ -19,7 +19,7 @@ import {
 
 export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
   id,
-  active,
+  ...rest
 }) => {
   const statement = useStatement<IfStatementStart>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
@@ -32,7 +32,7 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
   const [cursor, conditionExp, endCursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <CursorNodeComponent
         id={cursor}
         inputEvent={deleteCurrentScopeInputEvent}
@@ -53,7 +53,7 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
 
 export const IfStatementElseComponent: React.FC<StatementComponentProps> = ({
   id,
-  active,
+  ...rest
 }) => {
   const statement = useStatement<IfStatementElse>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
@@ -63,7 +63,7 @@ export const IfStatementElseComponent: React.FC<StatementComponentProps> = ({
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <BaseTextComopnent>else</BaseTextComopnent>
       <CursorNodeComponent id={cursor} inputEvent={newStatementInputEvent} />
     </StatementWrapper>
@@ -72,7 +72,7 @@ export const IfStatementElseComponent: React.FC<StatementComponentProps> = ({
 
 export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
   id,
-  active,
+  ...rest
 }) => {
   const statement = useStatement<IfStatementEnd>(id);
   const newStatementInputEvent = useNewStatementInputEvent(
@@ -85,7 +85,7 @@ export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
   const [cursor] = statement.nodes;
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <BaseTextComopnent>endif</BaseTextComopnent>
       <CursorNodeComponent
         id={cursor}

@@ -16,7 +16,7 @@ import { CallFunctionStatement } from '@/lib/models/editorObject';
 
 export const CallFunctionStatementComponent: React.FC<
   StatementComponentProps
-> = ({ id, active }) => {
+> = ({ id, ...rest }) => {
   const statement = useStatement<CallFunctionStatement>(id);
   const args = statement.nodes.slice(0, statement.nodes.length - 1);
   const cursorNode = statement.nodes.at(-1)!;
@@ -27,7 +27,7 @@ export const CallFunctionStatementComponent: React.FC<
   );
 
   return (
-    <StatementWrapper indent={statement.indent} active={active}>
+    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <BaseTextComopnent>{statement.functionName}(</BaseTextComopnent>
       <Stack direction="row" divider={<span>,</span>}>
         {args.map((arg) => (
