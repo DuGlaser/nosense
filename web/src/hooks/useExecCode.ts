@@ -11,7 +11,7 @@ export const useExecCode = () => {
   const { getOutputEventCallback } = useDamegaOutput();
   const { clearResult } = useExecResult();
 
-  const { execCode: _execCode } = useDamega({
+  const { execCode: _execCode, cancelExecCode } = useDamega({
     returnInputEventFn: getInputEventCallback,
     returnOutputEventFn: getOutputEventCallback,
   });
@@ -21,5 +21,5 @@ export const useExecCode = () => {
     _execCode();
   }, [_execCode, clearResult]);
 
-  return execCode;
+  return { execCode, cancelExecCode };
 };

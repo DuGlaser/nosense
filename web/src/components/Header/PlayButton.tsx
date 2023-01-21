@@ -1,6 +1,7 @@
 import BugReportIcon from '@mui/icons-material/BugReport';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
 import {
   Button,
   ListItemIcon,
@@ -13,12 +14,41 @@ import {
 import { useState } from 'react';
 
 import { useExecCode } from '@/hooks';
-import { useDebug } from '@/store';
+import { useDebug, useEditorMode } from '@/store';
+import { EditorMode } from '@/type';
 
-const Wrapper = styled('div')(({ theme }) => ({
-  background: theme.primary[700],
-  color: theme.primary.contrast[700],
+const buttonColorMixin = (background: string, color: string) => ({
+  background,
+  color,
+
+  '&:disabled': {
+    background,
+    color,
+    opacity: 0.5,
+  },
+
+  '&:hover': {
+    background,
+    color,
+    opacity: 0.8,
+  },
+});
+
+const Wrapper = styled('div')<{ mode: EditorMode }>(({ theme, mode }) => ({
+  display: 'flex',
+  width: '120px',
   borderRadius: '4px',
+
+  button: {
+    ...(mode === 'NORMAL'
+      ? buttonColorMixin(theme.primary[700], theme.primary.contrast[700])
+      : buttonColorMixin('#f00', '#fff')),
+  },
+}));
+
+const StyledButton = styled(Button)(() => ({
+  flex: 1,
+  borderRadius: '4px 0px 0px 4px',
 }));
 
 const OpenMenuButton = styled(Button)(() => ({
@@ -33,7 +63,8 @@ export const PlayButton = () => {
   const { start: startDebug } = useDebug();
   const open = Boolean(anchorEl);
   const theme = useTheme();
-  const execCode = useExecCode();
+  const { editorMode } = useEditorMode();
+  const { execCode, cancelExecCode } = useExecCode();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,21 +73,21 @@ export const PlayButton = () => {
   };
 
   return (
-    <Wrapper>
-      <Button
+    <Wrapper mode={editorMode}>
+      <StyledButton
         variant="contained"
         disableElevation
-        startIcon={<PlayArrowIcon />}
-        onClick={execCode}
-        sx={{
-          borderRadius: '4px 0 0 4px',
+        startIcon={editorMode === 'NORMAL' ? <PlayArrowIcon /> : <StopIcon />}
+        onClick={() => {
+          editorMode === 'NORMAL' ? execCode() : cancelExecCode();
         }}
       >
-        実行
-      </Button>
+        {editorMode === 'NORMAL' ? '実行' : '中断'}
+      </StyledButton>
       <OpenMenuButton
         variant="contained"
         disableElevation
+        disabled={editorMode !== 'NORMAL'}
         onClick={handleClick}
       >
         <KeyboardArrowDownIcon />

@@ -5,7 +5,6 @@ import {
   useCompleteMenu,
 } from '@editor/hooks';
 import {
-  useEditorMode,
   useMoveNextStatement,
   useMovePrevStatement,
   useNode,
@@ -25,6 +24,7 @@ import { flushSync } from 'react-dom';
 import { mergeRefs } from 'react-merge-refs';
 
 import { EditableNode } from '@/lib/models/editorObject';
+import { useEditMode } from '@/store';
 
 const equalInputEvent = (
   event: Omit<InputEvent, 'callback'>,
@@ -133,7 +133,7 @@ export const EditableNodeComponent = forwardRef<
   const [position, setPosition] = useState<
     { bottom: number; left: number } | undefined
   >(undefined);
-  const mode = useEditorMode();
+  const [mode] = useEditMode();
 
   /**
    * CompleteMenuで補完したときに入力を変更するためのState。
