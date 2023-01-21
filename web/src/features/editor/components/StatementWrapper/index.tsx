@@ -104,14 +104,17 @@ const EditMenu: React.FC<{
 
   return (
     <>
-      {showEditButton && (
-        <IconButton
-          sx={{ fontSize: '0.5em', color: 'white', padding: 0 }}
-          onClick={handleClick}
-        >
-          <ExpandMoreIcon />
-        </IconButton>
-      )}
+      <IconButton
+        sx={{
+          fontSize: '0.5em',
+          color: 'white',
+          padding: 0,
+          visibility: showEditButton ? 'visible' : 'hidden',
+        }}
+        onClick={handleClick}
+      >
+        <ExpandMoreIcon />
+      </IconButton>
       <StyledMenu
         id="demo-positioned-menu"
         aria-labelledby="demo-positioned-button"
@@ -167,12 +170,6 @@ const Gutter = styled('div')(() => ({
   flexDirection: 'row',
 }));
 
-const EditButtonWrapper = styled('div')(() => ({
-  minWidth: '24px',
-  width: '10px',
-  height: '100%',
-}));
-
 const LineNumber = styled('div')(() => ({
   flex: 1,
   fontSize: '0.8em',
@@ -219,23 +216,21 @@ export const StatementWrapper: React.FC<
       }}
     >
       <Gutter>
-        <EditButtonWrapper>
-          <EditMenu
-            onClose={() => {
-              setIsShowEditButton(false);
-              setIsOpenMenu(false);
-            }}
-            onOpen={() => setIsOpenMenu(true)}
-            showEditButton={isShowEditButton}
-            createNewStatement={() =>
-              insertStatement(statementId, [createNewStatement({ indent })])
-            }
-            deleteCurrentStatement={async () => {
-              const ids = await getCurrentScopeIds(statementId);
-              ids.forEach(deleteStatement);
-            }}
-          />
-        </EditButtonWrapper>
+        <EditMenu
+          onClose={() => {
+            setIsShowEditButton(false);
+            setIsOpenMenu(false);
+          }}
+          onOpen={() => setIsOpenMenu(true)}
+          showEditButton={isShowEditButton}
+          createNewStatement={() =>
+            insertStatement(statementId, [createNewStatement({ indent })])
+          }
+          deleteCurrentStatement={async () => {
+            const ids = await getCurrentScopeIds(statementId);
+            ids.forEach(deleteStatement);
+          }}
+        />
         <LineNumber className="editor-statement-gutter-linenumber">
           {lineNumber}
         </LineNumber>
