@@ -6,16 +6,19 @@ import {
   OutputEventCallback,
   Parser,
 } from '@nosense/damega';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { useStatements } from '@/features/editor/store';
 import { programConvertor } from '@/lib/converter';
+import { useEditorMode } from '@/store';
 
 export const useDamega = (args: {
   returnInputEventFn: () => InputEventCallback;
   returnOutputEventFn: () => OutputEventCallback;
 }) => {
   const getStatements = useStatements();
+  const cancelExecRef = useRef<(() => void) | undefined>(undefined);
+  const { editorMode, setSyncEditorMode } = useEditorMode();
 
   const parseToken = useCallback(async () => {
     const statements = await getStatements();
@@ -35,9 +38,19 @@ export const useDamega = (args: {
     const parsed = await parseToken();
     const env = new Environment();
 
-    const evaluated = evaluator.Eval(parsed, env);
+    const { start, cancel } = evaluator.Eval(parsed, env);
+    cancelExecRef.current = cancel;
+
+    setSyncEditorMode('EXEC');
+    const evaluated = await start();
+    setSyncEditorMode('NORMAL');
+
     return { evaluated, env };
   }, [evaluator, parseToken]);
+
+  const cancelExecCode = useCallback(() => {
+    cancelExecRef.current && cancelExecRef.current();
+  }, [editorMode]);
 
   const getExecCodeGenerator = useCallback(async () => {
     const parsed = await parseToken();
@@ -49,5 +62,6 @@ export const useDamega = (args: {
   return {
     execCode,
     getExecCodeGenerator,
+    cancelExecCode,
   };
 };

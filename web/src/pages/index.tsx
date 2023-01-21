@@ -5,6 +5,7 @@ import { Box, styled } from '@mui/material';
 import { Pane, SplitPane } from '@split-pane';
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
+import { RecoilSync } from 'recoil-sync';
 
 import {
   Header,
@@ -13,6 +14,8 @@ import {
   OutputResultPane,
 } from '@/components';
 import { useDebugInfo } from '@/store';
+import { EDIT_MODE_STORE_KEY, EDITOR_MODE_STORE_KEY } from '@/store/mode';
+import { EDIT_MODE, EDITOR_MODE } from '@/type';
 import { decodeUrl } from '@/utils/decodeUrl';
 
 const Wrapper = styled('div')(({ theme }) => ({
@@ -46,49 +49,62 @@ const IndexPage: NextPage = () => {
   }, []);
 
   return (
-    <Wrapper>
-      <Header />
-      <Box
-        sx={{
-          flex: 1,
-          overflow: 'auto',
+    <RecoilSync
+      storeKey={EDITOR_MODE_STORE_KEY}
+      read={() => {
+        return EDITOR_MODE.NORMAL;
+      }}
+    >
+      <RecoilSync
+        storeKey={EDIT_MODE_STORE_KEY}
+        read={() => {
+          return EDIT_MODE.WRITABLE;
         }}
       >
-        <SplitPane>
-          <Pane id={'editor'}>
-            <Editor
-              code={code}
-              mode={debugState.position ? 'READONLY' : 'WRITABLE'}
-              activeLineNumbers={
-                debugState?.position ? [debugState.position.line] : []
-              }
-            />
-          </Pane>
-          <Pane
-            id={'output-pane'}
-            defaultHeight={400}
-            maxHeight={600}
-            minHeight={48}
+        <Wrapper>
+          <Header />
+          <Box
+            sx={{
+              flex: 1,
+              overflow: 'auto',
+            }}
           >
-            <OutputPane
-              tabs={[
-                <TabItemWrapper key="output-result">
-                  <InsertCommentIcon />
-                  <span>出力</span>
-                </TabItemWrapper>,
-                <TabItemWrapper key="output-debug">
-                  <BugReportIcon />
-                  <span>デバッグログ</span>
-                </TabItemWrapper>,
-              ]}
-            >
-              <OutputResultPane />
-              <OutputDebugPane />
-            </OutputPane>
-          </Pane>
-        </SplitPane>
-      </Box>
-    </Wrapper>
+            <SplitPane>
+              <Pane id={'editor'}>
+                <Editor
+                  code={code}
+                  activeLineNumbers={
+                    debugState?.position ? [debugState.position.line] : []
+                  }
+                />
+              </Pane>
+              <Pane
+                id={'output-pane'}
+                defaultHeight={400}
+                maxHeight={600}
+                minHeight={48}
+              >
+                <OutputPane
+                  tabs={[
+                    <TabItemWrapper key="output-result">
+                      <InsertCommentIcon />
+                      <span>出力</span>
+                    </TabItemWrapper>,
+                    <TabItemWrapper key="output-debug">
+                      <BugReportIcon />
+                      <span>デバッグログ</span>
+                    </TabItemWrapper>,
+                  ]}
+                >
+                  <OutputResultPane />
+                  <OutputDebugPane />
+                </OutputPane>
+              </Pane>
+            </SplitPane>
+          </Box>
+        </Wrapper>
+      </RecoilSync>
+    </RecoilSync>
   );
 };
 

@@ -66,20 +66,35 @@ export class Evaluator {
     this.getBuiltinFunction = generateBuiltinFunctions(args);
   }
 
-  public async Eval(program: Program, env: Environment): Promise<Obj> {
-    const generator = this.EvalGenerator(program, env);
-    let count = 0;
+  public Eval(
+    program: Program,
+    env: Environment
+  ): { start: () => Promise<Obj | undefined>; cancel: () => void } {
+    let cancelFlag = false;
 
-    while (MAX_CALL_STACK > count) {
-      count++;
-      const result = await generator.next();
+    const start = async () => {
+      const generator = this.EvalGenerator(program, env);
+      let count = 0;
 
-      if (result.done) {
-        return result.value;
+      while (MAX_CALL_STACK > count) {
+        if (cancelFlag) return undefined;
+
+        count++;
+        const result = await generator.next();
+
+        if (result.done) {
+          return result.value;
+        }
       }
-    }
 
-    throw new Error('Infinity loop');
+      throw new Error('Infinity loop');
+    };
+
+    const cancel = () => {
+      cancelFlag = true;
+    };
+
+    return { start, cancel };
   }
 
   public async *EvalGenerator(

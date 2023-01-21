@@ -811,7 +811,7 @@ describe('Evaluator', () => {
   });
 });
 
-async function testEval(input: string): Promise<Obj> {
+async function testEval(input: string): Promise<Obj | undefined> {
   const l = new Lexer(input);
   const p = new Parser(l);
   const program = p.parseToken();
@@ -823,7 +823,9 @@ async function testEval(input: string): Promise<Obj> {
   return await new Evaluator({
     inputEventCallback: mockInputCallback,
     outputEventCallback: mockOutputCallback,
-  }).Eval(program, env);
+  })
+    .Eval(program, env)
+    .start();
 }
 
 async function testGenerator(input: string) {
