@@ -110,13 +110,21 @@ export type EditableNodeProps = {
   completeOptions?: CompleteOption[];
   inputEvent?: InputEvent[];
   validate?: ValidateFn;
+  placeholder?: string;
 } & ComponentProps<'div'>;
 
 export const EditableNodeComponent = forwardRef<
   HTMLDivElement,
   EditableNodeProps
 >(function EditableNodeComponent(
-  { id, completeOptions = [], inputEvent = [], validate, ...rest },
+  {
+    id,
+    completeOptions = [],
+    inputEvent = [],
+    validate,
+    placeholder: _placoholder,
+    ...rest
+  },
   _ref
 ) {
   const {
@@ -306,12 +314,14 @@ export const EditableNodeComponent = forwardRef<
     rest.onFocus && rest.onFocus(e);
   };
 
+  const placeholder = _placoholder ?? node.placeholder;
+
   return (
     <>
       <EditableDiv
         data-node-label="editable"
-        data-enable-placeholder={node.placeholder && value === ''}
-        data-placeholder={node.placeholder}
+        data-enable-placeholder={placeholder && value === ''}
+        data-placeholder={placeholder}
         spellCheck={false}
         {...rest}
         // TODO: popupなどでもっとわかりやすくエラーを表示するようにする
