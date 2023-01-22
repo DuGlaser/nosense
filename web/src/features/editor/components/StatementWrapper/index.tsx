@@ -194,8 +194,18 @@ export const StatementWrapper: React.FC<
     indent: number;
     active: boolean;
     lineNumber: number;
+    onCreateNewStatemnt?: () => void;
+    onDeleteCurrentStatemnt?: () => void;
   }>
-> = ({ statementId, indent, active, lineNumber, children }) => {
+> = ({
+  statementId,
+  indent,
+  active,
+  lineNumber,
+  onCreateNewStatemnt,
+  onDeleteCurrentStatemnt,
+  children,
+}) => {
   const getCurrentScopeIds = useGetCurrentScope();
   const deleteStatement = useDeleteStatement();
   const insertStatement = useInsertStatement();
@@ -223,10 +233,12 @@ export const StatementWrapper: React.FC<
           }}
           onOpen={() => setIsOpenMenu(true)}
           showEditButton={isShowEditButton}
-          createNewStatement={() =>
-            insertStatement(statementId, [createNewStatement({ indent })])
-          }
+          createNewStatement={() => {
+            if (onCreateNewStatemnt) return onCreateNewStatemnt();
+            insertStatement(statementId, [createNewStatement({ indent })]);
+          }}
           deleteCurrentStatement={async () => {
+            if (onDeleteCurrentStatemnt) return onDeleteCurrentStatemnt();
             const ids = await getCurrentScopeIds(statementId);
             ids.forEach(deleteStatement);
           }}
