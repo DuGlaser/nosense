@@ -3,7 +3,7 @@ import {
   StatementWrapper,
   ValidateFn,
 } from '@editor/components';
-import { CompleteOption } from '@editor/hooks';
+import { CompleteOption, useDeleteStatementInputEvent } from '@editor/hooks';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -11,7 +11,7 @@ import { Button, Stack, styled } from '@mui/material';
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { createNewStatement, LetStatement } from '@/lib/models/editorObject';
+import { createLetStatement, LetStatement } from '@/lib/models/editorObject';
 import { hexToRgba } from '@/styles/utils';
 
 const typeIdentOption: CompleteOption[] = [
@@ -44,8 +44,9 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   const statement = useStatement<LetStatement>(id);
   const [typeNode, ...varNameNodes] = statement.nodes;
   const insertNode = useInsertNode(id);
-
   const insertStmt = useInsertStatement();
+
+  const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
 
   const typeIdetValidator: ValidateFn = useCallback((value) => {
     const isMatch = typeIdentOption.find(
@@ -73,12 +74,25 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
     });
   };
 
+  const addLetStatement = () => {
+    insertStmt(statement.id, [
+      createLetStatement({ type: '', varNames: [''] }),
+    ]);
+  };
+
   return (
-    <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
+    <StatementWrapper
+      statementId={id}
+      indent={statement.indent}
+      {...rest}
+      onCreateNewStatemnt={addLetStatement}
+    >
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}
         id={typeNode}
+        inputEvent={deleteStatementInputEvent}
+        placeholder={'変数型'}
       />
       :
       <Stack direction="row" divider={<span>,</span>}>
@@ -86,15 +100,13 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
           <EditableNodeComponent
             key={varName}
             id={varName}
+            placeholder={'変数名'}
             inputEvent={[
               {
                 key: 'Enter',
-                callback: () => {
-                  insertStmt(statement.id, [
-                    createNewStatement({ indent: statement.indent }),
-                  ]);
-                },
+                callback: addLetStatement,
               },
+              ...deleteStatementInputEvent,
             ]}
           />
         ))}

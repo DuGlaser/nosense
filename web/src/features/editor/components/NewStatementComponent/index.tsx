@@ -1,4 +1,4 @@
-import { CursorNodeComponent, StatementWrapper } from '@editor/components';
+import { EditableNodeComponent, StatementWrapper } from '@editor/components';
 import { CompleteOption, useDeleteStatementInputEvent } from '@editor/hooks';
 import {
   useDeleteStatement,
@@ -6,7 +6,6 @@ import {
   useInsertStatement,
   useStatement,
 } from '@editor/store';
-import { styled } from '@mui/material';
 import { useRef } from 'react';
 
 import {
@@ -14,17 +13,12 @@ import {
   createCallFunctionStatement,
   createIfStatementEnd,
   createIfStatementStart,
-  createLetStatement,
   createNewStatement,
   createWhileStatementEnd,
   createWhileStatementStart,
   CursorNode,
   Statement,
 } from '@/lib/models/editorObject';
-
-const Placeholder = styled('div')({
-  opacity: 0.5,
-});
 
 export const NewStatementComponent: React.FC<{
   id: CursorNode['id'];
@@ -55,13 +49,6 @@ export const NewStatementComponent: React.FC<{
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
 
   const options: CompleteOption[] = [
-    {
-      displayName: '変数宣言',
-      keyword: [],
-      onComplete: () => {
-        insertNewStatement([createLetStatement({ type: '', varNames: [''] })]);
-      },
-    },
     {
       displayName: '代入文',
       keyword: [],
@@ -260,18 +247,19 @@ export const NewStatementComponent: React.FC<{
       active={false}
       {...rest}
     >
-      <CursorNodeComponent
+      <EditableNodeComponent
         ref={ref}
         id={cursor}
         completeOptions={options}
         inputEvent={deleteStatementInputEvent}
+        placeholder={'追加したい文を選択してください'}
+        onKeyDown={(e) => {
+          e.preventDefault();
+        }}
         onInput={(e) => {
           e.preventDefault();
         }}
       />
-      <Placeholder onClick={() => ref.current?.focus()}>
-        追加したい文を選択してください
-      </Placeholder>
     </StatementWrapper>
   );
 };

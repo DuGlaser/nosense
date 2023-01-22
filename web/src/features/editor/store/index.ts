@@ -1,4 +1,12 @@
-import { useCallback } from 'react';
+import {
+  array,
+  bool,
+  number,
+  object,
+  optional,
+  string,
+} from '@recoiljs/refine';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   atom,
   atomFamily,
@@ -7,8 +15,14 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+import { syncEffect } from 'recoil-sync';
 
-import { Node, Statement } from '@/lib/models/editorObject';
+import {
+  createLetStatement,
+  createNewStatement,
+  Node,
+  Statement,
+} from '@/lib/models/editorObject';
 
 /**
  * StatementのNodesはNode型のtuple arrayなので、
@@ -37,40 +51,109 @@ type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
 type ListStatementItem = Pick<Statement, 'id' | '_type'>;
 type ListNodeItem = Pick<Node, 'id' | '_type'>;
 
-const convert2ListStatementItem = (statement: Statement): ListStatementItem => {
+export const convert2ListStatementItem = (
+  statement: Statement
+): ListStatementItem => {
   return {
     id: statement.id,
     _type: statement._type,
   };
 };
 
-const convert2ListNodeItem = (node: Node): ListNodeItem => {
+export const convert2ListNodeItem = (node: Node): ListNodeItem => {
   return {
     id: node.id,
     _type: node._type,
   };
 };
 
-const convert2ListNode = (statement: Statement): ListNodeItem[] => {
+export const convert2ListNode = (statement: Statement): ListNodeItem[] => {
   return statement.nodes.map(convert2ListNodeItem);
 };
 
+export const STATEMENTS_DEFAULT_STATE_STORE_KEY =
+  'statementsDefaultStateStoreKey';
+
 const statementsState = atomFamily<AtomStatement<Statement>, Statement['id']>({
   key: 'statements',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  effects: (id) => [
+    syncEffect({
+      storeKey: STATEMENTS_DEFAULT_STATE_STORE_KEY,
+      itemKey: id,
+      refine: object({
+        _type: string(),
+        id: string(),
+        functionName: optional(string()),
+        nodes: array(string()),
+        indent: number(),
+      }),
+    }),
+  ],
 });
+
+export const STATEMENT_LIST_DEFAULT_STATE_STORE_KEY =
+  'statementListDefaultStateStoreKey';
 
 const statementListState = atom<ListStatementItem[]>({
   key: 'statementList',
   default: [],
+  effects: [
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    syncEffect({
+      storeKey: STATEMENT_LIST_DEFAULT_STATE_STORE_KEY,
+      refine: array(
+        object({
+          _type: string(),
+          id: string(),
+        })
+      ),
+    }),
+  ],
 });
+
+export const NODES_DEFAULT_STATE_STORE_KEY = 'nodesDefaultStateStoreKey';
 
 const nodesState = atomFamily<Node, Node['id']>({
   key: 'nodes',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  effects: (id) => [
+    syncEffect({
+      storeKey: NODES_DEFAULT_STATE_STORE_KEY,
+      itemKey: id,
+      refine: object({
+        _type: string(),
+        id: string(),
+        parentId: string(),
+        content: string(),
+        editable: bool(),
+        deletable: bool(),
+      }),
+    }),
+  ],
 });
+
+export const NODE_LIST_DEFAULT_STATE_STORE_KEY = 'nodeListDefaultStateStoreKey';
 
 const nodeListState = atom<ListNodeItem[]>({
   key: 'nodeList',
   default: [],
+  effects: [
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    syncEffect({
+      storeKey: NODE_LIST_DEFAULT_STATE_STORE_KEY,
+      refine: array(
+        object({
+          _type: string(),
+          id: string(),
+        })
+      ),
+    }),
+  ],
 });
 
 const nextNodeState = selectorFamily<Node | undefined, Node['id']>({
@@ -322,6 +405,53 @@ export const useStatementList = () => {
   return useRecoilValue(statementListState);
 };
 
+type EditorStatement = {
+  lineNumber: number;
+  statement: ListStatementItem;
+};
+
+export const useEditorStatements = () => {
+  const statementList = useStatementList();
+  const insertStatement = useInsertStatement();
+
+  return useMemo(() => {
+    let declarative: EditorStatement[] = [];
+    let imperative: EditorStatement[] = [];
+
+    let index = statementList.findIndex(
+      (item) => item._type !== 'LetStatement'
+    );
+
+    if (index === 0) {
+      insertStatement(undefined, [
+        createLetStatement({ type: '', varNames: [''] }),
+      ]);
+    }
+
+    if (index === -1) {
+      insertStatement(statementList.at(-1)?.id, [
+        createNewStatement({ indent: 0 }),
+      ]);
+    }
+
+    if (index === -1) {
+      index = statementList.length;
+    }
+
+    declarative = statementList
+      .slice(0, index)
+      .map((item, i) => ({ lineNumber: i + 1, statement: item }));
+    imperative = statementList
+      .slice(index)
+      .map((item, i) => ({ lineNumber: index + i + 1, statement: item }));
+
+    return {
+      declarative,
+      imperative,
+    };
+  }, [statementList]);
+};
+
 const focusElementLast = (element: Element) => {
   const textLength =
     element.childNodes.length > 0
@@ -347,7 +477,6 @@ const focusElementFirst = (element: Element) => {
 
   const selection = window.getSelection();
   selection?.removeAllRanges();
-  selection?.addRange(range);
   selection?.addRange(range);
 };
 
@@ -414,14 +543,26 @@ export const useMovePrevStatement = () => {
   );
 };
 
+function useFirstRender() {
+  const ref = useRef(true);
+
+  if (ref.current) {
+    ref.current = false;
+    return true;
+  }
+
+  return ref.current;
+}
+
 export const useNode = <T extends Node>(id: T['id']) => {
   const [node, setNode] = useRecoilState(nodesState(id));
   const nextNode = useRecoilValue(nextNodeState(id));
   const prevNode = useRecoilValue(prevNodeState(id));
+  const isFirstRendering = useFirstRender();
 
   const ref = useCallback(
     (element: HTMLDivElement | null) => {
-      if (!element || node.ref) return;
+      if (!element || !isFirstRendering) return;
       setNode((cur) => ({ ...cur, ref: element }));
     },
     [id, setNode, node]
