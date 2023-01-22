@@ -418,7 +418,7 @@ export const useEditorStatements = () => {
     let declarative: EditorStatement[] = [];
     let imperative: EditorStatement[] = [];
 
-    const index = statementList.findIndex(
+    let index = statementList.findIndex(
       (item) => item._type !== 'LetStatement'
     );
 
@@ -434,14 +434,16 @@ export const useEditorStatements = () => {
       ]);
     }
 
-    if (index !== -1) {
-      declarative = statementList
-        .slice(0, index)
-        .map((item, i) => ({ lineNumber: i + 1, statement: item }));
-      imperative = statementList
-        .slice(index)
-        .map((item, i) => ({ lineNumber: index + i + 1, statement: item }));
+    if (index === -1) {
+      index = statementList.length;
     }
+
+    declarative = statementList
+      .slice(0, index)
+      .map((item, i) => ({ lineNumber: i + 1, statement: item }));
+    imperative = statementList
+      .slice(index)
+      .map((item, i) => ({ lineNumber: index + i + 1, statement: item }));
 
     return {
       declarative,
@@ -475,7 +477,6 @@ const focusElementFirst = (element: Element) => {
 
   const selection = window.getSelection();
   selection?.removeAllRanges();
-  selection?.addRange(range);
   selection?.addRange(range);
 };
 
