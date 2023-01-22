@@ -16,7 +16,7 @@ import { match } from 'ts-pattern';
 import { Statement, statementType } from '@/lib/models/editorObject';
 
 import { NewStatementComponent } from './components/NewStatementComponent';
-import { useStatementList } from './store';
+import { useEditorStatements } from './store';
 
 const CStack = styled(Stack)(({ theme }) => ({
   backgroundColor: theme.background[900],
@@ -60,13 +60,32 @@ const StatementComponent: React.FC<{
     .exhaustive();
 };
 
+const SectionLabelWrapper = styled('div')(() => ({
+  width: '100%',
+}));
+
+const DeclarativeSectionLabel = styled('div')(() => ({
+  fontSize: '1.2rem',
+  fontWeight: 'bold',
+  margin: '8px 16px',
+  padding: '4px 8px',
+}));
+
+const ImperativeSectionLabel = styled('div')(() => ({
+  fontSize: '1.2rem',
+  fontWeight: 'bold',
+  width: 'auto',
+  margin: '24px 16px 8px',
+  padding: '4px 8px',
+}));
+
 type Props = {
   code: string;
   activeLineNumbers: number[];
 };
 
 export const Editor: React.FC<Props> = ({ code, activeLineNumbers }) => {
-  const statementList = useStatementList();
+  const { declarative, imperative } = useEditorStatements();
   useParseCode(code);
 
   return (
@@ -78,13 +97,28 @@ export const Editor: React.FC<Props> = ({ code, activeLineNumbers }) => {
           overflowY: 'auto',
         }}
       >
-        {statementList.map((item, i) => (
+        <SectionLabelWrapper>
+          <DeclarativeSectionLabel>宣言部</DeclarativeSectionLabel>
+        </SectionLabelWrapper>
+        {declarative.map(({ statement, lineNumber }) => (
           <StatementComponent
-            active={activeLineNumbers.includes(i + 1)}
-            key={item.id}
-            id={item.id}
-            type={item._type}
-            lineNumber={i + 1}
+            active={activeLineNumbers.includes(lineNumber)}
+            key={statement.id}
+            id={statement.id}
+            type={statement._type}
+            lineNumber={lineNumber}
+          />
+        ))}
+        <SectionLabelWrapper>
+          <ImperativeSectionLabel>命令部</ImperativeSectionLabel>
+        </SectionLabelWrapper>
+        {imperative.map(({ statement, lineNumber }) => (
+          <StatementComponent
+            active={activeLineNumbers.includes(lineNumber)}
+            key={statement.id}
+            id={statement.id}
+            type={statement._type}
+            lineNumber={lineNumber}
           />
         ))}
       </Box>

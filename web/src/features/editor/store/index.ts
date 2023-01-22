@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   atom,
   atomFamily,
@@ -8,7 +8,12 @@ import {
   useRecoilValue,
 } from 'recoil';
 
-import { Node, Statement } from '@/lib/models/editorObject';
+import {
+  createLetStatement,
+  createNewStatement,
+  Node,
+  Statement,
+} from '@/lib/models/editorObject';
 
 /**
  * StatementのNodesはNode型のtuple arrayなので、
@@ -320,6 +325,51 @@ export const useInsertStatement = () => {
 
 export const useStatementList = () => {
   return useRecoilValue(statementListState);
+};
+
+type EditorStatement = {
+  lineNumber: number;
+  statement: ListStatementItem;
+};
+
+export const useEditorStatements = () => {
+  const statementList = useStatementList();
+  const insertStatement = useInsertStatement();
+
+  return useMemo(() => {
+    let declarative: EditorStatement[] = [];
+    let imperative: EditorStatement[] = [];
+
+    const index = statementList.findIndex(
+      (item) => item._type !== 'LetStatement'
+    );
+
+    if (index === 0) {
+      insertStatement(undefined, [
+        createLetStatement({ type: '', varNames: [''] }),
+      ]);
+    }
+
+    if (index === -1) {
+      insertStatement(statementList.at(-1)?.id, [
+        createNewStatement({ indent: 0 }),
+      ]);
+    }
+
+    if (index !== -1) {
+      declarative = statementList
+        .slice(0, index)
+        .map((item, i) => ({ lineNumber: i + 1, statement: item }));
+      imperative = statementList
+        .slice(index)
+        .map((item, i) => ({ lineNumber: index + i + 1, statement: item }));
+    }
+
+    return {
+      declarative,
+      imperative,
+    };
+  }, [statementList]);
 };
 
 const focusElementLast = (element: Element) => {
