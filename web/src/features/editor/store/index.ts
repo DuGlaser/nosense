@@ -6,7 +6,7 @@ import {
   optional,
   string,
 } from '@recoiljs/refine';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   atom,
   atomFamily,
@@ -543,14 +543,26 @@ export const useMovePrevStatement = () => {
   );
 };
 
+function useFirstRender() {
+  const ref = useRef(true);
+
+  if (ref.current) {
+    ref.current = false;
+    return true;
+  }
+
+  return ref.current;
+}
+
 export const useNode = <T extends Node>(id: T['id']) => {
   const [node, setNode] = useRecoilState(nodesState(id));
   const nextNode = useRecoilValue(nextNodeState(id));
   const prevNode = useRecoilValue(prevNodeState(id));
+  const isFirstRendering = useFirstRender();
 
   const ref = useCallback(
     (element: HTMLDivElement | null) => {
-      if (!element || node.ref) return;
+      if (!element || !isFirstRendering) return;
       setNode((cur) => ({ ...cur, ref: element }));
     },
     [id, setNode, node]
