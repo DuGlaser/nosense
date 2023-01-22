@@ -9,7 +9,6 @@ import {
   WhileStatementEndComponent,
   WhileStatementStartComponent,
 } from '@editor/components';
-import { useParseCode } from '@editor/hooks';
 import { Box, Stack, styled } from '@mui/material';
 import { match } from 'ts-pattern';
 
@@ -80,13 +79,11 @@ const ImperativeSectionLabel = styled('div')(() => ({
 }));
 
 type Props = {
-  code: string;
   activeLineNumbers: number[];
 };
 
-export const Editor: React.FC<Props> = ({ code, activeLineNumbers }) => {
+export const Editor: React.FC<Props> = ({ activeLineNumbers }) => {
   const { declarative, imperative } = useEditorStatements();
-  useParseCode(code);
 
   return (
     <CStack direction={'row'} spacing={'8px'}>

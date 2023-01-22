@@ -1,3 +1,11 @@
+import {
+  array,
+  bool,
+  number,
+  object,
+  optional,
+  string,
+} from '@recoiljs/refine';
 import { useCallback, useMemo } from 'react';
 import {
   atom,
@@ -7,6 +15,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
+import { syncEffect } from 'recoil-sync';
 
 import {
   createLetStatement,
@@ -42,40 +51,109 @@ type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
 type ListStatementItem = Pick<Statement, 'id' | '_type'>;
 type ListNodeItem = Pick<Node, 'id' | '_type'>;
 
-const convert2ListStatementItem = (statement: Statement): ListStatementItem => {
+export const convert2ListStatementItem = (
+  statement: Statement
+): ListStatementItem => {
   return {
     id: statement.id,
     _type: statement._type,
   };
 };
 
-const convert2ListNodeItem = (node: Node): ListNodeItem => {
+export const convert2ListNodeItem = (node: Node): ListNodeItem => {
   return {
     id: node.id,
     _type: node._type,
   };
 };
 
-const convert2ListNode = (statement: Statement): ListNodeItem[] => {
+export const convert2ListNode = (statement: Statement): ListNodeItem[] => {
   return statement.nodes.map(convert2ListNodeItem);
 };
 
+export const STATEMENTS_DEFAULT_STATE_STORE_KEY =
+  'statementsDefaultStateStoreKey';
+
 const statementsState = atomFamily<AtomStatement<Statement>, Statement['id']>({
   key: 'statements',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  effects: (id) => [
+    syncEffect({
+      storeKey: STATEMENTS_DEFAULT_STATE_STORE_KEY,
+      itemKey: id,
+      refine: object({
+        _type: string(),
+        id: string(),
+        functionName: optional(string()),
+        nodes: array(string()),
+        indent: number(),
+      }),
+    }),
+  ],
 });
+
+export const STATEMENT_LIST_DEFAULT_STATE_STORE_KEY =
+  'statementListDefaultStateStoreKey';
 
 const statementListState = atom<ListStatementItem[]>({
   key: 'statementList',
   default: [],
+  effects: [
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    syncEffect({
+      storeKey: STATEMENT_LIST_DEFAULT_STATE_STORE_KEY,
+      refine: array(
+        object({
+          _type: string(),
+          id: string(),
+        })
+      ),
+    }),
+  ],
 });
+
+export const NODES_DEFAULT_STATE_STORE_KEY = 'nodesDefaultStateStoreKey';
 
 const nodesState = atomFamily<Node, Node['id']>({
   key: 'nodes',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  effects: (id) => [
+    syncEffect({
+      storeKey: NODES_DEFAULT_STATE_STORE_KEY,
+      itemKey: id,
+      refine: object({
+        _type: string(),
+        id: string(),
+        parentId: string(),
+        content: string(),
+        editable: bool(),
+        deletable: bool(),
+      }),
+    }),
+  ],
 });
+
+export const NODE_LIST_DEFAULT_STATE_STORE_KEY = 'nodeListDefaultStateStoreKey';
 
 const nodeListState = atom<ListNodeItem[]>({
   key: 'nodeList',
   default: [],
+  effects: [
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    syncEffect({
+      storeKey: NODE_LIST_DEFAULT_STATE_STORE_KEY,
+      refine: array(
+        object({
+          _type: string(),
+          id: string(),
+        })
+      ),
+    }),
+  ],
 });
 
 const nextNodeState = selectorFamily<Node | undefined, Node['id']>({
