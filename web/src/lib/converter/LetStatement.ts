@@ -1,6 +1,13 @@
 import { LetStatement as DamegaLetStatement, TOKEN } from '@nosense/damega';
 
-import { createLetStatement, LetStatement } from '@/lib/models/editorObject';
+import {
+  createLetStatement,
+  CreateLetStatementParams,
+  LetStatement,
+  statementTypeLiteral,
+} from '@/lib/models/editorObject';
+
+import { Convert2CreatorParams } from '.';
 
 const TYPE_NUMBER = '数値型';
 const TYPE_STRING = '文字列型';
@@ -40,6 +47,19 @@ export const letStatementConvertor = {
         varNames: stmt.names.map((name) => name.value),
       }),
     ];
+  },
+  toCreatorParams: (
+    stmt: LetStatement
+  ): Convert2CreatorParams<CreateLetStatementParams, 'LetStatement'> => {
+    const { _type, nodes } = stmt;
+    const [varType, ...varNames] = nodes;
+    return {
+      _type: statementTypeLiteral[_type],
+      params: {
+        type: varType.content,
+        varNames: varNames.map((name) => name.content),
+      },
+    };
   },
   toDamega: (stmt: LetStatement): string => {
     const [typeNode, ...varNames] = stmt.nodes;

@@ -19,15 +19,17 @@ type FunctionArgument = {
   placeholder?: string;
 };
 
+export type CreateCallFunctionStatementParams = {
+  functionName: string;
+  args: FunctionArgument[];
+  indent: number;
+};
+
 export const createCallFunctionStatement = ({
   functionName,
   args,
   indent,
-}: {
-  functionName: string;
-  args: FunctionArgument[];
-  indent: number;
-}): CallFunctionStatement => {
+}: CreateCallFunctionStatementParams): CallFunctionStatement => {
   const id = uuidv4();
 
   return {

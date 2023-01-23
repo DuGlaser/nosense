@@ -11,13 +11,15 @@ export interface ExpressionStatement
   nodes: [EditableNode];
 }
 
+export type CreateExpressionStatementParams = {
+  exp: string;
+  indent: number;
+};
+
 export const createExpressionStatement = ({
   exp,
   indent,
-}: {
-  exp: string;
-  indent: number;
-}): ExpressionStatement => {
+}: CreateExpressionStatementParams): ExpressionStatement => {
   const id = uuidv4();
   return {
     id,

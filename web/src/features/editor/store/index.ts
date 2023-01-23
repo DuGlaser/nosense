@@ -1,9 +1,9 @@
 import {
   array,
   bool,
+  nullable,
   number,
   object,
-  optional,
   string,
 } from '@recoiljs/refine';
 import { useCallback, useMemo, useRef } from 'react';
@@ -87,7 +87,7 @@ const statementsState = atomFamily<AtomStatement<Statement>, Statement['id']>({
       refine: object({
         _type: string(),
         id: string(),
-        functionName: optional(string()),
+        functionName: nullable(string()),
         nodes: array(string()),
         indent: number(),
       }),
@@ -131,6 +131,7 @@ const nodesState = atomFamily<Node, Node['id']>({
         id: string(),
         parentId: string(),
         content: string(),
+        placeholder: nullable(string()),
         editable: bool(),
         deletable: bool(),
       }),

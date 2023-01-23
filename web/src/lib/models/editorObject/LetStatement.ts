@@ -11,13 +11,15 @@ export interface LetStatement
   nodes: [EditableNode, ...EditableNode[]];
 }
 
+export type CreateLetStatementParams = {
+  type: string;
+  varNames: string[];
+};
+
 export const createLetStatement = ({
   type,
   varNames,
-}: {
-  type: string;
-  varNames: string[];
-}): LetStatement => {
+}: CreateLetStatementParams): LetStatement => {
   const id = uuidv4();
   const newNode =
     varNames.length === 0
