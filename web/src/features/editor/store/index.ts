@@ -22,6 +22,8 @@ import {
   createNewStatement,
   Node,
   Statement,
+  StatementType,
+  statementType,
 } from '@/lib/models/editorObject';
 
 /**
@@ -281,6 +283,24 @@ export const useDeleteStatement = () => {
   );
 };
 
+const statementPair: Record<
+  StatementType[number],
+  { next?: StatementType; prev?: StatementType }
+> = {
+  [statementType.WhileStatementStart]: {
+    next: statementType.WhileStatementEnd,
+  },
+  [statementType.WhileStatementEnd]: {
+    prev: statementType.WhileStatementStart,
+  },
+  [statementType.IfStatementStart]: {
+    next: statementType.IfStatementEnd,
+  },
+  [statementType.IfStatementEnd]: {
+    prev: statementType.IfStatementStart,
+  },
+};
+
 export const useGetCurrentScope = () => {
   const statementList = useStatementList();
 
@@ -289,6 +309,7 @@ export const useGetCurrentScope = () => {
     if (currentIndex === -1) return [];
 
     const currentStmt = await snapshot.getPromise(statementsState(id));
+    const { next: nextPair, prev: prevPair } = statementPair[currentStmt._type];
     const targetScopeIndent = currentStmt.indent;
 
     const next = (async (index) => {
@@ -305,6 +326,11 @@ export const useGetCurrentScope = () => {
         } else if (
           stmt.indent === targetScopeIndent &&
           prevStmtIndent > stmt.indent
+        ) {
+          result.push(stmt.id);
+        } else if (
+          stmt.indent === targetScopeIndent &&
+          stmt._type === nextPair
         ) {
           result.push(stmt.id);
         } else {
@@ -332,6 +358,11 @@ export const useGetCurrentScope = () => {
         } else if (
           stmt.indent === targetScopeIndent &&
           nextStmtIndent > stmt.indent
+        ) {
+          result.push(stmt.id);
+        } else if (
+          stmt.indent === targetScopeIndent &&
+          stmt._type === prevPair
         ) {
           result.push(stmt.id);
         } else {
