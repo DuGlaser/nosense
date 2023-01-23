@@ -1,12 +1,10 @@
-const encode2Base64 = (content: string) => {
-  return window.btoa(content);
-};
-
-export const generateShareUrl = (code: string) => {
-  const params = {
-    code: encode2Base64(code),
-  };
-
+export const generateShareUrl = (params: Record<string, string>) => {
   const { origin, pathname } = window.location;
-  return origin + pathname + '/?' + new URLSearchParams(params).toString();
+
+  const url = new URL(origin + pathname);
+  Object.entries(params).forEach(([name, value]) => {
+    url.searchParams.set(name, value);
+  });
+
+  return url.toString();
 };

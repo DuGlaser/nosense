@@ -18,6 +18,7 @@ import { useStatements } from '@/features/editor/store';
 import { programConvertor } from '@/lib/converter';
 import { generateShareUrl } from '@/utils/generateShareUrl';
 import { saveFile } from '@/utils/saveFile';
+import { shareCode } from '@/utils/shareCode';
 
 const PopoverWrapper = styled(IconButton)(() => ({
   width: '40px',
@@ -42,13 +43,14 @@ type MenuItemProps = {
 };
 
 const ShareUrlMenuItem: React.FC<MenuItemProps> = ({ onClose }) => {
-  const getCode = useGetCode();
+  const getStatements = useStatements();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleCopyShareUrl = async () => {
-    const code = await getCode();
-    navigator.clipboard.writeText(generateShareUrl(code));
+    const statements = await getStatements();
+    const params = shareCode.toUrlParams(statements);
+    navigator.clipboard.writeText(generateShareUrl(params));
   };
 
   return (

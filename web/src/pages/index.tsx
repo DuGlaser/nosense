@@ -14,10 +14,12 @@ import {
   OutputPane,
   OutputResultPane,
 } from '@/components';
+import { programConvertor } from '@/lib/converter';
+import { Statement } from '@/lib/models/editorObject';
 import { useDebugInfo } from '@/store';
 import { EDIT_MODE_STORE_KEY, EDITOR_MODE_STORE_KEY } from '@/store/mode';
 import { EDIT_MODE, EDITOR_MODE } from '@/type';
-import { decodeUrl } from '@/utils/decodeUrl';
+import { shareCode, ShareCodeParams } from '@/utils/shareCode';
 
 const Wrapper = styled('div')(({ theme }) => ({
   width: '100%',
@@ -40,19 +42,26 @@ const TabItemWrapper = styled('div')(({ theme }) => ({
 }));
 
 const IndexPage: NextPage = () => {
-  const [code, setCode] = useState<string | undefined>(undefined);
+  const [defaultStatements, setDefaultStatements] = useState<
+    Statement[] | undefined
+  >(undefined);
   const debugState = useDebugInfo();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setCode(decodeUrl(window.location.href).code);
+      const code = new URL(window.location.href).searchParams.get('code') ?? '';
+      const params: ShareCodeParams = { code };
+      const creatorParamsList = shareCode.fromUrlParams(params);
+      setDefaultStatements(
+        programConvertor.fromCreatorParams(creatorParamsList)
+      );
     }
   }, []);
 
-  if (code === undefined) return null;
+  if (defaultStatements === undefined) return null;
 
   return (
-    <EditorProvider defaultCode={code}>
+    <EditorProvider defaultStatements={defaultStatements}>
       <RecoilSync
         storeKey={EDITOR_MODE_STORE_KEY}
         read={() => {
