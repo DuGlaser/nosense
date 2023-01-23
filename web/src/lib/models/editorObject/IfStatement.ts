@@ -36,13 +36,15 @@ export interface IfStatementElse
   nodes: [CursorNode];
 }
 
+export type CreateIfStatementStartParams = {
+  condition: string;
+  indent: number;
+};
+
 export const createIfStatementStart = ({
   condition,
   indent,
-}: {
-  condition: string;
-  indent: number;
-}): IfStatementStart => {
+}: CreateIfStatementStartParams): IfStatementStart => {
   const id = uuidv4();
   return {
     id,
@@ -56,11 +58,13 @@ export const createIfStatementStart = ({
   };
 };
 
+export type CreateIfStatementEndParams = {
+  indent: number;
+};
+
 export const createIfStatementEnd = ({
   indent,
-}: {
-  indent: number;
-}): IfStatementEnd => {
+}: CreateIfStatementElseParams): IfStatementEnd => {
   const id = uuidv4();
   return {
     id,
@@ -70,11 +74,13 @@ export const createIfStatementEnd = ({
   };
 };
 
+export type CreateIfStatementElseParams = {
+  indent: number;
+};
+
 export const createIfStatementElse = ({
   indent,
-}: {
-  indent: number;
-}): IfStatementElse => {
+}: CreateIfStatementElseParams): IfStatementElse => {
   const id = uuidv4();
   return {
     id,

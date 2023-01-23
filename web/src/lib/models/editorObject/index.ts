@@ -48,6 +48,19 @@ export const statementType = {
   WhileStatementStart: 'WhileStatementStart',
 } as const;
 
+export const statementTypeLiteral = {
+  AssignStatement: 1,
+  CallFunctionStatement: 2,
+  ExpressionStatement: 3,
+  IfStatementElse: 4,
+  IfStatementEnd: 5,
+  IfStatementStart: 6,
+  LetStatement: 7,
+  NewStatement: 8,
+  WhileStatementEnd: 9,
+  WhileStatementStart: 10,
+} as const;
+
 export type StatementType = (typeof statementType)[keyof typeof statementType];
 export type PickStatementType<T extends keyof typeof statementType> =
   (typeof statementType)[T];

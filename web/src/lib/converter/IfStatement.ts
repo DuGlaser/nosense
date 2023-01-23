@@ -2,14 +2,19 @@ import { IfStatement as DamegaIfStatemest } from '@nosense/damega';
 
 import {
   createIfStatementElse,
+  CreateIfStatementElseParams,
   createIfStatementEnd,
+  CreateIfStatementEndParams,
   createIfStatementStart,
+  CreateIfStatementStartParams,
+  IfStatementElse,
   IfStatementEnd,
   IfStatementStart,
   Statement,
+  statementTypeLiteral,
 } from '@/lib/models/editorObject';
 
-import { statementConvertor } from '.';
+import { Convert2CreatorParams, statementConvertor } from '.';
 
 export const ifStatemestConvertor = {
   fromDamega: (
@@ -33,6 +38,21 @@ export const ifStatemestConvertor = {
 };
 
 export const ifStatemestStartConvertor = {
+  toCreatorParams: (
+    stmt: IfStatementStart
+  ): Convert2CreatorParams<
+    CreateIfStatementStartParams,
+    'IfStatementStart'
+  > => {
+    const { _type, nodes, indent } = stmt;
+    return {
+      _type: statementTypeLiteral[_type],
+      params: {
+        condition: nodes[1].content,
+        indent,
+      },
+    };
+  },
   toDamega: (stmt: IfStatementStart): string => {
     const [, condition] = stmt.nodes;
     return `if (${condition.content}) {`;
@@ -40,12 +60,34 @@ export const ifStatemestStartConvertor = {
 };
 
 export const ifStatemestElseConvertor = {
+  toCreatorParams: (
+    stmt: IfStatementElse
+  ): Convert2CreatorParams<CreateIfStatementElseParams, 'IfStatementElse'> => {
+    const { _type, indent } = stmt;
+    return {
+      _type: statementTypeLiteral[_type],
+      params: {
+        indent,
+      },
+    };
+  },
   toDamega: (): string => {
     return `} else {`;
   },
 };
 
 export const ifStatemestEndConvertor = {
+  toCreatorParams: (
+    stmt: IfStatementEnd
+  ): Convert2CreatorParams<CreateIfStatementEndParams, 'IfStatementEnd'> => {
+    const { _type, indent } = stmt;
+    return {
+      _type: statementTypeLiteral[_type],
+      params: {
+        indent,
+      },
+    };
+  },
   toDamega: (): string => {
     return `}`;
   },

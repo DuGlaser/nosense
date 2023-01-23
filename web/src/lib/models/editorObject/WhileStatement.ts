@@ -20,13 +20,15 @@ export interface WhileStatementEnd
   nodes: [CursorNode];
 }
 
+export type CreateWhileStatementStartParams = {
+  condition: string;
+  indent: number;
+};
+
 export const createWhileStatementStart = ({
   condition,
   indent,
-}: {
-  condition: string;
-  indent: number;
-}): WhileStatementStart => {
+}: CreateWhileStatementStartParams): WhileStatementStart => {
   const id = uuidv4();
   return {
     id,
@@ -40,11 +42,13 @@ export const createWhileStatementStart = ({
   };
 };
 
+export type CreateWhileStatementEndParams = {
+  indent: number;
+};
+
 export const createWhileStatementEnd = ({
   indent,
-}: {
-  indent: number;
-}): WhileStatementEnd => {
+}: CreateWhileStatementEndParams): WhileStatementEnd => {
   const id = uuidv4();
   return {
     id,

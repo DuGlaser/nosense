@@ -11,15 +11,17 @@ export interface AssignStatement
   nodes: [EditableNode, EditableNode];
 }
 
+export type CreateAssignStatementParams = {
+  name: string;
+  value: string;
+  indent: number;
+};
+
 export const createAssignStatement = ({
   name,
   value,
   indent,
-}: {
-  name: string;
-  value: string;
-  indent: number;
-}): AssignStatement => {
+}: CreateAssignStatementParams): AssignStatement => {
   const id = uuidv4();
   return {
     id,

@@ -2,13 +2,16 @@ import { WhileStatement as DamegawhileStatemest } from '@nosense/damega';
 
 import {
   createWhileStatementEnd,
+  CreateWhileStatementEndParams,
   createWhileStatementStart,
+  CreateWhileStatementStartParams,
   Statement,
+  statementTypeLiteral,
   WhileStatementEnd,
   WhileStatementStart,
 } from '@/lib/models/editorObject';
 
-import { statementConvertor } from '.';
+import { Convert2CreatorParams, statementConvertor } from '.';
 
 export const whileStatemestConvertor = {
   fromDamega: (
@@ -24,6 +27,22 @@ export const whileStatemestConvertor = {
 };
 
 export const whileStatemestStartConvertor = {
+  toCreatorParams: (
+    stmt: WhileStatementStart
+  ): Convert2CreatorParams<
+    CreateWhileStatementStartParams,
+    'WhileStatementStart'
+  > => {
+    const { _type, nodes, indent } = stmt;
+
+    return {
+      _type: statementTypeLiteral[_type],
+      params: {
+        indent,
+        condition: nodes[1].content,
+      },
+    };
+  },
   toDamega: (stmt: WhileStatementStart): string => {
     const [, condition] = stmt.nodes;
     return `while (${condition.content}) {`;
@@ -31,6 +50,21 @@ export const whileStatemestStartConvertor = {
 };
 
 export const whileStatemestEndConvertor = {
+  toCreatorParams: (
+    stmt: WhileStatementEnd
+  ): Convert2CreatorParams<
+    CreateWhileStatementEndParams,
+    'WhileStatementEnd'
+  > => {
+    const { _type, indent } = stmt;
+
+    return {
+      _type: statementTypeLiteral[_type],
+      params: {
+        indent,
+      },
+    };
+  },
   toDamega: (): string => {
     return `}`;
   },
