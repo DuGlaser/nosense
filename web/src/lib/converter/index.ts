@@ -25,6 +25,7 @@ import {
   CreateIfStatementStartParams,
   createLetStatement,
   CreateLetStatementParams,
+  createNewStatement,
   createWhileStatementEnd,
   CreateWhileStatementEndParams,
   createWhileStatementStart,
@@ -71,6 +72,7 @@ export type CreatorParams =
   | Convert2CreatorParams<CreateIfStatementElseParams, 'IfStatementElse'>
   | Convert2CreatorParams<CreateIfStatementEndParams, 'IfStatementEnd'>
   | Convert2CreatorParams<CreateLetStatementParams, 'LetStatement'>
+  | Convert2CreatorParams<{ indent: number }, 'NewStatement'>
   | Convert2CreatorParams<
       CreateWhileStatementStartParams,
       'WhileStatementStart'
@@ -129,6 +131,9 @@ export const statementConvertor = {
       .with({ _type: statementTypeLiteral[statementType.LetStatement] }, (n) =>
         createLetStatement(n.params)
       )
+      .with({ _type: statementTypeLiteral[statementType.NewStatement] }, (n) =>
+        createNewStatement(n.params)
+      )
       .with(
         { _type: statementTypeLiteral[statementType.WhileStatementStart] },
         (n) => createWhileStatementStart(n.params)
@@ -168,6 +173,10 @@ export const statementConvertor = {
       .with({ _type: statementType.WhileStatementEnd }, (n) =>
         whileStatemestEndConvertor.toCreatorParams(n)
       )
+      .with({ _type: statementType.NewStatement }, (n) => ({
+        _type: statementTypeLiteral[statementType.NewStatement],
+        params: { indent: n.indent },
+      }))
       .otherwise(() => undefined);
   },
   toDamega: (stmt: Statement): string => {
