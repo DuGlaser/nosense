@@ -303,6 +303,20 @@ export const EditableNodeComponent = forwardRef<
   };
 
   const handleInput = (e: FormEvent<HTMLDivElement>) => {
+    if (mode === 'READONLY' || !node.editable) {
+      e.preventDefault();
+
+      // IMEが有効な時は入力されてしまうため、初期値に戻すようにしている
+      // 現在の値をセットすると再レンダリングが走らないので末尾にスペースをつけている
+      flushSync(() => {
+        setDisplayValue(node.content + ' ');
+      });
+      flushSync(() => {
+        setDisplayValue(node.content);
+      });
+
+      return;
+    }
     openCompleteMenu();
     const target = e.target as HTMLDivElement;
     handleUpdateValue(target.innerText);
