@@ -36,7 +36,7 @@ export const WhileStatementStartComponent: React.FC<
         inputEvent={deleteCurrentScopeInputEvent}
       />
       <BaseTextComopnent>while (</BaseTextComopnent>
-      <EditableNodeComponent id={conditionExp} />
+      <EditableNodeComponent id={conditionExp} placeholder={'条件文'} />
       <BaseTextComopnent>)</BaseTextComopnent>
       <CursorNodeComponent
         id={endCursor}

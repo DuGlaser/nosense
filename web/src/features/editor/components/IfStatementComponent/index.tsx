@@ -38,7 +38,7 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
         inputEvent={deleteCurrentScopeInputEvent}
       />
       <BaseTextComopnent>if (</BaseTextComopnent>
-      <EditableNodeComponent id={conditionExp} />
+      <EditableNodeComponent id={conditionExp} placeholder={'条件文'} />
       <BaseTextComopnent>)</BaseTextComopnent>
       <CursorNodeComponent
         id={endCursor}
