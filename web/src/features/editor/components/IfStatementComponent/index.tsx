@@ -10,6 +10,7 @@ import {
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
+import { useRef } from 'react';
 
 import {
   IfStatementElse,
@@ -22,6 +23,7 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
   ...rest
 }) => {
   const statement = useStatement<IfStatementStart>(id);
+  const ref = useRef<HTMLDivElement>(null);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
     statement.indent + 1
@@ -37,8 +39,14 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
         id={cursor}
         inputEvent={deleteCurrentScopeInputEvent}
       />
-      <BaseTextComopnent>if (</BaseTextComopnent>
-      <EditableNodeComponent id={conditionExp} placeholder={'条件文'} />
+      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+        if (
+      </BaseTextComopnent>
+      <EditableNodeComponent
+        id={conditionExp}
+        ref={ref}
+        placeholder={'条件文'}
+      />
       <BaseTextComopnent>)</BaseTextComopnent>
       <CursorNodeComponent
         id={endCursor}
@@ -75,6 +83,7 @@ export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
   ...rest
 }) => {
   const statement = useStatement<IfStatementEnd>(id);
+  const ref = useRef<HTMLDivElement>(null);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
     statement.indent
@@ -86,9 +95,12 @@ export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <BaseTextComopnent>endif</BaseTextComopnent>
+      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+        endif
+      </BaseTextComopnent>
       <CursorNodeComponent
         id={cursor}
+        ref={ref}
         inputEvent={[
           ...newStatementInputEvent,
           ...deleteCurrentScopeInputEvent,

@@ -10,6 +10,7 @@ import {
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
+import { useRef } from 'react';
 
 import {
   WhileStatementEnd,
@@ -20,6 +21,7 @@ export const WhileStatementStartComponent: React.FC<
   StatementComponentProps
 > = ({ id, ...rest }) => {
   const statement = useStatement<WhileStatementStart>(id);
+  const ref = useRef<HTMLDivElement>(null);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
     statement.indent + 1
@@ -35,8 +37,14 @@ export const WhileStatementStartComponent: React.FC<
         id={cursor}
         inputEvent={deleteCurrentScopeInputEvent}
       />
-      <BaseTextComopnent>while (</BaseTextComopnent>
-      <EditableNodeComponent id={conditionExp} placeholder={'条件文'} />
+      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+        while (
+      </BaseTextComopnent>
+      <EditableNodeComponent
+        id={conditionExp}
+        ref={ref}
+        placeholder={'条件文'}
+      />
       <BaseTextComopnent>)</BaseTextComopnent>
       <CursorNodeComponent
         id={endCursor}
@@ -54,6 +62,7 @@ export const WhileStatementEndComponent: React.FC<StatementComponentProps> = ({
   ...rest
 }) => {
   const statement = useStatement<WhileStatementEnd>(id);
+  const ref = useRef<HTMLDivElement>(null);
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
     statement.indent
@@ -65,9 +74,12 @@ export const WhileStatementEndComponent: React.FC<StatementComponentProps> = ({
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <BaseTextComopnent>endwhile</BaseTextComopnent>
+      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+        endwhile
+      </BaseTextComopnent>
       <CursorNodeComponent
         id={cursor}
+        ref={ref}
         inputEvent={[
           ...newStatementInputEvent,
           ...deleteCurrentScopeInputEvent,
