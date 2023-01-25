@@ -35,6 +35,7 @@ const generatePrintln: BuiltinObjectGenerator = (ctx) =>
         .otherwise(() => null);
 
       ctx.outputEventCallback(value?.toString() ?? '');
+      return NULL;
     },
   });
 
@@ -96,9 +97,9 @@ const generateSleepFn: BuiltinObjectGenerator = () => {
   return new BuiltinObject({
     fn: async (obj: Obj) => {
       if (obj instanceof NumberObject) {
-        await new Promise((resolve) => {
+        return await new Promise((resolve) => {
           setTimeout(() => {
-            resolve(undefined);
+            resolve(NULL);
           }, obj.value);
         });
       }
