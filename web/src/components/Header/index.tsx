@@ -1,6 +1,7 @@
 import { styled } from '@mui/material';
 
 import { DebugTools } from './DebugTools';
+import { HelpModal } from './HelpModal';
 import { PlayButton } from './PlayButton';
 import { SharePopover } from './SharePopover';
 
@@ -32,6 +33,14 @@ const Flex = styled('div')(() => ({
   height: '100%',
 }));
 
+const Icons = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: '8px',
+  height: '100%',
+}));
+
 export const Header = () => {
   return (
     <Wrapper>
@@ -39,7 +48,10 @@ export const Header = () => {
       <Flex>
         <DebugTools />
         <PlayButton />
-        <SharePopover />
+        <Icons>
+          <SharePopover />
+          <HelpModal />
+        </Icons>
       </Flex>
     </Wrapper>
   );
