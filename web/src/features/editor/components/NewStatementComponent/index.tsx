@@ -43,7 +43,7 @@ export const NewStatementComponent: React.FC<{
      **/
     setTimeout(() => {
       focusStatement(stmts[0].id);
-    }, 1);
+    }, 100);
   };
 
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
