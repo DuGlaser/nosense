@@ -11,6 +11,7 @@ import {
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
 import { Stack } from '@mui/material';
+import { useRef } from 'react';
 
 import { CallFunctionStatement } from '@/lib/models/editorObject';
 
@@ -18,6 +19,7 @@ export const CallFunctionStatementComponent: React.FC<
   StatementComponentProps
 > = ({ id, ...rest }) => {
   const statement = useStatement<CallFunctionStatement>(id);
+  const ref = useRef<HTMLDivElement>(null);
   const args = statement.nodes.slice(0, statement.nodes.length - 1);
   const cursorNode = statement.nodes.at(-1)!;
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
@@ -28,10 +30,13 @@ export const CallFunctionStatementComponent: React.FC<
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <BaseTextComopnent>{statement.functionName}(</BaseTextComopnent>
+      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+        {statement.functionName}(
+      </BaseTextComopnent>
       <Stack direction="row" divider={<span>,</span>}>
-        {args.map((arg) => (
+        {args.map((arg, i) => (
           <EditableNodeComponent
+            ref={i === 0 ? ref : null}
             key={arg}
             id={arg}
             inputEvent={deleteStatementInputEvent}

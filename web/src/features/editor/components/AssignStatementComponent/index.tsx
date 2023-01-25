@@ -6,6 +6,7 @@ import {
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { useRef } from 'react';
 
 import { AssignStatement } from '@/lib/models/editorObject';
 
@@ -14,6 +15,7 @@ export const AssignStatementComponent: React.FC<StatementComponentProps> = ({
   ...rest
 }) => {
   const statement = useStatement<AssignStatement>(id);
+  const ref = useRef<HTMLDivElement>(null);
   const [varName, exp] = statement.nodes;
   const newStatementInputEvent = useNewStatementInputEvent(
     statement.id,
@@ -27,9 +29,10 @@ export const AssignStatementComponent: React.FC<StatementComponentProps> = ({
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <EditableNodeComponent
         id={varName}
+        ref={ref}
         inputEvent={deleteStatementInputEvent}
       />
-      <KeyboardBackspaceIcon />
+      <KeyboardBackspaceIcon onClick={() => ref.current?.focus()} />
       <EditableNodeComponent
         id={exp}
         inputEvent={[...newStatementInputEvent, ...deleteStatementInputEvent]}

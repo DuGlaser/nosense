@@ -66,6 +66,21 @@ const CmpMenu = styled('div')<{ top: number; left: number }>(
   })
 );
 
+const CmpMenuFooter = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  margin: '4px -2px -4px',
+  padding: '4px 8px',
+  fontSize: '0.5em',
+  backgroundColor: hexToRgba(theme.background[900], 0.8),
+  color: theme.background.contrast[900],
+  kbd: {
+    padding: '0 4px',
+    backgroundColor: theme.background[600],
+    color: theme.background.contrast[600],
+  },
+}));
+
 const StyledCmpMenuItem = styled('div')<{ focused: number }>(
   ({ theme, focused }) => {
     const activeStyle = {
@@ -151,8 +166,15 @@ const CmpMenuItem: React.FC<
     option: DisplayCompleteOption;
     closeCompleteMenu: () => void;
     onSelectCompleteItem: (option: CompleteOption) => void;
+    nestLevel: number;
   } & ComponentProps<'div'>
-> = ({ option, closeCompleteMenu, onSelectCompleteItem, ...rest }) => {
+> = ({
+  option,
+  closeCompleteMenu,
+  onSelectCompleteItem,
+  nestLevel,
+  ...rest
+}) => {
   const [position, setPosition] = useState<
     { top: number; right: number } | undefined
   >(undefined);
@@ -184,6 +206,7 @@ const CmpMenuItem: React.FC<
         <CompleteMenuRoot
           top={position.top - 4}
           left={position.right + 8}
+          nestLevel={nestLevel + 1}
           options={option.completeOptions}
           onSelectCompleteItem={onSelectCompleteItem}
           closeCompleteMenu={closeCompleteMenu}
@@ -199,13 +222,22 @@ const CompleteMenuRoot: React.FC<{
   options: DisplayCompleteOption[];
   closeCompleteMenu: () => void;
   onSelectCompleteItem: (option: CompleteOption) => void;
-}> = ({ top, left, options, closeCompleteMenu, onSelectCompleteItem }) => {
+  nestLevel: number;
+}> = ({
+  top,
+  left,
+  options,
+  closeCompleteMenu,
+  onSelectCompleteItem,
+  nestLevel,
+}) => {
   return ReactDOM.createPortal(
     <CmpMenu top={top} left={left}>
       {options.map((option, i) => (
         <CmpMenuItem
           key={i}
           option={option}
+          nestLevel={nestLevel}
           onMouseDown={() => {
             onSelectCompleteItem(option);
             closeCompleteMenu();
@@ -218,6 +250,12 @@ const CompleteMenuRoot: React.FC<{
           closeCompleteMenu={closeCompleteMenu}
         />
       ))}
+      {nestLevel === 0 && (
+        <CmpMenuFooter>
+          <kbd>ESC</kbd>
+          <span>で閉じる</span>
+        </CmpMenuFooter>
+      )}
     </CmpMenu>,
     document.body
   );
@@ -493,6 +531,7 @@ export const useCompleteMenu = (
       <CompleteMenuRoot
         top={top}
         left={left}
+        nestLevel={0}
         options={displayOptions}
         onSelectCompleteItem={onSelectCompleteItem}
         closeCompleteMenu={closeCompleteMenu}
