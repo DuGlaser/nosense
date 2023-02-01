@@ -26,28 +26,8 @@ import {
   statementType,
 } from '@/lib/models/editorObject';
 
-/**
- * StatementのNodesはNode型のtuple arrayなので、
- * そこからidだけを抽出したstring tuple arrayに変換する。
- * useStatementを使う際にNodeをtupleとして扱いたいのでこのようにしている。
- * 型が複雑になり一部ts-ignoreしないと行けないが、useStatement側を使う機会のほうが
- * 多いと判断し、今は使っている。
- **/
-type NodesToIds<T extends Node[], K extends Node['id'][] = []> = T extends [
-  Node,
-  ...infer R
-]
-  ? R extends Node[]
-    ? // NOTE: 先頭要素以外を取り除いたRで再帰させる
-      NodesToIds<R, [...K, T[0]['id']]>
-    : []
-  : // NOTE: ...Node[]などはマッチしないのでここで処理させる
-  T extends []
-  ? [...K]
-  : [...K, ...Node['id'][]];
-
 type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
-  nodes: NodesToIds<T['nodes']>;
+  nodes: T['nodes'][number]['id'][];
 };
 
 type ListStatementItem = Pick<Statement, 'id' | '_type'>;
