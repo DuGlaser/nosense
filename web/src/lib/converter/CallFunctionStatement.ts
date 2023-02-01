@@ -31,6 +31,7 @@ export const callFunctionStatementConvertor = {
   > => {
     const { _type, nodes, indent, functionName } = stmt;
     const args = nodes
+      .slice(1, nodes.length - 1)
       .filter((node): node is EditableNode => 'placeholder' in node)
       .map((node) => ({
         defaultValue: node.content,
