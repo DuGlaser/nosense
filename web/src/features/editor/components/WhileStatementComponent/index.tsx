@@ -6,7 +6,8 @@ import {
 } from '@editor/components';
 import {
   useDeleteCurrentScopeInputEvent,
-  useNewStatementInputEvent,
+  useNextNewStatementInputEvent,
+  usePrevNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
@@ -22,9 +23,13 @@ export const WhileStatementStartComponent: React.FC<
 > = ({ id, ...rest }) => {
   const statement = useStatement<WhileStatementStart>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const newStatementInputEvent = useNewStatementInputEvent(
+  const newNextStatementInputEvent = useNextNewStatementInputEvent(
     statement.id,
     statement.indent + 1
+  );
+  const newPrevStatementInputEvent = usePrevNewStatementInputEvent(
+    statement.id,
+    statement.indent
   );
   const deleteCurrentScopeInputEvent = useDeleteCurrentScopeInputEvent(
     statement.id
@@ -35,7 +40,10 @@ export const WhileStatementStartComponent: React.FC<
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <CursorNodeComponent
         id={cursor}
-        inputEvent={deleteCurrentScopeInputEvent}
+        inputEvent={[
+          ...deleteCurrentScopeInputEvent,
+          ...newPrevStatementInputEvent,
+        ]}
       />
       <BaseTextComopnent onClick={() => ref.current?.focus()}>
         while (
@@ -49,7 +57,7 @@ export const WhileStatementStartComponent: React.FC<
       <CursorNodeComponent
         id={endCursor}
         inputEvent={[
-          ...newStatementInputEvent,
+          ...newNextStatementInputEvent,
           ...deleteCurrentScopeInputEvent,
         ]}
       />
@@ -63,7 +71,7 @@ export const WhileStatementEndComponent: React.FC<StatementComponentProps> = ({
 }) => {
   const statement = useStatement<WhileStatementEnd>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const newStatementInputEvent = useNewStatementInputEvent(
+  const newStatementInputEvent = useNextNewStatementInputEvent(
     statement.id,
     statement.indent
   );

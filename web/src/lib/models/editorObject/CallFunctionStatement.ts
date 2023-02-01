@@ -11,7 +11,7 @@ import { createEditableNode, EditableNode } from './EditableNode';
 export interface CallFunctionStatement
   extends BaseStatement<PickStatementType<'CallFunctionStatement'>> {
   functionName: string;
-  nodes: [...EditableNode[], CursorNode];
+  nodes: [CursorNode, ...EditableNode[], CursorNode];
 }
 
 type FunctionArgument = {
@@ -37,6 +37,7 @@ export const createCallFunctionStatement = ({
     functionName,
     _type: 'CallFunctionStatement',
     nodes: [
+      createCursorNode(id),
       ...args.map((arg) =>
         createEditableNode({
           content: arg.defaultValue,

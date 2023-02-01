@@ -384,7 +384,7 @@ export const useGetCurrentScope = () => {
 };
 
 export const useInsertStatement = () => {
-  return useRecoilCallback(
+  const insertNextStatement = useRecoilCallback(
     ({ set, snapshot }) =>
       async (
         beforeStatementId: Statement['id'] | undefined,
@@ -431,6 +431,23 @@ export const useInsertStatement = () => {
       },
     []
   );
+
+  const insertPrevStatement = useRecoilCallback(
+    ({ snapshot }) =>
+      async (
+        afterStatementId: Statement['id'] | undefined,
+        newStmts: Statement[]
+      ) => {
+        const stmts = await snapshot.getPromise(statementListState);
+        const index = stmts.findIndex((stmt) => stmt.id === afterStatementId);
+        if (index <= 0) return;
+
+        insertNextStatement(stmts[index - 1].id, newStmts);
+      },
+    []
+  );
+
+  return { insertNextStatement, insertPrevStatement };
 };
 
 export const useStatementList = () => {
@@ -444,7 +461,7 @@ type EditorStatement = {
 
 export const useEditorStatements = () => {
   const statementList = useStatementList();
-  const insertStatement = useInsertStatement();
+  const { insertNextStatement } = useInsertStatement();
 
   return useMemo(() => {
     let declarative: EditorStatement[] = [];
@@ -455,13 +472,13 @@ export const useEditorStatements = () => {
     );
 
     if (index === 0) {
-      insertStatement(undefined, [
+      insertNextStatement(undefined, [
         createLetStatement({ type: '', varNames: [''] }),
       ]);
     }
 
     if (index === -1) {
-      insertStatement(statementList.at(-1)?.id, [
+      insertNextStatement(statementList.at(-1)?.id, [
         createNewStatement({ indent: 0 }),
       ]);
     }

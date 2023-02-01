@@ -24,7 +24,7 @@ export const NewStatementComponent: React.FC<{
   id: CursorNode['id'];
   lineNumber: number;
 }> = ({ id, ...rest }) => {
-  const insertStmt = useInsertStatement();
+  const { insertNextStatement } = useInsertStatement();
   const deleteStmt = useDeleteStatement();
   const statement = useStatement(id);
   const focusStatement = useFocusStatemnt();
@@ -33,7 +33,7 @@ export const NewStatementComponent: React.FC<{
   const ref = useRef<HTMLDivElement>(null);
 
   const insertNewStatement = (stmts: Statement[]) => {
-    insertStmt(id, stmts);
+    insertNextStatement(id, stmts);
     deleteStmt(id);
     /**
      * NOTE:
