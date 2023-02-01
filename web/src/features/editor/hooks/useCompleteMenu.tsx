@@ -334,7 +334,7 @@ const getCurrentSelectOption = (displayOptions: DisplayCompleteOption[]) => {
 export const useCompleteMenu = (
   completeOptions: CompleteOption[],
   inputValue: string,
-  delay = 500
+  delay = 800
 ) => {
   const [displayOptions, setDisplayOptions] = useState<DisplayCompleteOption[]>(
     []

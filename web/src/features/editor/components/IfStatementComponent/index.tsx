@@ -6,7 +6,8 @@ import {
 } from '@editor/components';
 import {
   useDeleteCurrentScopeInputEvent,
-  useNewStatementInputEvent,
+  useNextNewStatementInputEvent,
+  usePrevNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
@@ -24,9 +25,13 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
 }) => {
   const statement = useStatement<IfStatementStart>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const newStatementInputEvent = useNewStatementInputEvent(
+  const newNextStatementInputEvent = useNextNewStatementInputEvent(
     statement.id,
     statement.indent + 1
+  );
+  const newPrevStatementInputEvent = usePrevNewStatementInputEvent(
+    statement.id,
+    statement.indent
   );
   const deleteCurrentScopeInputEvent = useDeleteCurrentScopeInputEvent(
     statement.id
@@ -37,7 +42,10 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <CursorNodeComponent
         id={cursor}
-        inputEvent={deleteCurrentScopeInputEvent}
+        inputEvent={[
+          ...deleteCurrentScopeInputEvent,
+          ...newPrevStatementInputEvent,
+        ]}
       />
       <BaseTextComopnent onClick={() => ref.current?.focus()}>
         if (
@@ -51,7 +59,7 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
       <CursorNodeComponent
         id={endCursor}
         inputEvent={[
-          ...newStatementInputEvent,
+          ...newNextStatementInputEvent,
           ...deleteCurrentScopeInputEvent,
         ]}
       />
@@ -64,7 +72,7 @@ export const IfStatementElseComponent: React.FC<StatementComponentProps> = ({
   ...rest
 }) => {
   const statement = useStatement<IfStatementElse>(id);
-  const newStatementInputEvent = useNewStatementInputEvent(
+  const newStatementInputEvent = useNextNewStatementInputEvent(
     statement.id,
     statement.indent + 1
   );
@@ -84,7 +92,7 @@ export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
 }) => {
   const statement = useStatement<IfStatementEnd>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const newStatementInputEvent = useNewStatementInputEvent(
+  const newStatementInputEvent = useNextNewStatementInputEvent(
     statement.id,
     statement.indent
   );

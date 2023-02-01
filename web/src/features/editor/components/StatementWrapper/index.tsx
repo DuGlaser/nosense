@@ -208,7 +208,7 @@ export const StatementWrapper: React.FC<
 }) => {
   const getCurrentScopeIds = useGetCurrentScope();
   const deleteStatement = useDeleteStatement();
-  const insertStatement = useInsertStatement();
+  const { insertNextStatement } = useInsertStatement();
 
   const [isShowEditButton, setIsShowEditButton] = useState(false);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
@@ -235,7 +235,7 @@ export const StatementWrapper: React.FC<
           showEditButton={isShowEditButton}
           createNewStatement={() => {
             if (onCreateNewStatemnt) return onCreateNewStatemnt();
-            insertStatement(statementId, [createNewStatement({ indent })]);
+            insertNextStatement(statementId, [createNewStatement({ indent })]);
           }}
           deleteCurrentStatement={async () => {
             if (onDeleteCurrentStatemnt) return onDeleteCurrentStatemnt();

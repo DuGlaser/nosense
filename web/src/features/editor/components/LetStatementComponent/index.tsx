@@ -44,7 +44,7 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   const statement = useStatement<LetStatement>(id);
   const [typeNode, ...varNameNodes] = statement.nodes;
   const insertNode = useInsertNode(id);
-  const insertStmt = useInsertStatement();
+  const { insertNextStatement } = useInsertStatement();
 
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
 
@@ -75,7 +75,7 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   };
 
   const addLetStatement = () => {
-    insertStmt(statement.id, [
+    insertNextStatement(statement.id, [
       createLetStatement({ type: '', varNames: [''] }),
     ]);
   };

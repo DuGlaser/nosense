@@ -6,7 +6,8 @@ import {
 } from '@editor/components';
 import {
   useDeleteStatementInputEvent,
-  useNewStatementInputEvent,
+  useNextNewStatementInputEvent,
+  usePrevNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
@@ -20,16 +21,28 @@ export const CallFunctionStatementComponent: React.FC<
 > = ({ id, ...rest }) => {
   const statement = useStatement<CallFunctionStatement>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const args = statement.nodes.slice(0, statement.nodes.length - 1);
-  const cursorNode = statement.nodes.at(-1)!;
+  const frontCursorNode = statement.nodes[0];
+  const backCursorNode = statement.nodes[statement.nodes.length - 1];
+  const args = statement.nodes.slice(1, statement.nodes.length - 1);
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
-  const newStatementInputEvent = useNewStatementInputEvent(
+  const newNextStatementInputEvent = useNextNewStatementInputEvent(
     id,
+    statement.indent
+  );
+  const newPrevStatementInputEvent = usePrevNewStatementInputEvent(
+    statement.id,
     statement.indent
   );
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
+      <CursorNodeComponent
+        id={frontCursorNode}
+        inputEvent={[
+          ...newPrevStatementInputEvent,
+          ...deleteStatementInputEvent,
+        ]}
+      />
       <BaseTextComopnent onClick={() => ref.current?.focus()}>
         {statement.functionName}(
       </BaseTextComopnent>
@@ -45,8 +58,11 @@ export const CallFunctionStatementComponent: React.FC<
       </Stack>
       <BaseTextComopnent>)</BaseTextComopnent>
       <CursorNodeComponent
-        id={cursorNode}
-        inputEvent={[...newStatementInputEvent, ...deleteStatementInputEvent]}
+        id={backCursorNode}
+        inputEvent={[
+          ...newNextStatementInputEvent,
+          ...deleteStatementInputEvent,
+        ]}
       />
     </StatementWrapper>
   );

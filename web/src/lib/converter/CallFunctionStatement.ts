@@ -48,7 +48,7 @@ export const callFunctionStatementConvertor = {
   },
   toDamega: (stmt: CallFunctionStatement): string => {
     return `${stmt.functionName}(${stmt.nodes
-      .slice(0, stmt.nodes.length - 1)
+      .slice(1, stmt.nodes.length - 1)
       .map((arg) => arg.content)
       .join(',')});`;
   },

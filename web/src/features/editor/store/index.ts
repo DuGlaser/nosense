@@ -26,28 +26,8 @@ import {
   statementType,
 } from '@/lib/models/editorObject';
 
-/**
- * StatementのNodesはNode型のtuple arrayなので、
- * そこからidだけを抽出したstring tuple arrayに変換する。
- * useStatementを使う際にNodeをtupleとして扱いたいのでこのようにしている。
- * 型が複雑になり一部ts-ignoreしないと行けないが、useStatement側を使う機会のほうが
- * 多いと判断し、今は使っている。
- **/
-type NodesToIds<T extends Node[], K extends Node['id'][] = []> = T extends [
-  Node,
-  ...infer R
-]
-  ? R extends Node[]
-    ? // NOTE: 先頭要素以外を取り除いたRで再帰させる
-      NodesToIds<R, [...K, T[0]['id']]>
-    : []
-  : // NOTE: ...Node[]などはマッチしないのでここで処理させる
-  T extends []
-  ? [...K]
-  : [...K, ...Node['id'][]];
-
 type AtomStatement<T extends Statement> = Omit<T, 'nodes'> & {
-  nodes: NodesToIds<T['nodes']>;
+  nodes: T['nodes'][number]['id'][];
 };
 
 type ListStatementItem = Pick<Statement, 'id' | '_type'>;
@@ -384,7 +364,7 @@ export const useGetCurrentScope = () => {
 };
 
 export const useInsertStatement = () => {
-  return useRecoilCallback(
+  const insertNextStatement = useRecoilCallback(
     ({ set, snapshot }) =>
       async (
         beforeStatementId: Statement['id'] | undefined,
@@ -431,6 +411,23 @@ export const useInsertStatement = () => {
       },
     []
   );
+
+  const insertPrevStatement = useRecoilCallback(
+    ({ snapshot }) =>
+      async (
+        afterStatementId: Statement['id'] | undefined,
+        newStmts: Statement[]
+      ) => {
+        const stmts = await snapshot.getPromise(statementListState);
+        const index = stmts.findIndex((stmt) => stmt.id === afterStatementId);
+        if (index <= 0) return;
+
+        insertNextStatement(stmts[index - 1].id, newStmts);
+      },
+    []
+  );
+
+  return { insertNextStatement, insertPrevStatement };
 };
 
 export const useStatementList = () => {
@@ -444,7 +441,7 @@ type EditorStatement = {
 
 export const useEditorStatements = () => {
   const statementList = useStatementList();
-  const insertStatement = useInsertStatement();
+  const { insertNextStatement } = useInsertStatement();
 
   return useMemo(() => {
     let declarative: EditorStatement[] = [];
@@ -455,13 +452,13 @@ export const useEditorStatements = () => {
     );
 
     if (index === 0) {
-      insertStatement(undefined, [
+      insertNextStatement(undefined, [
         createLetStatement({ type: '', varNames: [''] }),
       ]);
     }
 
     if (index === -1) {
-      insertStatement(statementList.at(-1)?.id, [
+      insertNextStatement(statementList.at(-1)?.id, [
         createNewStatement({ indent: 0 }),
       ]);
     }
