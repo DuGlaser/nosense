@@ -3,6 +3,7 @@ import type { Obniz } from 'obniz/dist/src/obniz/Obniz';
 
 import { BuiltinObject, Obj, StringObject } from '@/object';
 
+import { NULL } from '..';
 import { ObnizModule } from './interface';
 import { DamegaObnizLED } from './led';
 
@@ -29,14 +30,16 @@ export class DamegaObniz extends ObnizModule {
       ['CONNECT']: new BuiltinObject({
         fn: async (code: Obj) => {
           if (!(code instanceof StringObject)) {
-            return;
+            return NULL;
           }
           await this.init(code.value);
+          return NULL;
         },
       }),
       ['CLOSE']: new BuiltinObject({
         fn: async () => {
           await getInstance()?.closeWait();
+          return NULL;
         },
       }),
       ['LED']: new DamegaObnizLED(getInstance()),

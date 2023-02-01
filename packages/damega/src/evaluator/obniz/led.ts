@@ -3,6 +3,7 @@ import type LED from 'obniz/dist/src/parts/Light/LED/index.d';
 
 import { BuiltinObject, NumberObject, Obj } from '@/object';
 
+import { NULL } from '..';
 import { getInstance } from '.';
 import { ObnizModule } from './interface';
 
@@ -24,6 +25,8 @@ export class DamegaObnizLED extends ObnizModule {
           ) {
             this.getLED(anode.value, cathode.value)?.on();
           }
+
+          return NULL;
         },
       }),
       ['OFF']: new BuiltinObject({
@@ -34,6 +37,8 @@ export class DamegaObnizLED extends ObnizModule {
           ) {
             this.getLED(anode.value, cathode.value)?.off();
           }
+
+          return NULL;
         },
       }),
       ['BLINK']: new BuiltinObject({
@@ -44,6 +49,8 @@ export class DamegaObnizLED extends ObnizModule {
           ) {
             this.getLED(anode.value, cathode.value)?.blink();
           }
+
+          return NULL;
         },
       }),
       ['END_BLINK']: new BuiltinObject({
@@ -54,6 +61,8 @@ export class DamegaObnizLED extends ObnizModule {
           ) {
             this.getLED(anode.value, cathode.value)?.endBlink();
           }
+
+          return NULL;
         },
       }),
     };
