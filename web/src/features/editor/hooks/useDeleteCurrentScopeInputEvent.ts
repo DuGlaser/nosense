@@ -21,13 +21,12 @@ export const useDeleteCurrentScopeInputEvent = (
     ids.forEach(deleteStmt);
   }, [deleteStmt, id]);
 
-  return useMemo(
+  return useMemo<InputEvent[]>(
     () => [
       {
         key: 'Backspace',
-        callback: (e, next) => {
-          if (!e.ctrlKey) return next();
-
+        ctrlKey: true,
+        callback: () => {
           deleteCurrentScope();
         },
       },

@@ -173,11 +173,18 @@ const shortCutList: {
   {
     key: (
       <>
-        <div>行末で</div>
-        <kbd>Enter</kbd>
+        <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
       </>
     ),
-    description: '直後の行に新規の文を追加する',
+    description: '直後に文を追加',
+  },
+  {
+    key: (
+      <>
+        <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>
+      </>
+    ),
+    description: '直前に文を追加',
   },
   {
     key: <kbd>Tab</kbd>,

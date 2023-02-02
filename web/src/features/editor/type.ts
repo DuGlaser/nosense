@@ -16,5 +16,7 @@ export type InputEvent = {
   contentLength?: number;
   cursorPosition?: CursorPosition;
   openCompleteMenu?: boolean;
+  ctrlKey?: boolean;
+  shiftKey?: boolean;
   callback: (e: KeyboardEvent<HTMLDivElement>, next: () => void) => void;
 };

@@ -1,52 +1,40 @@
 import { useInsertStatement } from '@editor/store';
 import { InputEvent } from '@editor/type';
+import { useMemo } from 'react';
 
 import { createNewStatement } from '@/lib/models/editorObject';
 
-export const useNextNewStatementInputEvent = (
+export const useNewStatementInputEvent = (
   id: string,
-  indent: number
+  indents: {
+    nextIndent: number;
+    prevIndent: number;
+  }
 ): InputEvent[] => {
-  const { insertNextStatement } = useInsertStatement();
+  const { insertNextStatement, insertPrevStatement } = useInsertStatement();
 
-  return [
-    {
-      key: 'Enter',
-      contentLength: 0,
-      callback: () => {
-        insertNextStatement(id, [createNewStatement({ indent })]);
+  return useMemo<InputEvent[]>(
+    () => [
+      {
+        key: 'Enter',
+        ctrlKey: true,
+        callback: () => {
+          insertNextStatement(id, [
+            createNewStatement({ indent: indents.nextIndent }),
+          ]);
+        },
       },
-    },
-    {
-      key: 'Enter',
-      cursorPosition: 'END',
-      callback: () => {
-        insertNextStatement(id, [createNewStatement({ indent })]);
+      {
+        key: 'Enter',
+        ctrlKey: true,
+        shiftKey: true,
+        callback: () => {
+          insertPrevStatement(id, [
+            createNewStatement({ indent: indents.prevIndent }),
+          ]);
+        },
       },
-    },
-  ];
-};
-
-export const usePrevNewStatementInputEvent = (
-  id: string,
-  indent: number
-): InputEvent[] => {
-  const { insertPrevStatement } = useInsertStatement();
-
-  return [
-    {
-      key: 'Enter',
-      contentLength: 0,
-      callback: () => {
-        insertPrevStatement(id, [createNewStatement({ indent })]);
-      },
-    },
-    {
-      key: 'Enter',
-      cursorPosition: 'START',
-      callback: () => {
-        insertPrevStatement(id, [createNewStatement({ indent })]);
-      },
-    },
-  ];
+    ],
+    [insertNextStatement, insertPrevStatement]
+  );
 };

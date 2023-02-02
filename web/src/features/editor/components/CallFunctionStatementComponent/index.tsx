@@ -6,8 +6,7 @@ import {
 } from '@editor/components';
 import {
   useDeleteStatementInputEvent,
-  useNextNewStatementInputEvent,
-  usePrevNewStatementInputEvent,
+  useNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
@@ -25,24 +24,16 @@ export const CallFunctionStatementComponent: React.FC<
   const backCursorNode = statement.nodes[statement.nodes.length - 1];
   const args = statement.nodes.slice(1, statement.nodes.length - 1);
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
-  const newNextStatementInputEvent = useNextNewStatementInputEvent(
-    id,
-    statement.indent
-  );
-  const newPrevStatementInputEvent = usePrevNewStatementInputEvent(
-    statement.id,
-    statement.indent
-  );
+  const newStatementInputEvent = useNewStatementInputEvent(id, {
+    nextIndent: statement.indent,
+    prevIndent: statement.indent,
+  });
+
+  const inputEvent = [...newStatementInputEvent, ...deleteStatementInputEvent];
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <CursorNodeComponent
-        id={frontCursorNode}
-        inputEvent={[
-          ...newPrevStatementInputEvent,
-          ...deleteStatementInputEvent,
-        ]}
-      />
+      <CursorNodeComponent id={frontCursorNode} inputEvent={inputEvent} />
       <BaseTextComopnent onClick={() => ref.current?.focus()}>
         {statement.functionName}(
       </BaseTextComopnent>
@@ -52,18 +43,12 @@ export const CallFunctionStatementComponent: React.FC<
             ref={i === 0 ? ref : null}
             key={arg}
             id={arg}
-            inputEvent={deleteStatementInputEvent}
+            inputEvent={inputEvent}
           />
         ))}
       </Stack>
       <BaseTextComopnent>)</BaseTextComopnent>
-      <CursorNodeComponent
-        id={backCursorNode}
-        inputEvent={[
-          ...newNextStatementInputEvent,
-          ...deleteStatementInputEvent,
-        ]}
-      />
+      <CursorNodeComponent id={backCursorNode} inputEvent={inputEvent} />
     </StatementWrapper>
   );
 };
