@@ -1,8 +1,7 @@
 import { EditableNodeComponent, StatementWrapper } from '@editor/components';
 import {
   useDeleteStatementInputEvent,
-  useNextNewStatementInputEvent,
-  usePrevNewStatementInputEvent,
+  useNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
@@ -18,35 +17,29 @@ export const AssignStatementComponent: React.FC<StatementComponentProps> = ({
   const statement = useStatement<AssignStatement>(id);
   const ref = useRef<HTMLDivElement>(null);
   const [varName, exp] = statement.nodes;
-  const newNextStatementInputEvent = useNextNewStatementInputEvent(
-    statement.id,
-    statement.indent
-  );
-  const newPrevStatementInputEvent = usePrevNewStatementInputEvent(
-    statement.id,
-    statement.indent
-  );
+  const newStatementInputEvent = useNewStatementInputEvent(statement.id, {
+    nextIndent: statement.indent,
+    prevIndent: statement.indent,
+  });
   const deleteStatementInputEvent = useDeleteStatementInputEvent([
     statement.id,
   ]);
+
+  const inputEvent = [...newStatementInputEvent, ...deleteStatementInputEvent];
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <EditableNodeComponent
         id={varName}
         ref={ref}
-        inputEvent={[
-          ...newPrevStatementInputEvent,
-          ...deleteStatementInputEvent,
-        ]}
+        inputEvent={inputEvent}
+        placeholder={'代入先'}
       />
       <KeyboardBackspaceIcon onClick={() => ref.current?.focus()} />
       <EditableNodeComponent
         id={exp}
-        inputEvent={[
-          ...newNextStatementInputEvent,
-          ...deleteStatementInputEvent,
-        ]}
+        inputEvent={inputEvent}
+        placeholder={'代入する値'}
       />
     </StatementWrapper>
   );

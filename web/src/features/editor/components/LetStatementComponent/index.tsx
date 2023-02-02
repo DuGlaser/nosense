@@ -5,10 +5,10 @@ import {
 } from '@editor/components';
 import { CompleteOption, useDeleteStatementInputEvent } from '@editor/hooks';
 import { useInsertNode, useInsertStatement, useStatement } from '@editor/store';
-import { StatementComponentProps } from '@editor/type';
+import { InputEvent, StatementComponentProps } from '@editor/type';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Button, Stack, styled } from '@mui/material';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { createLetStatement, LetStatement } from '@/lib/models/editorObject';
@@ -44,7 +44,7 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
   const statement = useStatement<LetStatement>(id);
   const [typeNode, ...varNameNodes] = statement.nodes;
   const insertNode = useInsertNode(id);
-  const { insertNextStatement } = useInsertStatement();
+  const { insertNextStatement, insertPrevStatement } = useInsertStatement();
 
   const deleteStatementInputEvent = useDeleteStatementInputEvent([id]);
 
@@ -74,24 +74,53 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
     });
   };
 
-  const addLetStatement = () => {
+  const createNextLetStatement = useCallback(() => {
     insertNextStatement(statement.id, [
       createLetStatement({ type: '', varNames: [''] }),
     ]);
-  };
+  }, [insertNextStatement]);
+
+  const createPrevLetStatement = useCallback(() => {
+    insertPrevStatement(statement.id, [
+      createLetStatement({ type: '', varNames: [''] }),
+    ]);
+  }, [insertPrevStatement]);
+
+  const addLetStatementInputEvent = useMemo<InputEvent[]>(
+    () => [
+      {
+        key: 'Enter',
+        ctrlKey: true,
+        callback: () => createNextLetStatement(),
+      },
+      {
+        key: 'Enter',
+        ctrlKey: true,
+        shiftKey: true,
+        callback: () => createPrevLetStatement(),
+      },
+    ],
+    [insertNextStatement, insertPrevStatement]
+  );
+
+  const inputEvent = [
+    ...addLetStatementInputEvent,
+    ...deleteStatementInputEvent,
+  ];
 
   return (
     <StatementWrapper
       statementId={id}
       indent={statement.indent}
       {...rest}
-      onCreateNewStatemnt={addLetStatement}
+      onCreateNextNewStatemnt={createNextLetStatement}
+      onCreatePrevNewStatemnt={createPrevLetStatement}
     >
       <EditableNodeComponent
         completeOptions={typeIdentOption}
         validate={typeIdetValidator}
         id={typeNode}
-        inputEvent={deleteStatementInputEvent}
+        inputEvent={inputEvent}
         placeholder={'変数型'}
       />
       :
@@ -101,13 +130,7 @@ export const LetStatementComponent: React.FC<StatementComponentProps> = ({
             key={varName}
             id={varName}
             placeholder={'変数名'}
-            inputEvent={[
-              {
-                key: 'Enter',
-                callback: addLetStatement,
-              },
-              ...deleteStatementInputEvent,
-            ]}
+            inputEvent={inputEvent}
           />
         ))}
       </Stack>

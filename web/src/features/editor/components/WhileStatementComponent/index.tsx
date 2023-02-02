@@ -1,13 +1,12 @@
 import {
-  BaseTextComopnent,
+  BaseTextComponent,
   CursorNodeComponent,
   EditableNodeComponent,
   StatementWrapper,
 } from '@editor/components';
 import {
   useDeleteCurrentScopeInputEvent,
-  useNextNewStatementInputEvent,
-  usePrevNewStatementInputEvent,
+  useNewStatementInputEvent,
 } from '@editor/hooks';
 import { useStatement } from '@editor/store';
 import { StatementComponentProps } from '@editor/type';
@@ -23,44 +22,34 @@ export const WhileStatementStartComponent: React.FC<
 > = ({ id, ...rest }) => {
   const statement = useStatement<WhileStatementStart>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const newNextStatementInputEvent = useNextNewStatementInputEvent(
-    statement.id,
-    statement.indent + 1
-  );
-  const newPrevStatementInputEvent = usePrevNewStatementInputEvent(
-    statement.id,
-    statement.indent
-  );
+  const newStatementInputEvent = useNewStatementInputEvent(statement.id, {
+    nextIndent: statement.indent + 1,
+    prevIndent: statement.indent,
+  });
   const deleteCurrentScopeInputEvent = useDeleteCurrentScopeInputEvent(
     statement.id
   );
   const [cursor, conditionExp, endCursor] = statement.nodes;
 
+  const inputEvent = [
+    ...newStatementInputEvent,
+    ...deleteCurrentScopeInputEvent,
+  ];
+
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <CursorNodeComponent
-        id={cursor}
-        inputEvent={[
-          ...deleteCurrentScopeInputEvent,
-          ...newPrevStatementInputEvent,
-        ]}
-      />
-      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+      <CursorNodeComponent id={cursor} inputEvent={inputEvent} />
+      <BaseTextComponent onClick={() => ref.current?.focus()}>
         while (
-      </BaseTextComopnent>
+      </BaseTextComponent>
       <EditableNodeComponent
         id={conditionExp}
         ref={ref}
         placeholder={'条件文'}
+        inputEvent={inputEvent}
       />
-      <BaseTextComopnent>)</BaseTextComopnent>
-      <CursorNodeComponent
-        id={endCursor}
-        inputEvent={[
-          ...newNextStatementInputEvent,
-          ...deleteCurrentScopeInputEvent,
-        ]}
-      />
+      <BaseTextComponent>)</BaseTextComponent>
+      <CursorNodeComponent id={endCursor} inputEvent={inputEvent} />
     </StatementWrapper>
   );
 };
@@ -71,10 +60,10 @@ export const WhileStatementEndComponent: React.FC<StatementComponentProps> = ({
 }) => {
   const statement = useStatement<WhileStatementEnd>(id);
   const ref = useRef<HTMLDivElement>(null);
-  const newStatementInputEvent = useNextNewStatementInputEvent(
-    statement.id,
-    statement.indent
-  );
+  const newStatementInputEvent = useNewStatementInputEvent(statement.id, {
+    nextIndent: statement.indent,
+    prevIndent: statement.indent + 1,
+  });
   const deleteCurrentScopeInputEvent = useDeleteCurrentScopeInputEvent(
     statement.id
   );
@@ -82,9 +71,9 @@ export const WhileStatementEndComponent: React.FC<StatementComponentProps> = ({
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+      <BaseTextComponent onClick={() => ref.current?.focus()}>
         endwhile
-      </BaseTextComopnent>
+      </BaseTextComponent>
       <CursorNodeComponent
         id={cursor}
         ref={ref}

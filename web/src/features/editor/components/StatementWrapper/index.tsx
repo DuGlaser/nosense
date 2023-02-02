@@ -82,13 +82,15 @@ const EditMenu: React.FC<{
   onClose: () => void;
   onOpen: () => void;
   showEditButton: boolean;
-  createNewStatement: () => void;
+  createNextNewStatement: () => void;
+  createPrevNewStatement: () => void;
   deleteCurrentStatement: () => void;
 }> = ({
   onClose,
   onOpen,
   showEditButton,
-  createNewStatement,
+  createNextNewStatement,
+  createPrevNewStatement,
   deleteCurrentStatement,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -139,12 +141,23 @@ const EditMenu: React.FC<{
         <MenuItem
           onClick={() => {
             handleClose();
-            createNewStatement();
+            createNextNewStatement();
           }}
         >
-          <ListItemText>文を追加</ListItemText>
+          <ListItemText>直後に文を追加</ListItemText>
           <ShortcutText>
-            行末で<kbd>Enter</kbd>
+            <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
+          </ShortcutText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            createPrevNewStatement();
+          }}
+        >
+          <ListItemText>直前に文を追加</ListItemText>
+          <ShortcutText>
+            <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>
           </ShortcutText>
         </MenuItem>
         <MenuItem
@@ -194,7 +207,8 @@ export const StatementWrapper: React.FC<
     indent: number;
     active: boolean;
     lineNumber: number;
-    onCreateNewStatemnt?: () => void;
+    onCreateNextNewStatemnt?: () => void;
+    onCreatePrevNewStatemnt?: () => void;
     onDeleteCurrentStatemnt?: () => void;
   }>
 > = ({
@@ -202,13 +216,14 @@ export const StatementWrapper: React.FC<
   indent,
   active,
   lineNumber,
-  onCreateNewStatemnt,
+  onCreateNextNewStatemnt,
+  onCreatePrevNewStatemnt,
   onDeleteCurrentStatemnt,
   children,
 }) => {
   const getCurrentScopeIds = useGetCurrentScope();
   const deleteStatement = useDeleteStatement();
-  const { insertNextStatement } = useInsertStatement();
+  const { insertNextStatement, insertPrevStatement } = useInsertStatement();
 
   const [isShowEditButton, setIsShowEditButton] = useState(false);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
@@ -233,9 +248,13 @@ export const StatementWrapper: React.FC<
           }}
           onOpen={() => setIsOpenMenu(true)}
           showEditButton={isShowEditButton}
-          createNewStatement={() => {
-            if (onCreateNewStatemnt) return onCreateNewStatemnt();
+          createNextNewStatement={() => {
+            if (onCreateNextNewStatemnt) return onCreateNextNewStatemnt();
             insertNextStatement(statementId, [createNewStatement({ indent })]);
+          }}
+          createPrevNewStatement={() => {
+            if (onCreatePrevNewStatemnt) return onCreatePrevNewStatemnt();
+            insertPrevStatement(statementId, [createNewStatement({ indent })]);
           }}
           deleteCurrentStatement={async () => {
             if (onDeleteCurrentStatemnt) return onDeleteCurrentStatemnt();

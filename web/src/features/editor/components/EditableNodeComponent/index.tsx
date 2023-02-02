@@ -1,4 +1,4 @@
-import { BaseTextComopnent } from '@editor/components';
+import { BaseTextComponent } from '@editor/components';
 import {
   CompleteOption,
   isCompleteOptionRoot,
@@ -36,6 +36,9 @@ const equalInputEvent = (
     event.contentLength !== target.contentLength
   )
     return false;
+
+  if (!!target.shiftKey !== !!event.shiftKey) return false;
+  if (!!target.ctrlKey !== !!event.ctrlKey) return false;
 
   if (
     target.cursorPosition !== undefined &&
@@ -82,7 +85,7 @@ const getCursorPosition = (
   return undefined;
 };
 
-const EditableDiv = styled(BaseTextComopnent)(() => ({
+const EditableDiv = styled(BaseTextComponent)(() => ({
   minWidth: '5px',
   position: 'relative',
   '&[data-has-error="true"]': {
@@ -209,6 +212,8 @@ export const EditableNodeComponent = forwardRef<
       key: e.key,
       contentLength: value.length,
       openCompleteMenu: isOpen,
+      shiftKey: e.shiftKey,
+      ctrlKey: e.ctrlKey,
       cursorPosition: getCursorPosition(value, selection?.focusOffset),
     };
 
@@ -282,6 +287,15 @@ export const EditableNodeComponent = forwardRef<
         callback: () => clickCurrentCompleteItem(selectCompleteItem),
       },
       {
+        key: 'Enter',
+        callback: () => moveNextNode(),
+      },
+      {
+        key: 'Enter',
+        shiftKey: true,
+        callback: () => movePrevNode(),
+      },
+      {
         key: 'Tab',
         callback: () => moveNextNode(),
       },
@@ -292,6 +306,11 @@ export const EditableNodeComponent = forwardRef<
       },
       {
         key: 'Enter',
+        callback: () => e.preventDefault(),
+      },
+      {
+        key: 'Enter',
+        shiftKey: true,
         callback: () => e.preventDefault(),
       },
     ];

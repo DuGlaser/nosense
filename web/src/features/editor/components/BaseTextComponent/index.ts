@@ -1,6 +1,6 @@
 import { styled } from '@mui/material';
 
-export const BaseTextComopnent = styled('div')({
+export const BaseTextComponent = styled('div')({
   border: 'none',
   padding: '1px 4px',
   '&:focus': {
