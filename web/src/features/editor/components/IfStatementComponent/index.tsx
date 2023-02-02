@@ -1,5 +1,5 @@
 import {
-  BaseTextComopnent,
+  BaseTextComponent,
   CursorNodeComponent,
   EditableNodeComponent,
   StatementWrapper,
@@ -41,16 +41,16 @@ export const IfStatementStartComponent: React.FC<StatementComponentProps> = ({
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <CursorNodeComponent id={cursor} inputEvent={inputEvent} />
-      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+      <BaseTextComponent onClick={() => ref.current?.focus()}>
         if (
-      </BaseTextComopnent>
+      </BaseTextComponent>
       <EditableNodeComponent
         id={conditionExp}
         ref={ref}
         placeholder={'条件文'}
         inputEvent={inputEvent}
       />
-      <BaseTextComopnent>)</BaseTextComopnent>
+      <BaseTextComponent>)</BaseTextComponent>
       <CursorNodeComponent id={endCursor} inputEvent={inputEvent} />
     </StatementWrapper>
   );
@@ -69,7 +69,7 @@ export const IfStatementElseComponent: React.FC<StatementComponentProps> = ({
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <BaseTextComopnent>else</BaseTextComopnent>
+      <BaseTextComponent>else</BaseTextComponent>
       <CursorNodeComponent id={cursor} inputEvent={newStatementInputEvent} />
     </StatementWrapper>
   );
@@ -92,9 +92,9 @@ export const IfStatementEndComponent: React.FC<StatementComponentProps> = ({
 
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
-      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+      <BaseTextComponent onClick={() => ref.current?.focus()}>
         endif
-      </BaseTextComopnent>
+      </BaseTextComponent>
       <CursorNodeComponent
         id={cursor}
         ref={ref}

@@ -1,4 +1,4 @@
-import { BaseTextComopnent } from '@editor/components';
+import { BaseTextComponent } from '@editor/components';
 import {
   CompleteOption,
   isCompleteOptionRoot,
@@ -85,7 +85,7 @@ const getCursorPosition = (
   return undefined;
 };
 
-const EditableDiv = styled(BaseTextComopnent)(() => ({
+const EditableDiv = styled(BaseTextComponent)(() => ({
   minWidth: '5px',
   position: 'relative',
   '&[data-has-error="true"]': {

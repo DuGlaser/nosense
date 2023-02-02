@@ -1,5 +1,5 @@
 import {
-  BaseTextComopnent,
+  BaseTextComponent,
   CursorNodeComponent,
   EditableNodeComponent,
   StatementWrapper,
@@ -34,9 +34,9 @@ export const CallFunctionStatementComponent: React.FC<
   return (
     <StatementWrapper statementId={id} indent={statement.indent} {...rest}>
       <CursorNodeComponent id={frontCursorNode} inputEvent={inputEvent} />
-      <BaseTextComopnent onClick={() => ref.current?.focus()}>
+      <BaseTextComponent onClick={() => ref.current?.focus()}>
         {statement.functionName}(
-      </BaseTextComopnent>
+      </BaseTextComponent>
       <Stack direction="row" divider={<span>,</span>}>
         {args.map((arg, i) => (
           <EditableNodeComponent
@@ -47,7 +47,7 @@ export const CallFunctionStatementComponent: React.FC<
           />
         ))}
       </Stack>
-      <BaseTextComopnent>)</BaseTextComopnent>
+      <BaseTextComponent>)</BaseTextComponent>
       <CursorNodeComponent id={backCursorNode} inputEvent={inputEvent} />
     </StatementWrapper>
   );
