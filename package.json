@@ -5,8 +5,7 @@
   "author": "DuGlaser <duglaser0618@gmail.com>",
   "workspaces": [
     "packages/*",
-    "web",
-    "app"
+    "web"
   ],
   "scripts": {
     "build": "npx turbo run build",

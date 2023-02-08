@@ -19,9 +19,8 @@ $ make build
 ## Project layout
 
 ```
-├─ app/             Electron周りの設定
 ├─ packages/
-│  ├─ damega/       疑似言語用のインタプリタ   
+│  ├─ damega/       疑似言語用のインタプリタ
 │  └─ web-obniz/    Obnizをブラウザ向けにビルドするための設定
 └─ web/             Nosenseの本体
 ```
