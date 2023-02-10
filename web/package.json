@@ -34,7 +34,7 @@
     "@emotion/react": "11.10.5",
     "@emotion/styled": "11.10.5",
     "@mui/icons-material": "5.11.0",
-    "@mui/material": "5.11.7",
+    "@mui/material": "5.11.8",
     "@nosense/damega": "*",
     "@recoiljs/refine": "^0.1.1",
     "file-saver": "^2.0.5",
