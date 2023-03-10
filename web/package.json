@@ -40,7 +40,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^8.0.2",
     "next": "13.2.4",
-    "notistack": "^2.0.8",
+    "notistack": "^3.0.0",
     "pako": "^2.1.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
